@@ -12,6 +12,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -19,7 +20,7 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 
 	filePath := file.Filename
 	fileExt := strings.ToLower(filepath.Ext(file.Filename))
-	url := strings.TrimSpace(strings.Trim(configs.Get().FileLcs, " "))
+	url := strings.TrimSpace(strings.Trim(configs.Get().FileLc, " "))
 
 	acceptedExts := []string{".jpg", ".jpeg", ".gif", ".png", ".svg"}
 	accepted := false
@@ -137,4 +138,78 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 	default:
 		return &uploadResp
 	}
+}
+
+// SetByCurlImageQr gửi dữ liệu hình ảnh đến dịch vụ khác
+func setByCurlImageQrToService(imageData []byte) *entities.UploadResponse {
+	// URL của dịch vụ lưu trữ hình ảnh
+	url := strings.TrimSpace(strings.Trim(configs.Get().FileLc, " "))
+	fileConvert := strconv.FormatInt(GenerateUniqueKey(), 10)
+
+	// Tạo buffer để tạo multipart form data
+	bodyBuf := &bytes.Buffer{}
+	bodyWriter := multipart.NewWriter(bodyBuf)
+
+	fileName := fmt.Sprintf("%s_%s.png", "qr_code", fileConvert)
+
+	// Thêm hình ảnh vào form data
+	fileWriter, err := bodyWriter.CreateFormFile("file", fileName)
+	if err != nil {
+		return &entities.UploadResponse{
+			Result: entities.Result{
+				Code:    4,
+				Message: "Server error",
+			},
+		}
+	}
+	_, err = fileWriter.Write(imageData)
+	if err != nil {
+		return &entities.UploadResponse{
+			Result: entities.Result{
+				Code:    4,
+				Message: "Server error",
+			},
+		}
+	}
+
+	// Kết thúc form data
+	contentType := bodyWriter.FormDataContentType()
+	bodyWriter.Close()
+
+	// Gửi yêu cầu POST đến dịch vụ lưu trữ hình ảnh
+	resp, err := http.Post(url, contentType, bodyBuf)
+	if err != nil {
+		return &entities.UploadResponse{
+			Result: entities.Result{
+				Code:    404,
+				Message: fmt.Sprintf("Resource not found: %s", err),
+			},
+		}
+	}
+	defer resp.Body.Close()
+
+	// Đọc phản hồi
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return &entities.UploadResponse{
+			Result: entities.Result{
+				Code:    4,
+				Message: "Server error",
+			},
+		}
+	}
+
+	// Giải mã phản hồi thành cấu trúc
+	var uploadResp entities.UploadResponse
+	err = json.Unmarshal(respBody, &uploadResp)
+	if err != nil {
+		return &entities.UploadResponse{
+			Result: entities.Result{
+				Code:    4,
+				Message: "Server error",
+			},
+		}
+	}
+
+	return &uploadResp
 }

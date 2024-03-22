@@ -8,12 +8,16 @@ import (
 type Configs struct {
 	Port           string `json:"port`
 	DataSource     string `json:"data_source"`
-	FileLcs        string `json:"file_lcs"`
+	FileLc         string `json:"file_lc"`
 	Url            string `json:"url,omitempty"`
 	Token          string `json:"token,omitempty"`
 	TokenExpired   string `json:"token_expired,omitempty"`
 	RefreshExpired int    `json:"refresh_expires,omitempty`
 	ReferenceToken string `json:"reference,omitempty"`
+	FromEmail      string `json:"from_email`
+	PasswordEmail  string `json:"password_email`
+	SmtpHost       string `json:"smtp_host"`
+	SmtpPort       int    `json:"smtp_port"`
 }
 
 var config *Configs
