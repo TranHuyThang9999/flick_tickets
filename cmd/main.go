@@ -16,18 +16,21 @@ func init() {
 	configs.LoadConfig(pathConfig)
 }
 func main() {
-	//thuy := "thuynguyen151387@gmail.com"
-	//tranhuythang9999@gmail.com
 
 	err := utils.GeneratesQrCodeAndSendQrWithEmail("thuynguyen151387@gmail.com", "highlight obnl egfwerv 666")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	// fmt.Println("generating highlight")
-	// err := utils.SendEmail("thuynguyen151387@gmail.com", "http://localhost:1234/manager/shader/huythang/458478123.png")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
+
 }
+
+//thuy := "thuynguyen151387@gmail.com"
+//tranhuythang9999@gmail.com
+
+// fmt.Println("generating highlight")
+// err := utils.SendEmail("thuynguyen151387@gmail.com", "http://localhost:1234/manager/shader/huythang/458478123.png")
+// if err != nil {
+// 	fmt.Println(err)
+// 	return
+// }

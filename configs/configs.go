@@ -6,18 +6,18 @@ import (
 )
 
 type Configs struct {
-	Port           string `json:"port`
-	DataSource     string `json:"data_source"`
-	FileLc         string `json:"file_lc"`
-	Url            string `json:"url,omitempty"`
-	Token          string `json:"token,omitempty"`
-	TokenExpired   string `json:"token_expired,omitempty"`
-	RefreshExpired int    `json:"refresh_expires,omitempty`
-	ReferenceToken string `json:"reference,omitempty"`
-	FromEmail      string `json:"from_email`
-	PasswordEmail  string `json:"password_email`
-	SmtpHost       string `json:"smtp_host"`
-	SmtpPort       int    `json:"smtp_port"`
+	FileLc        string `json:"file_lc"`
+	DataSource    string `json:"data_source"`
+	Port          string `json:"port"`
+	AccessSecret  string `json:"access_secret,omitempty"`
+	ExpireAccess  string `json:"expire_access,omitempty"`
+	RefreshSecret string `json:"refresh_secret,omitempty"`
+	ExpireRefresh string `json:"expire_refresh,omitempty"`
+	KeyAES128     string `json:"keyAES128"`
+	FromEmail     string `json:"fromEmail"`
+	PasswordEmail string `json:"passwordEmail"`
+	SmtpHost      string `json:"smtpHost,omitempty"`
+	SmtpPort      string `json:"smtpPort,omitempty"`
 }
 
 var config *Configs

@@ -2,9 +2,12 @@ package utils
 
 import (
 	"bytes"
+	"flick_tickets/common/log"
+	"flick_tickets/configs"
 	"fmt"
 	"image/png"
 	"io"
+	"strconv"
 
 	"github.com/skip2/go-qrcode"
 	"gopkg.in/gomail.v2"
@@ -66,15 +69,23 @@ func GeneratesQrCodeAndSendQrWithEmail(addressEmail, token string) error {
 }
 
 func SendEmail(to string, attachment []byte) error {
-	//	infomations := *configs.Get()
+	infomations := configs.Get()
 	// Sender data.
-	username := "tranhuythang9999@gmail.com"
-	password := "nvkq qdrq ecpa bapz"
+	// username := "tranhuythang9999@gmail.com"
+	// password := "nvkq qdrq ecpa bapz"
 
-	// smtp server configuration.
-	smtpHost := "smtp.gmail.com"
-	smtpPort := 587
-	// Create a new message.
+	// // // smtp server configuration.
+	// smtpHost := "smtp.gmail.com"
+	// smtpPort := 587
+	username := infomations.FromEmail
+	password := infomations.PasswordEmail
+	smtpHost := infomations.SmtpHost
+	port, err := strconv.Atoi(infomations.SmtpPort)
+
+	if err != nil {
+		return err
+	}
+	//Create a new message.
 	message := gomail.NewMessage()
 	message.SetHeader("From", username)
 	message.SetHeader("To", to)
@@ -83,16 +94,21 @@ func SendEmail(to string, attachment []byte) error {
 	// Attach the image to the message.
 	message.Attach("QRCode.png", gomail.SetCopyFunc(func(w io.Writer) error {
 		_, err := w.Write(attachment)
-		return err
+		if err != nil {
+			log.Error(err, "error sending qr :%s")
+			return err
+		}
+		return nil
 	}))
 
 	// Create a new SMTP client.
-	dialer := gomail.NewDialer(smtpHost, smtpPort, username, password)
+	dialer := gomail.NewDialer(smtpHost, port, username, password)
 
 	// Sending email.
 	if err := dialer.DialAndSend(message); err != nil {
+		log.Error(err, "error sending email")
 		return err
 	}
-
+	log.Info("oik")
 	return nil
 }
