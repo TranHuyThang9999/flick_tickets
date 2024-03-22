@@ -1,0 +1,10 @@
+{
+    "file_lc":"http://localhost:1234/manager/upload",
+    "data_source":"host=localhost user=postgres password=1234 dbname=flick_tickets port=5432 sslmode=disable TimeZone=Asia/Shanghai",
+    "port":"8080",
+    "access_secret":"secretAAAAAAAAAAAaaaaaaaaassssdsv",
+    "expire_access":"24h",
+    "refresh_secret":"secretAAAAAAAAAAAaaaaaaaaassssdsv",
+    "expire_refresh":"168h",
+    "keyAES128":"tytuyceds8c8c8c8c8c8c8c8098u 8r234n234n234n234n234n234n234n234n234"
+}
