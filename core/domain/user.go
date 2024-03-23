@@ -1,9 +1,17 @@
 package domain
 
+import (
+	"context"
+
+	"gorm.io/gorm"
+)
+
 type Users struct {
 	Id          int64  `json:"id"`
 	UserName    string `json:"user_name"`
+	Password    string `json:"password"`
 	Age         int    `json:"age"`
+	Address     string `json:"address"`
 	AvatarUrl   string `json:"avatar_url"`
 	Role        int    `json:"role"`
 	IsActive    int    `json:"is_active"`
@@ -13,18 +21,16 @@ type Users struct {
 }
 
 type UsersReqByForm struct {
-	Id          int64  `form:"id"`
-	UserName    string `form:"user_name"`
-	Age         int    `form:"age"`
-	AvatarUrl   string `form:"avatar_url"`
-	Role        int    `form:"role"`
-	IsActive    int    `form:"is_active"`
-	ExpiredTime int    `form:"expired_time"`
-	CreatedAt   int    `form:"created_at"`
-	UpdatedAt   int    `form:"updated_at"`
+	Id        int64  `json:"id"`
+	UserName  string `json:"user_name"`
+	Age       int    `json:"age"`
+	Address   string `json:"address"`
+	CreatedAt int    `json:"created_at"`
+	UpdatedAt int    `json:"updated_at"`
 }
 type UserUpdate struct {
 	UserName    string `json:"user_name"`
+	Password    string `json:"password"`
 	Age         int    `json:"age"`
 	AvatarUrl   string `json:"avatar_url"`
 	Role        int    `json:"role"`
@@ -34,8 +40,8 @@ type UserUpdate struct {
 }
 
 type RepositoryUser interface {
-	AddUser(user *Users) error
-	GetAllUserStaffs(user *UsersReqByForm) ([]*Users, error)
-	DeleteUserByUsernameStaff(userName string) error
-	UpdateUserByUsernameStaff(user *UserUpdate) error
+	AddUser(ctx context.Context, tx *gorm.DB, user *Users) error
+	GetAllUserStaffs(ctx context.Context, user *UsersReqByForm) ([]*Users, error)
+	DeleteUserByUsernameStaff(ctx context.Context, tx *gorm.DB, userName string) error
+	UpdateUserByUsernameStaff(ctx context.Context, tx *gorm.DB, user *UserUpdate) error
 }

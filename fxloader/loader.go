@@ -1,8 +1,12 @@
 package fxloader
 
 import (
+	"flick_tickets/api/controllers"
+	"flick_tickets/api/middlewares"
 	"flick_tickets/api/routers"
-	repository "flick_tickets/core/adapter"
+	"flick_tickets/core/adapter"
+	"flick_tickets/core/adapter/repository"
+	"flick_tickets/core/usecase"
 
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/fx"
@@ -18,7 +22,11 @@ func Load() []fx.Option {
 }
 func loadUseCase() []fx.Option {
 	return []fx.Option{
-		//	fx.Provide(use_case.NewUseCaseUser),
+		fx.Provide(usecase.NewUseCaseUser),
+		fx.Provide(usecase.NewAesUseCase),
+		fx.Provide(usecase.NewJwtUseCase),
+		fx.Provide(usecase.NewUsecaseTicker),
+		fx.Provide(usecase.NewUseCaseFile),
 	}
 }
 
@@ -29,17 +37,22 @@ func loadValidator() []fx.Option {
 }
 func loadEngine() []fx.Option {
 	return []fx.Option{
-		// fx.Provide(controllers.NewBaseController),
-		// fx.Provide(controllers.NewUserController),
-		// fx.Provide(controllers.NewAuthController),
+
 		fx.Provide(routers.NewApiRouter),
-		// fx.Provide(middlewares.NewMiddleware),
+		fx.Provide(controllers.NewControllersUser),
+		fx.Provide(controllers.NewBaseController),
+		fx.Provide(controllers.NewControllerAuth),
+		fx.Provide(middlewares.NewMiddleware),
+		fx.Provide(controllers.NewControllerTicket),
+		fx.Provide(controllers.NewControllerFileLc),
 	}
 }
 func loadAdapter() []fx.Option {
 	return []fx.Option{
-		fx.Provide(repository.NewpostgreDb),
-		//fx.Provide(postgres.NewpostgreDb),
-		//fx.Provide(repositories.NewResposUser),
+		fx.Provide(adapter.NewpostgreDb),
+		fx.Provide(repository.NewCollectionUser),
+		fx.Provide(repository.NewTransaction),
+		fx.Provide(repository.NewConllectionFileStore),
+		fx.Provide(repository.NewCollectionTickets),
 	}
 }

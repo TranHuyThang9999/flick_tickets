@@ -6,7 +6,7 @@
     "expire_access":"24h",
     "refresh_secret":"secretAAAAAAAAAAAaaaaaaaaassssdsv",
     "expire_refresh":"168h",
-    "keyAES128":"tytuyceds8c8c8c8c8c8c8c8098u 8r234n234n234n234n234n234n234n234n234",
+    "keyAES128":"your-256-bit-key-32-byte-long-wx",
     "fromEmail" : "tranhuythang9999@gmail.com",
 	"passwordEmail" : "nvkq qdrq ecpa bapz",
     "smtpHost" :"smtp.gmail.com",

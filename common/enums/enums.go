@@ -26,4 +26,27 @@ const (
 
 	TRANSACTION_INVALID_CODE = 16
 	TRANSACTION_INVALID_MESS = "invalid transaction"
+
+	AES_ENCRYPT_AES_CODE = 18
+	AES_ENCRYPT_AES_MESS = "AES encryption error"
+
+	HASH_PASSWORD_ERR_CODE = 20
+	HASH_PASSWORD_ERR_MESS = "password error"
+
+	USER_EXITS_CODE      = 22
+	USER_EXITS_CODE_MESS = "ACCOUNT  exist"
+
+	USER_NOT_EXIST_CODE = 24
+	USER_NOT_EXIST_MESS = "ACCOUNT user not exist"
+
+	CREATE_TOKEN      = 26
+	CREATE_TOKEN_MESS = "create token error"
+
+	UPLOAD_FILE_ERR_CODE = 28
+	UPLOAD_FILE_ERR_MESS = "upload file error"
+)
+const (
+	ROLE_ADMIN     = 1
+	ROLE_STAFF     = 3
+	ACCOUNT_ACTIVE = 5
 )

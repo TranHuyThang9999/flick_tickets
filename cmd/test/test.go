@@ -1,68 +1,111 @@
 package main
 
 import (
-	"flick_tickets/common/log"
-	"io"
-	"net/http"
-	"os"
-
-	"gopkg.in/gomail.v2"
+	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/base64"
+	"fmt"
+	"log"
 )
 
+// Encrypt sử dụng AES để mã hóa dữ liệu với khóa đã cho.
+func Encrypt(data []byte, key []byte) (string, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+
+	// Tạo một vector khởi tạo (IV) ngẫu nhiên
+	iv := make([]byte, aes.BlockSize)
+
+	// Tạo chế độ CBC với khối mã hóa và vector khởi tạo
+	mode := cipher.NewCBCEncrypter(block, iv)
+
+	// Thêm padding vào dữ liệu
+	blockSize := aes.BlockSize
+	data = pkcs7Pad(data, blockSize)
+
+	// Mã hóa dữ liệu
+	ciphertext := make([]byte, len(data))
+	mode.CryptBlocks(ciphertext, data)
+
+	// Chuyển đổi mã hóa thành chuỗi base64
+	ciphertextBase64 := base64.StdEncoding.EncodeToString(ciphertext)
+
+	return ciphertextBase64, nil
+}
+
+// Decrypt sử dụng AES để giải mã dữ liệu đã được mã hóa với khóa đã cho.
+func Decrypt(ciphertextBase64 string, key []byte) ([]byte, error) {
+	ciphertext, err := base64.StdEncoding.DecodeString(ciphertextBase64)
+	if err != nil {
+		return nil, err
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+
+	// Tạo một vector khởi tạo (IV) ngẫu nhiên
+	iv := make([]byte, aes.BlockSize)
+
+	// Tạo chế độ CBC với khối mã hóa và vector khởi tạo
+	mode := cipher.NewCBCDecrypter(block, iv)
+
+	// Giải mã dữ liệu
+	plaintext := make([]byte, len(ciphertext))
+	mode.CryptBlocks(plaintext, ciphertext)
+
+	// Xóa padding từ dữ liệu giải mã
+	plaintext, err = pkcs7Unpad(plaintext)
+	if err != nil {
+		return nil, err
+	}
+
+	return plaintext, nil
+}
+
+// Hàm pkcs7Unpad xóa padding từ dữ liệu theo chuẩn PKCS7
+func pkcs7Unpad(data []byte) ([]byte, error) {
+	padding := int(data[len(data)-1])
+	if padding < 1 || padding > aes.BlockSize {
+		return nil, fmt.Errorf("Invalid padding")
+	}
+
+	return data[:len(data)-padding], nil
+}
+
+// Hàm pkcs7Pad thêm padding vào dữ liệu theo chuẩn PKCS7
+func pkcs7Pad(data []byte, blockSize int) []byte {
+	padding := blockSize - (len(data) % blockSize)
+	padText := bytes.Repeat([]byte{byte(padding)}, padding)
+	return append(data, padText...)
+}
+
 func main() {
-	log.LoadLogger() // Initialize the logger
-	//thang := "tranhuythang9999@gmail.com"
-	thuy := "thuynguyen151387@gmail.com"
-	url := "http://localhost:1234/manager/shader/huythang/411373416.png"
-	SendEmail(thuy, url)
-}
+	// Khóa AES (32 byte)
+	key := []byte("your-256-bit-key-32-byte-long-wx")
+	fakeKey := []byte("your-256-bit-key-32-byte-long-wap")
+	// Đoạn mã dữ liệu cần mã hóa
+	plaintext := []byte("Hello, World!")
 
-func SendEmail(from, imagePath string) error {
-	// Sender data.
-	username := "tranhuythang9999@gmail.com"
-	password := "nvkq qdrq ecpa bapz"
-
-	// smtp server configuration.
-	smtpHost := "smtp.gmail.com"
-	smtpPort := 587
-	// Download the image from the URL.
-	response, err := http.Get(imagePath)
+	// Mã hóa dữ liệu
+	ciphertext, err := Encrypt(plaintext, key)
 	if err != nil {
-		return err
+		log.Fatal("Lỗi khi mã hóa dữ liệu:", err)
 	}
-	defer response.Body.Close()
 
-	// Tạo tệp tin tạm để lưu dữ liệu hình ảnh.
-	tempFile, err := os.CreateTemp("", "image.png")
+	// In ra mã hóa chuỗi base64
+	log.Println("Mã hóa base64:", ciphertext)
+
+	// Giải mã dữ liệu
+	decrypted, err := Decrypt(ciphertext, fakeKey)
 	if err != nil {
-		return err
+		log.Fatal("Lỗi khi giải mã dữ liệu:", err)
 	}
 
-	defer os.Remove(tempFile.Name())
-	// Ghi dữ liệu hình ảnh vào tệp tin tạm.
-	if _, err := io.Copy(tempFile, response.Body); err != nil {
-		return err
-	}
-	tempFile.Close()
-
-	// Create a new message.
-	message := gomail.NewMessage()
-	message.SetHeader("From", from)
-	message.SetHeader("To", from)
-	message.SetHeader("Subject", "Example Subject") // Đặt giá trị tiêu đề
-
-	// Attach the image to the message.
-	message.Attach(tempFile.Name())
-
-	// Create a new SMTP client.
-	dialer := gomail.NewDialer(smtpHost, smtpPort, username, password)
-
-	// Sending email.
-	if err := dialer.DialAndSend(message); err != nil {
-		return err
-	}
-
-	return nil
+	// In ra dữ liệu giải mã
+	log.Println("Dữ liệu giải mã:", string(decrypted))
 }
-
-//http://localhost:1234/manager/shader/huythang/411373416.png

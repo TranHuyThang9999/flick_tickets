@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"flick_tickets/configs"
 	"flick_tickets/core/adapter"
 	"flick_tickets/core/domain"
@@ -19,36 +20,32 @@ func NewCollectionUser(cf *configs.Configs, user *adapter.PostGresql) domain.Rep
 }
 
 // AddUser implements domain.RepositoryUser.
-func (c *CollectionUser) AddUser(user *domain.Users) error {
-	result := c.collection.Create(user)
+func (c *CollectionUser) AddUser(ctx context.Context, tx *gorm.DB, user *domain.Users) error {
+	result := tx.Create(user)
 	return result.Error
 }
 
 // DeleteUserByUsernameStaff implements domain.RepositoryUser.
-func (c *CollectionUser) DeleteUserByUsernameStaff(userName string) error {
-	result := c.collection.Where("user_name =?", userName).Delete(&domain.Users{})
+func (c *CollectionUser) DeleteUserByUsernameStaff(ctx context.Context, tx *gorm.DB, userName string) error {
+	result := tx.Where("user_name =?", userName).Delete(&domain.Users{})
 	return result.Error
 }
 
 // GetAllUserStaffs implements domain.RepositoryUser.
-func (c *CollectionUser) GetAllUserStaffs(user *domain.UsersReqByForm) ([]*domain.Users, error) {
+func (c *CollectionUser) GetAllUserStaffs(ctx context.Context, user *domain.UsersReqByForm) ([]*domain.Users, error) {
 	var users = make([]*domain.Users, 0)
 	result := c.collection.Where(&domain.Users{
-		Id:          user.Id,
-		UserName:    user.UserName,
-		Age:         user.Age,
-		AvatarUrl:   user.AvatarUrl,
-		Role:        user.Role,
-		IsActive:    user.IsActive,
-		ExpiredTime: user.ExpiredTime,
-		CreatedAt:   user.CreatedAt,
-		UpdatedAt:   user.UpdatedAt,
+		Id:        user.Id,
+		UserName:  user.UserName,
+		Age:       user.Age,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}).Find(&users)
 	return users, result.Error
 }
 
 // UpdateUserByUsernameStaff implements domain.RepositoryUser.
-func (c *CollectionUser) UpdateUserByUsernameStaff(user *domain.UserUpdate) error {
-	result := c.collection.Model(&domain.Users{}).Where("user_name = ?", user.UserName).Updates(user)
+func (c *CollectionUser) UpdateUserByUsernameStaff(ctx context.Context, tx *gorm.DB, user *domain.UserUpdate) error {
+	result := tx.Model(&domain.Users{}).Where("user_name = ?", user.UserName).Updates(user)
 	return result.Error
 }
