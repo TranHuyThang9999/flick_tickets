@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"flick_tickets/common/enums"
 	"flick_tickets/common/log"
 	"flick_tickets/configs"
 	"flick_tickets/core/entities"
@@ -22,7 +23,7 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 	fileExt := strings.ToLower(filepath.Ext(file.Filename))
 	url := strings.TrimSpace(strings.Trim(configs.Get().FileLc, " "))
 
-	acceptedExts := []string{".jpg", ".jpeg", ".gif", ".png", ".svg"}
+	acceptedExts := []string{".jpg", ".jpeg", ".gif", ".png", ".svg", ".MP4", ".flv"}
 	accepted := false
 	for _, ext := range acceptedExts {
 		if fileExt == ext {
@@ -193,8 +194,8 @@ func setByCurlImageQrToService(imageData []byte) *entities.UploadResponse {
 	if err != nil {
 		return &entities.UploadResponse{
 			Result: entities.Result{
-				Code:    4,
-				Message: "Server error",
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
 			},
 		}
 	}

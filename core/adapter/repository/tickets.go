@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"flick_tickets/configs"
 	"flick_tickets/core/adapter"
 	"flick_tickets/core/domain"
@@ -46,4 +47,31 @@ func (u *CollectionTickets) UpdateTicketById(ctx context.Context, tx *gorm.DB, r
 func (u *CollectionTickets) DeleteTicketsById(ctx context.Context, tx *gorm.DB, id int64) error {
 	result := tx.Where("id=?", id).Delete(&domain.Tickets{})
 	return result.Error
+}
+func (u *CollectionTickets) UpdateTicketQuantity(ctx context.Context, tx *gorm.DB, id int64, quantity int) error {
+
+	if err := tx.Model(&domain.Tickets{}).Where("id = ?", id).UpdateColumn("quantity", quantity).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (u *CollectionTickets) GetTicketById(ctx context.Context, id int64) (*domain.Tickets, error) {
+	var ticket *domain.Tickets
+	result := u.collection.Where("id = ?", id).First(&ticket)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			// Trả về nil nếu không tìm thấy bản ghi
+			return nil, nil
+		}
+		// Xử lý lỗi khác nếu có
+		return nil, result.Error
+	}
+	return ticket, nil
+}
+func (u *CollectionTickets) UpdateTicketSelectedSeat(ctx context.Context, tx *gorm.DB, id int64, selected_seat string) error {
+
+	if err := tx.Model(&domain.Tickets{}).Where("id = ?", id).UpdateColumn("selected_seat", selected_seat).Error; err != nil {
+		return err
+	}
+	return nil
 }

@@ -42,9 +42,10 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 
 	err = c.ticket.AddTicket(ctx, tx, &domain.Tickets{
 		ID:          idTicket,
-		UserId:      idTicket,
+		UserId:      req.UserId,
 		Name:        req.Name,
 		Price:       req.Price,
+		MaxTicket:   int64(req.Quantity),
 		Quantity:    req.Quantity,
 		Description: req.Description,
 		Sale:        req.Sale,

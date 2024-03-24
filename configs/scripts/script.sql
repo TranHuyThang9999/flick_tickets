@@ -23,11 +23,15 @@ CREATE Table customers (
 
 CREATE TABLE orders (
     id BIGINT PRIMARY KEY,
-    customer_id BIGINT,
     ticket_id BIGINT,
-    payment_id BIGINT,
     showtime int,
     release_date int,
+    email VARCHAR(255),
+    otp BIGINT,
+    decription VARCHAR(2014),
+    status int,
+    price DECIMAL(10, 2),
+    file VARCHAR(1024),
     created_at int,
     updated_at int
 );
@@ -68,4 +72,8 @@ CREATE Table transactions (
     transaction_date INT,
     status int
 );
+
+INSERT INTO "orders" ("ticket_id","showtime","release_date","email","otp","description","status","price","file","seats","sale","created_at","updated_at","id") VALUES 
+(3744462,121213,0,'thuynguyen151387@gmail.com',0,'ves vipo',0,120000,'',10,0,1711287384,1711287654,3246993) RETURNING "id"
+
 

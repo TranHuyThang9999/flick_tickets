@@ -44,6 +44,18 @@ const (
 
 	UPLOAD_FILE_ERR_CODE = 28
 	UPLOAD_FILE_ERR_MESS = "upload file error"
+
+	CONVERT_STRING_TO_ARRAY_CODE = 30
+	CONVERT_STRING_TO_ARRAY_MESS = "convert string string to array error"
+
+	SEND_EMAIL_ERR_CODE = 32
+	SEND_EMAIL_ERR_MESS = "error send email"
+
+	TICKETS_REGISTERED_ERR_CODE = 34
+	TICKETS_REGISTERED_ERR_MESS = "error tickets regisedred"
+
+	AES_DECRYPT_AES_CODE = 18
+	AES_DECRYPT_AES_MESS = "error QRcode is invalid"
 )
 const (
 	ROLE_ADMIN     = 1

@@ -14,7 +14,7 @@ import (
 )
 
 // GeneratesQrCodeAndSendQrWithEmail tạo mã QR từ token và gửi mã QR đến địa chỉ email.
-func GeneratesQrCodeAndSendQrWithEmail(addressEmail, token string) error {
+func GeneratesQrCodeAndSendQrWithEmail(addressEmail, title, token string) error {
 	// Tạo mã QR từ token
 	qrCode, err := qrcode.New(token, qrcode.Medium)
 	if err != nil {
@@ -47,7 +47,7 @@ func GeneratesQrCodeAndSendQrWithEmail(addressEmail, token string) error {
 
 	// Sử dụng goroutine để gửi hình ảnh mã QR đến địa chỉ email
 	go func(email string, attachment []byte) {
-		err := SendEmail(email, attachment)
+		err := SendEmail(email, title, attachment)
 		if err != nil {
 			emailErrCh <- fmt.Errorf("error sending email: %v", err)
 		} else {
@@ -68,7 +68,7 @@ func GeneratesQrCodeAndSendQrWithEmail(addressEmail, token string) error {
 	return nil
 }
 
-func SendEmail(to string, attachment []byte) error {
+func SendEmail(to, title string, attachment []byte) error {
 	infomations := configs.Get()
 	// Sender data.
 	// username := "tranhuythang9999@gmail.com"
@@ -89,7 +89,7 @@ func SendEmail(to string, attachment []byte) error {
 	message := gomail.NewMessage()
 	message.SetHeader("From", username)
 	message.SetHeader("To", to)
-	message.SetHeader("Subject", "Example Subject") // Đặt giá trị tiêu đề
+	message.SetHeader("Subject", title) // Đặt giá trị tiêu đề
 
 	// Attach the image to the message.
 	message.Attach("QRCode.png", gomail.SetCopyFunc(func(w io.Writer) error {

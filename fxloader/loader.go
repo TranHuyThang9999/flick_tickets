@@ -23,10 +23,11 @@ func Load() []fx.Option {
 func loadUseCase() []fx.Option {
 	return []fx.Option{
 		fx.Provide(usecase.NewUseCaseUser),
-		fx.Provide(usecase.NewAesUseCase),
 		fx.Provide(usecase.NewJwtUseCase),
 		fx.Provide(usecase.NewUsecaseTicker),
 		fx.Provide(usecase.NewUseCaseFile),
+		fx.Provide(usecase.NewUsecaseOrder),
+		fx.Provide(usecase.NewAesUseCase),
 	}
 }
 
@@ -45,6 +46,8 @@ func loadEngine() []fx.Option {
 		fx.Provide(middlewares.NewMiddleware),
 		fx.Provide(controllers.NewControllerTicket),
 		fx.Provide(controllers.NewControllerFileLc),
+		fx.Provide(controllers.NewControllerOrder),
+		fx.Provide(controllers.NewControllerAes),
 	}
 }
 func loadAdapter() []fx.Option {
@@ -54,5 +57,6 @@ func loadAdapter() []fx.Option {
 		fx.Provide(repository.NewTransaction),
 		fx.Provide(repository.NewConllectionFileStore),
 		fx.Provide(repository.NewCollectionTickets),
+		fx.Provide(repository.NewCollectionOrder),
 	}
 }

@@ -1,8 +1,9 @@
 package entities
 
 type TokenRequestSendQrCode struct {
-	Id        int64  `json:"id"`
-	FromEmail string `json:"fromEmail"`
+	Title     string `form:"title"`
+	Content   string `form:"content"`
+	FromEmail string `form:"fromEmail"`
 }
 type TokenRespSendQrCode struct {
 	Token   string `json:"token"`
@@ -10,9 +11,10 @@ type TokenRespSendQrCode struct {
 	Created int    `json:"created"`
 }
 type TokenReqCheckQrCode struct {
-	Token string `json:"token"`
+	Token string `form:"token"`
 }
 type TokenResponseCheckQrCode struct {
 	Result  Result `json:"result"`
+	Content string `json:"content"`
 	Created int    `json:"created"`
 }

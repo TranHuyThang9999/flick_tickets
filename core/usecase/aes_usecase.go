@@ -8,20 +8,21 @@ import (
 	"flick_tickets/common/utils"
 	"flick_tickets/configs"
 	"flick_tickets/core/entities"
-	"strconv"
 )
 
-type AesUseCase struct {
+type UseCaseAes struct {
 	config *configs.Configs
 }
 
-func NewAesUseCase(cf *configs.Configs) (*AesUseCase, error) {
-	return &AesUseCase{}, nil
+func NewAesUseCase(cf *configs.Configs) (*UseCaseAes, error) {
+	return &UseCaseAes{
+		config: cf,
+	}, nil
 }
-func (c *AesUseCase) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entities.TokenRequestSendQrCode) (*entities.TokenRespSendQrCode, error) {
+func (c *UseCaseAes) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entities.TokenRequestSendQrCode) (*entities.TokenRespSendQrCode, error) {
 
 	key := []byte(c.config.KeyAES128)
-	plaintext := []byte(strconv.FormatInt(req.Id, 10))
+	plaintext := []byte(req.Content)
 
 	// Mã hóa dữ liệu
 	ciphertext, err := c.EncryptAes(plaintext, key)
@@ -33,7 +34,15 @@ func (c *AesUseCase) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entiti
 			},
 		}, nil
 	}
-
+	err = utils.GeneratesQrCodeAndSendQrWithEmail(req.FromEmail, req.Title, ciphertext)
+	if err != nil {
+		return &entities.TokenRespSendQrCode{
+			Result: entities.Result{
+				Code:    enums.SEND_EMAIL_ERR_CODE,
+				Message: enums.SEND_EMAIL_ERR_MESS,
+			},
+		}, nil
+	}
 	return &entities.TokenRespSendQrCode{
 		Token: ciphertext,
 		Result: entities.Result{
@@ -43,18 +52,31 @@ func (c *AesUseCase) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entiti
 		Created: utils.GenerateTimestamp(),
 	}, nil
 }
-func (c *AesUseCase) CheckQrCode(req *entities.TokenReqCheckQrCode) (*entities.TokenResponseCheckQrCode, error) {
+func (c *UseCaseAes) CheckQrCode(req *entities.TokenReqCheckQrCode) (*entities.TokenResponseCheckQrCode, error) {
+
+	key := []byte(c.config.KeyAES128)
+
+	data, err := c.DecryptAes(req.Token, key)
+	if err != nil {
+		return &entities.TokenResponseCheckQrCode{
+			Result: entities.Result{
+				Code:    enums.AES_DECRYPT_AES_CODE,
+				Message: enums.AES_DECRYPT_AES_MESS,
+			},
+		}, nil
+	}
 	return &entities.TokenResponseCheckQrCode{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
+		Content: string(data),
 		Created: utils.GenerateTimestamp(),
 	}, nil
 }
 
 // Encrypt sử dụng AES để mã hóa dữ liệu với khóa đã cho.
-func (e *AesUseCase) EncryptAes(data []byte, key []byte) (string, error) {
+func (e *UseCaseAes) EncryptAes(data []byte, key []byte) (string, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return "", err
@@ -81,7 +103,7 @@ func (e *AesUseCase) EncryptAes(data []byte, key []byte) (string, error) {
 }
 
 // Decrypt sử dụng AES để giải mã dữ liệu đã được mã hóa với khóa đã cho.
-func (e *AesUseCase) DecryptAes(ciphertextBase64 string, key []byte) ([]byte, error) {
+func (e *UseCaseAes) DecryptAes(ciphertextBase64 string, key []byte) ([]byte, error) {
 	ciphertext, err := base64.StdEncoding.DecodeString(ciphertextBase64)
 	if err != nil {
 		return nil, err

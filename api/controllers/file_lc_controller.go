@@ -8,11 +8,16 @@ import (
 
 type ControllerFileLc struct {
 	file *usecase.UseCaseFileStore
+	*baseController
 }
 
-func NewControllerFileLc(file *usecase.UseCaseFileStore) *ControllerFileLc {
+func NewControllerFileLc(
+	file *usecase.UseCaseFileStore,
+	baseController *baseController,
+) *ControllerFileLc {
 	return &ControllerFileLc{
-		file: file,
+		file:           file,
+		baseController: baseController,
 	}
 }
 func (lc *ControllerFileLc) GetListFileById(ctx *gin.Context) {
@@ -20,9 +25,6 @@ func (lc *ControllerFileLc) GetListFileById(ctx *gin.Context) {
 	id := ctx.Query("id")
 
 	resp, err := lc.file.GetListFileByObjectId(ctx, id)
-	if err != nil {
-		ctx.JSON(200, err)
-		return
-	}
-	ctx.JSON(200, resp)
+	lc.baseController.Response(ctx, resp, err)
+
 }

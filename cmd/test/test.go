@@ -1,111 +1,70 @@
 package main
 
 import (
-	"bytes"
-	"crypto/aes"
-	"crypto/cipher"
-	"encoding/base64"
-	"fmt"
-	"log"
+	"context"
+	"flag"
+	"flick_tickets/api/routers"
+	"flick_tickets/common/log"
+	"flick_tickets/configs"
+	"flick_tickets/fxloader"
+	"net/http"
+	"os"
+	"os/signal"
+
+	"go.uber.org/fx"
 )
 
-// Encrypt sử dụng AES để mã hóa dữ liệu với khóa đã cho.
-func Encrypt(data []byte, key []byte) (string, error) {
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return "", err
-	}
-
-	// Tạo một vector khởi tạo (IV) ngẫu nhiên
-	iv := make([]byte, aes.BlockSize)
-
-	// Tạo chế độ CBC với khối mã hóa và vector khởi tạo
-	mode := cipher.NewCBCEncrypter(block, iv)
-
-	// Thêm padding vào dữ liệu
-	blockSize := aes.BlockSize
-	data = pkcs7Pad(data, blockSize)
-
-	// Mã hóa dữ liệu
-	ciphertext := make([]byte, len(data))
-	mode.CryptBlocks(ciphertext, data)
-
-	// Chuyển đổi mã hóa thành chuỗi base64
-	ciphertextBase64 := base64.StdEncoding.EncodeToString(ciphertext)
-
-	return ciphertextBase64, nil
-}
-
-// Decrypt sử dụng AES để giải mã dữ liệu đã được mã hóa với khóa đã cho.
-func Decrypt(ciphertextBase64 string, key []byte) ([]byte, error) {
-	ciphertext, err := base64.StdEncoding.DecodeString(ciphertextBase64)
-	if err != nil {
-		return nil, err
-	}
-
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return nil, err
-	}
-
-	// Tạo một vector khởi tạo (IV) ngẫu nhiên
-	iv := make([]byte, aes.BlockSize)
-
-	// Tạo chế độ CBC với khối mã hóa và vector khởi tạo
-	mode := cipher.NewCBCDecrypter(block, iv)
-
-	// Giải mã dữ liệu
-	plaintext := make([]byte, len(ciphertext))
-	mode.CryptBlocks(plaintext, ciphertext)
-
-	// Xóa padding từ dữ liệu giải mã
-	plaintext, err = pkcs7Unpad(plaintext)
-	if err != nil {
-		return nil, err
-	}
-
-	return plaintext, nil
-}
-
-// Hàm pkcs7Unpad xóa padding từ dữ liệu theo chuẩn PKCS7
-func pkcs7Unpad(data []byte) ([]byte, error) {
-	padding := int(data[len(data)-1])
-	if padding < 1 || padding > aes.BlockSize {
-		return nil, fmt.Errorf("Invalid padding")
-	}
-
-	return data[:len(data)-padding], nil
-}
-
-// Hàm pkcs7Pad thêm padding vào dữ liệu theo chuẩn PKCS7
-func pkcs7Pad(data []byte, blockSize int) []byte {
-	padding := blockSize - (len(data) % blockSize)
-	padText := bytes.Repeat([]byte{byte(padding)}, padding)
-	return append(data, padText...)
+func init() {
+	log.LoadLogger() // Initialize the logger
+	var pathConfig string
+	flag.StringVar(&pathConfig, "configs", "configs/configs.json", "path config")
+	flag.Parse()
+	configs.LoadConfig(pathConfig)
 }
 
 func main() {
-	// Khóa AES (32 byte)
-	key := []byte("your-256-bit-key-32-byte-long-wx")
-	fakeKey := []byte("your-256-bit-key-32-byte-long-wap")
-	// Đoạn mã dữ liệu cần mã hóa
-	plaintext := []byte("Hello, World!")
+	app := fx.New(
+		fx.Provide(configs.Get),
+		fx.Options(fxloader.Load()...),
+		fx.Invoke(serverLifecycle),
+		fx.Options(), // No need for conditional logic with nopLogger
+	)
 
-	// Mã hóa dữ liệu
-	ciphertext, err := Encrypt(plaintext, key)
-	if err != nil {
-		log.Fatal("Lỗi khi mã hóa dữ liệu:", err)
+	// Run the application
+	if err := app.Start(context.Background()); err != nil {
+		log.Fatal(err, "Error starting application")
 	}
 
-	// In ra mã hóa chuỗi base64
-	log.Println("Mã hóa base64:", ciphertext)
+	// Wait for an interrupt signal to gracefully shut down the application
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt)
+	<-stop
 
-	// Giải mã dữ liệu
-	decrypted, err := Decrypt(ciphertext, fakeKey)
-	if err != nil {
-		log.Fatal("Lỗi khi giải mã dữ liệu:", err)
+	// Shut down the application gracefully
+	if err := app.Stop(context.Background()); err != nil {
+		log.Fatal(err, "Error stopping application")
+	}
+}
+
+func serverLifecycle(lc fx.Lifecycle, apiRouter *routers.ApiRouter, cf *configs.Configs) {
+	server := &http.Server{
+		Addr:    ":" + cf.Port,
+		Handler: apiRouter.Engine,
 	}
 
-	// In ra dữ liệu giải mã
-	log.Println("Dữ liệu giải mã:", string(decrypted))
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
+			go func() {
+				if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+					log.Fatal(err, "Cannot start server,address")
+				}
+			}()
+
+			return nil
+		},
+		OnStop: func(ctx context.Context) error {
+			log.Infof("Stopping backend server.", cf.Port)
+			return server.Shutdown(ctx)
+		},
+	})
 }

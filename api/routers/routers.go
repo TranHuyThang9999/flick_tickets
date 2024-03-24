@@ -18,6 +18,8 @@ func NewApiRouter(
 	auth *controllers.ControllerAuth,
 	ticket *controllers.ControllerTicket,
 	file_lc *controllers.ControllerFileLc,
+	order *controllers.ControllerOrder,
+	aes *controllers.ControllerAes,
 	middlewares *middlewares.MiddleWare,
 	cf *configs.Configs,
 ) *ApiRouter {
@@ -38,6 +40,8 @@ func NewApiRouter(
 	r.POST("/user/login", auth.LoginUser)
 	r.POST("/user/upload/ticket", ticket.AddTicket)
 	r.GET("/user/load", file_lc.GetListFileById)
+	r.POST("/user/register/ticket", order.OrdersTicket)
+	r.POST("/user/verify/", aes.VerifyTickets)
 	//r.Use(middlewares.Authenticate())
 	return &ApiRouter{
 		Engine: engine,

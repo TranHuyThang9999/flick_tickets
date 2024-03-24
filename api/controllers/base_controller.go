@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -36,4 +37,11 @@ func (b *baseController) validateRequest(obj interface{}) error {
 		return err
 	}
 	return nil
+}
+func (b *baseController) Response(ctx *gin.Context, resp interface{}, err error) {
+	if err != nil {
+		ctx.JSON(200, err)
+		return
+	}
+	ctx.JSON(200, resp)
 }

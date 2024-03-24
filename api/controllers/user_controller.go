@@ -10,13 +10,16 @@ import (
 
 type ControllersUser struct {
 	user *usecase.UseCaseUser
+	*baseController
 }
 
 func NewControllersUser(
 	user *usecase.UseCaseUser,
+	baseController *baseController,
 ) *ControllersUser {
 	return &ControllersUser{
-		user: user,
+		user:           user,
+		baseController: baseController,
 	}
 }
 func (u *ControllersUser) AddUser(ctx *gin.Context) {
@@ -37,10 +40,7 @@ func (u *ControllersUser) AddUser(ctx *gin.Context) {
 	}
 	req.File = file
 	resp, err := u.user.AddUserd(ctx, &req)
-	if err != nil {
-		ctx.JSON(200, err)
-		return
-	}
-	ctx.JSON(http.StatusOK, resp)
+
+	u.baseController.Response(ctx, resp, err)
 
 }

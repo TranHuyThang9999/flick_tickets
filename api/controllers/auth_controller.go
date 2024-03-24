@@ -35,10 +35,7 @@ func (b *ControllerAuth) LoginUser(ctx *gin.Context) {
 		return
 	}
 	resp, err := b.jwtUseCase.LoginUser(ctx, req.UserName, req.Password)
-	if err != nil {
-		ctx.JSON(200, err)
-		return
-	}
-	ctx.JSON(200, resp)
+
+	b.baseController.Response(ctx, resp, err)
 
 }

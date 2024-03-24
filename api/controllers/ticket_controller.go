@@ -10,11 +10,16 @@ import (
 
 type ControllerTicket struct {
 	ticket *usecase.UseCaseTicker
+	*baseController
 }
 
-func NewControllerTicket(ticket *usecase.UseCaseTicker) *ControllerTicket {
+func NewControllerTicket(
+	ticket *usecase.UseCaseTicker,
+	baseController *baseController,
+) *ControllerTicket {
 	return &ControllerTicket{
-		ticket: ticket,
+		ticket:         ticket,
+		baseController: baseController,
 	}
 }
 func (c *ControllerTicket) AddTicket(ctx *gin.Context) {
@@ -35,9 +40,6 @@ func (c *ControllerTicket) AddTicket(ctx *gin.Context) {
 	}
 	req.File = file
 	resp, err := c.ticket.AddTicket(ctx, &req)
-	if err != nil {
-		ctx.JSON(200, err)
-		return
-	}
-	ctx.JSON(http.StatusOK, resp)
+	c.baseController.Response(ctx, resp, err)
+
 }

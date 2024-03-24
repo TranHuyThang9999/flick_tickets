@@ -17,7 +17,7 @@ import (
 func init() {
 	log.LoadLogger() // Initialize the logger
 	var pathConfig string
-	flag.StringVar(&pathConfig, "configs", "./configs/configs.json", "path config")
+	flag.StringVar(&pathConfig, "configs", "configs/configs.json", "path config")
 	flag.Parse()
 	configs.LoadConfig(pathConfig)
 }
