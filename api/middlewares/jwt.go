@@ -8,12 +8,12 @@ import (
 )
 
 type MiddleWare struct {
-	jwtUseCase     *usecase.JwtUseCase
+	jwtUseCase     *usecase.UseCaseJwt
 	getUserUseCase *usecase.UseCaseUser
 }
 
 func NewMiddleware(
-	jwtUseCase *usecase.JwtUseCase,
+	jwtUseCase *usecase.UseCaseJwt,
 	getUserUseCase *usecase.UseCaseUser,
 
 ) *MiddleWare {

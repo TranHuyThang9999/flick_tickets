@@ -15,14 +15,14 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type JwtUseCase struct {
+type UseCaseJwt struct {
 	config             *configs.Configs
 	expAccessToken     time.Duration
 	expRefreshToken    time.Duration
 	userRepositoryPort domain.RepositoryUser
 }
 
-func NewJwtUseCase(cf *configs.Configs, userRepositoryPort domain.RepositoryUser) (*JwtUseCase, error) {
+func NewUseCaseJwt(cf *configs.Configs, userRepositoryPort domain.RepositoryUser) (*UseCaseJwt, error) {
 	expAccessToken, err := time.ParseDuration(cf.ExpireAccess)
 	if err != nil {
 		return nil, fmt.Errorf("expire access token has wrong format: %s", err)
@@ -31,7 +31,7 @@ func NewJwtUseCase(cf *configs.Configs, userRepositoryPort domain.RepositoryUser
 	if err != nil {
 		return nil, fmt.Errorf("expire refresh token has wrong format: %s", err)
 	}
-	return &JwtUseCase{
+	return &UseCaseJwt{
 		config:             cf,
 		expAccessToken:     expAccessToken,
 		expRefreshToken:    expRefreshToken,
@@ -39,12 +39,12 @@ func NewJwtUseCase(cf *configs.Configs, userRepositoryPort domain.RepositoryUser
 	}, nil
 }
 
-func (u *JwtUseCase) encrypt(secret string, claims jwt.Claims) (string, error) {
+func (u *UseCaseJwt) encrypt(secret string, claims jwt.Claims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(secret))
 }
 
-func (u *JwtUseCase) Decrypt(tokenString string) (*entities.UserJwtClaim, error) {
+func (u *UseCaseJwt) Decrypt(tokenString string) (*entities.UserJwtClaim, error) {
 	token, err := jwt.ParseWithClaims(
 		tokenString,
 		&entities.UserJwtClaim{},
@@ -64,7 +64,7 @@ func (u *JwtUseCase) Decrypt(tokenString string) (*entities.UserJwtClaim, error)
 	}
 	return claims, nil
 }
-func (u *JwtUseCase) generateToken(id int64, userName string) (*entities.JwtToken, error) {
+func (u *UseCaseJwt) generateToken(id int64, userName string) (*entities.JwtToken, error) {
 	userClaim := func(expire time.Duration) *entities.UserJwtClaim {
 		return &entities.UserJwtClaim{
 			Id:       id,
@@ -93,7 +93,7 @@ func (u *JwtUseCase) generateToken(id int64, userName string) (*entities.JwtToke
 		RtExpires:    int64(u.expRefreshToken / time.Second),
 	}, nil
 }
-func (u *JwtUseCase) LoginUser(ctx context.Context, user_name string, password string) (*entities.ResponseLogin, error) {
+func (u *UseCaseJwt) LoginUser(ctx context.Context, user_name string, password string) (*entities.ResponseLogin, error) {
 	log.Infof("req : ", user_name, password)
 	users, err := u.userRepositoryPort.GetAllUserStaffs(ctx, &domain.UsersReqByForm{
 		UserName: user_name,

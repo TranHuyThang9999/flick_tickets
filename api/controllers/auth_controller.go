@@ -10,12 +10,12 @@ import (
 
 type ControllerAuth struct {
 	*baseController
-	jwtUseCase *usecase.JwtUseCase
+	jwtUseCase *usecase.UseCaseJwt
 }
 
 func NewControllerAuth(
 	baseController *baseController,
-	jwtUseCase *usecase.JwtUseCase,
+	jwtUseCase *usecase.UseCaseJwt,
 ) *ControllerAuth {
 	return &ControllerAuth{
 		baseController: baseController,

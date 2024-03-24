@@ -23,7 +23,7 @@ func Load() []fx.Option {
 func loadUseCase() []fx.Option {
 	return []fx.Option{
 		fx.Provide(usecase.NewUseCaseUser),
-		fx.Provide(usecase.NewJwtUseCase),
+		fx.Provide(usecase.NewUseCaseJwt),
 		fx.Provide(usecase.NewUsecaseTicker),
 		fx.Provide(usecase.NewUseCaseFile),
 		fx.Provide(usecase.NewUsecaseOrder),
