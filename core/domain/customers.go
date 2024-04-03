@@ -1,0 +1,42 @@
+package domain
+
+import (
+	"context"
+
+	"gorm.io/gorm"
+)
+
+type Customers struct {
+	ID          int64  `json:"id"`
+	UserName    string `json:"user_name"`
+	Password    string `json:"password"`
+	AvatarUrl   string `json:"avatar_url"`
+	Address     string `json:"address"`
+	Age         int    `json:"age"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
+	OTP         int64  `json:"otp"`
+	IsActive    bool   `json:"is_active"`
+	CreatedAt   int    `json:"created_at"`
+	UpdatedAt   int    `json:"updated_at"`
+}
+type CustomersFindByForm struct {
+	ID          int64  `form:"id"`
+	UserName    string `form:"user_name"`
+	Password    string `form:"password"`
+	AvatarUrl   string `form:"avatar_url"`
+	Address     string `form:"address"`
+	Age         int    `form:"age"`
+	Email       string `form:"email"`
+	PhoneNumber string `form:"phone_number"`
+	OTP         int64  `form:"otp"`
+	CreatedAt   int    `form:"created_at"`
+	UpdatedAt   int    `form:"updated_at"`
+}
+type RepositoryCustomers interface {
+	FindCustomers(ctx context.Context, req *CustomersFindByForm) ([]*Customers, error)
+	RegisterCustomers(ctx context.Context, tx *gorm.DB, req *Customers) error
+	UpdateProfile(ctx context.Context, tx *gorm.DB, req *Customers) error
+	UpdateWhenCheckOtp(ctx context.Context, otp int64, email string) error
+	GetCustomersByEmail(ctx context.Context, email string, otp int64) (*Customers, error)
+}

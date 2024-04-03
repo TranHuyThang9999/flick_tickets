@@ -3,12 +3,11 @@ package usecase
 import (
 	"context"
 	"flick_tickets/common/enums"
-	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
 	"flick_tickets/core/mapper"
-	"fmt"
+	"strconv"
 )
 
 type UseCaseOrder struct {
@@ -33,8 +32,10 @@ func NewUsecaseOrder(
 	}
 }
 func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersReq) (*entities.OrdersResponseResgister, error) {
-	log.Infof("req : ", req)
-	// Bắt đầu giao dịch
+
+	idOrder := utils.GenerateUniqueKey()
+
+	// init transaction
 	tx, err := u.trans.BeginTransaction(ctx)
 	if err != nil {
 		return &entities.OrdersResponseResgister{
@@ -64,8 +65,8 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 	if ticket == nil {
 		return &entities.OrdersResponseResgister{
 			Result: entities.Result{
-				Code:    enums.SUCCESS_CODE,
-				Message: "Không tìm thấy vé",
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
 			},
 		}, nil
 	}
@@ -80,23 +81,24 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 
 	// Đăng ký vé
 	err = u.order.RegisterTicket(ctx, tx, &domain.Orders{
-		ID:          utils.GenerateUniqueKey(),
+		ID:          idOrder,
 		Email:       req.Email,
 		Seats:       req.Seats,
 		TicketID:    ticket.ID,
 		Showtime:    ticket.Showtime,
 		ReleaseDate: ticket.ReleaseDate,
 		Description: ticket.Description,
-		Status:      ticket.Status,
+		Status:      ticket.Status, //need update
 		Sale:        ticket.Sale,
 		Price:       ticket.Price,
 		CreatedAt:   ticket.CreatedAt,
 	})
 	if err != nil {
+		tx.Rollback()
 		return &entities.OrdersResponseResgister{
 			Result: entities.Result{
 				Code:    enums.DB_ERR_CODE,
-				Message: err.Error(),
+				Message: enums.DB_ERR_MESS,
 			},
 		}, nil
 	}
@@ -124,19 +126,40 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		}
 	}
 
-	resp, err := u.aes.GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(&entities.TokenRequestSendQrCode{
-		Content:   fmt.Sprintf("%v-%v-%v-%v", ticket.ID, ticket.Showtime, ticket.Price+(ticket.Price*float64(ticket.Sale)), req.Seats),
-		FromEmail: req.Email,
-		Title:     "Xin gửi bạn mã QR Code vé xem phim tại dạp vui lòng không để lộ ra ngoài",
-	})
-	if resp.Result.Code != 0 {
+	if err != nil {
+		tx.Rollback()
 		return &entities.OrdersResponseResgister{
 			Result: entities.Result{
-				Code:    resp.Result.Code,
-				Message: resp.Result.Message,
+				Code:    enums.ERROR_CONVERT_JSON_CODE,
+				Message: enums.ERROR_CONVERT_JSON_MESS,
 			},
 		}, nil
 	}
+	defer func() *entities.OrdersResponseResgister {
+
+		resp, err := u.aes.GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(&entities.TokenRequestSendQrCode{
+			Content:   strconv.FormatInt(idOrder, 10),
+			FromEmail: req.Email,
+			Title:     "Xin gửi bạn mã QR Code vé xem phim tại dạp vui lòng không để lộ ra ngoài",
+		})
+
+		if err != nil || resp.Result.Code != 0 {
+			return &entities.OrdersResponseResgister{
+				Result: entities.Result{
+					Code:    enums.SEND_EMAIL_ERR_CODE,
+					Message: enums.SEND_EMAIL_ERR_MESS,
+				},
+			}
+		}
+
+		// Trả về nil nếu không có lỗi
+		return &entities.OrdersResponseResgister{
+			Result: entities.Result{
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
+			},
+		}
+	}()
 
 	listSeat = append(listSeat, req.Seats)
 	// Cập nhật số lượng vé sau khi đăng ký
@@ -181,4 +204,38 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 			Message: enums.SUCCESS_MESS,
 		},
 	}, nil
+}
+func (u *UseCaseOrder) GetOrderById(ctx context.Context, id string) (*entities.OrdersResponseGetById, error) {
+
+	numberId, err := strconv.Atoi(id)
+
+	if err != nil {
+		return &entities.OrdersResponseGetById{
+			Result: entities.Result{
+				Code:    enums.CONVERT_TO_NUMBER_CODE,
+				Message: enums.CONVERT_TO_NUMBER_MESS,
+			},
+		}, nil
+	}
+
+	order, err := u.order.GetOrderById(ctx, int64(numberId))
+	if err != nil {
+		return &entities.OrdersResponseGetById{
+			Result: entities.Result{
+				Code:    enums.CONVERT_TO_NUMBER_CODE,
+				Message: enums.CONVERT_TO_NUMBER_MESS,
+			},
+			Created: int64(utils.GenerateTimestamp()),
+		}, nil
+	}
+
+	return &entities.OrdersResponseGetById{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Orders:  order,
+		Created: int64(utils.GenerateTimestamp()),
+	}, nil
+
 }

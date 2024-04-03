@@ -40,6 +40,14 @@ func (u *UseCaseFileStore) GetListFileByObjectId(ctx context.Context, id string)
 			},
 		}, nil
 	}
+	if len(listFile) == 0 {
+		return &entities.ResponseGetListFileByObjetId{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
 	return &entities.ResponseGetListFileByObjetId{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,

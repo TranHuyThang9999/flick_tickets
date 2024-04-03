@@ -30,15 +30,12 @@ func (c *ControllerTicket) AddTicket(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
-	file, err := ctx.FormFile("file")
-
-	if err != nil && err != http.ErrMissingFile && err != http.ErrNotMultipart {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Không thể tải ảnh lên.",
-		})
+	files, err := c.baseController.GetUploadedFiles(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	req.File = file
+	req.File = files
 	resp, err := c.ticket.AddTicket(ctx, &req)
 	c.baseController.Response(ctx, resp, err)
 

@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"mime/multipart"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -44,4 +45,25 @@ func (b *baseController) Response(ctx *gin.Context, resp interface{}, err error)
 		return
 	}
 	ctx.JSON(200, resp)
+}
+func (b *baseController) GetUploadedFiles(c *gin.Context) ([]*multipart.FileHeader, error) {
+	form, err := c.MultipartForm()
+	if err != nil {
+		return nil, err
+	}
+
+	files, ok := form.File["file"]
+	if !ok || len(files) == 0 {
+		return nil, nil
+	}
+
+	var uploadedFiles []*multipart.FileHeader
+	for _, file := range files {
+		if file.Size == 0 {
+			return nil, fmt.Errorf("Uploaded file is empty")
+		}
+		uploadedFiles = append(uploadedFiles, file)
+	}
+
+	return uploadedFiles, nil
 }

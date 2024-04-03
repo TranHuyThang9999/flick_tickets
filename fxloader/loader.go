@@ -6,6 +6,7 @@ import (
 	"flick_tickets/api/routers"
 	"flick_tickets/core/adapter"
 	"flick_tickets/core/adapter/repository"
+	"flick_tickets/core/events/caching"
 	"flick_tickets/core/usecase"
 
 	"github.com/go-playground/validator/v10"
@@ -27,7 +28,8 @@ func loadUseCase() []fx.Option {
 		fx.Provide(usecase.NewUsecaseTicker),
 		fx.Provide(usecase.NewUseCaseFile),
 		fx.Provide(usecase.NewUsecaseOrder),
-		fx.Provide(usecase.NewAesUseCase),
+		fx.Provide(usecase.NewUseCaseAes),
+		fx.Provide(usecase.NewUseCaseCustomer),
 	}
 }
 
@@ -48,6 +50,7 @@ func loadEngine() []fx.Option {
 		fx.Provide(controllers.NewControllerFileLc),
 		fx.Provide(controllers.NewControllerOrder),
 		fx.Provide(controllers.NewControllerAes),
+		fx.Provide(controllers.NewControllerCustomer),
 	}
 }
 func loadAdapter() []fx.Option {
@@ -58,5 +61,7 @@ func loadAdapter() []fx.Option {
 		fx.Provide(repository.NewConllectionFileStore),
 		fx.Provide(repository.NewCollectionTickets),
 		fx.Provide(repository.NewCollectionOrder),
+		fx.Provide(caching.NewRedisCache),
+		fx.Provide(repository.NewCollectionCustomer),
 	}
 }

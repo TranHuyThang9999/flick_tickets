@@ -56,6 +56,12 @@ const (
 
 	AES_DECRYPT_AES_CODE = 18
 	AES_DECRYPT_AES_MESS = "error QRcode is invalid"
+
+	DATA_EMPTY_ERR_CODE = 20
+	DATA_EMPTY_ERR_MESS = "data empty"
+
+	OTP_ERR_VERIFY_CODE = 22
+	OTP_ERR_VERIFY_MESS = "error verify otp send email"
 )
 const (
 	ROLE_ADMIN     = 1

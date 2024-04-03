@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 	"flick_tickets/common/enums"
+	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
-	"fmt"
 )
 
 type UseCaseTicker struct {
@@ -63,30 +63,35 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 			},
 		}, nil
 	}
-	respFile := utils.SetByCurlImage(ctx, req.File)
-	if respFile.Result.Code != 0 {
-		tx.Rollback()
+	respFile, err := utils.SetListFile(ctx, req.File)
+	if err != nil {
 		return &entities.TicketRespUpload{
 			Result: entities.Result{
 				Code:    enums.UPLOAD_FILE_ERR_CODE,
-				Message: fmt.Sprint(enums.UPLOAD_FILE_ERR_MESS, "%v", respFile.Result.Message),
+				Message: enums.UPLOAD_FILE_ERR_MESS,
 			},
 		}, nil
 	}
-	err = c.file.AddInformationFileStorages(ctx, tx, &domain.FileStorages{
-		ID:        utils.GenerateUniqueKey(),
-		URL:       respFile.URL,
-		TicketID:  idTicket,
-		CreatedAt: utils.GenerateTimestamp(),
-	})
-	if err != nil {
-		tx.Rollback()
-		return &entities.TicketRespUpload{
-			Result: entities.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
-			},
-		}, nil
+	log.Infof("file", respFile, len(respFile))
+	if len(respFile) > 0 {
+		for _, file := range respFile {
+			err = c.file.AddInformationFileStorages(ctx, tx, &domain.FileStorages{
+				ID:        utils.GenerateUniqueKey(),
+				URL:       file.URL,
+				TicketID:  idTicket,
+				CreatedAt: utils.GenerateTimestamp(),
+			})
+			if err != nil {
+				tx.Rollback()
+				return &entities.TicketRespUpload{
+					Result: entities.Result{
+						Code:    enums.DB_ERR_CODE,
+						Message: enums.DB_ERR_MESS,
+					},
+				}, nil
+			}
+		}
+
 	}
 	tx.Commit()
 	return &entities.TicketRespUpload{

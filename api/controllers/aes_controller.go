@@ -25,6 +25,7 @@ func NewControllerAes(
 func (aes *ControllerAes) VerifyTickets(ctx *gin.Context) {
 
 	var req entities.TokenReqCheckQrCode
+
 	if err := ctx.ShouldBind(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 		return

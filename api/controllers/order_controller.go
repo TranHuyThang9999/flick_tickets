@@ -34,3 +34,12 @@ func (order *ControllerOrder) OrdersTicket(ctx *gin.Context) {
 
 	order.baseController.Response(ctx, resp, err)
 }
+func (order *ControllerOrder) GetOrderById(ctx *gin.Context) {
+
+	idTicket := ctx.Query("id")
+
+	resp, err := order.order.GetOrderById(ctx, idTicket)
+
+	order.baseController.Response(ctx, resp, err)
+
+}

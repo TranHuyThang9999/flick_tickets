@@ -18,6 +18,9 @@ type Configs struct {
 	PasswordEmail string `json:"passwordEmail"`
 	SmtpHost      string `json:"smtpHost,omitempty"`
 	SmtpPort      string `json:"smtpPort,omitempty"`
+	AddressRedis  string `json:"addressRedis"`       // Địa chỉ và cổng Redis
+	PasswordRedis string `json:"passwordRedis"`      // Mật khẩu Redis (nếu có)
+	DatabaseRedis string `json:"databaseredisIndex"` // Số DB trong Redis
 }
 
 var config *Configs

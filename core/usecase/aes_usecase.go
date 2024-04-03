@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"flick_tickets/common/enums"
+	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
 	"flick_tickets/configs"
 	"flick_tickets/core/entities"
@@ -14,7 +15,7 @@ type UseCaseAes struct {
 	config *configs.Configs
 }
 
-func NewAesUseCase(cf *configs.Configs) (*UseCaseAes, error) {
+func NewUseCaseAes(cf *configs.Configs) (*UseCaseAes, error) {
 	return &UseCaseAes{
 		config: cf,
 	}, nil
@@ -34,6 +35,7 @@ func (c *UseCaseAes) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entiti
 			},
 		}, nil
 	}
+	log.Info(ciphertext)
 	err = utils.GeneratesQrCodeAndSendQrWithEmail(req.FromEmail, req.Title, ciphertext)
 	if err != nil {
 		return &entities.TokenRespSendQrCode{

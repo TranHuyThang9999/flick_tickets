@@ -69,8 +69,8 @@ func (u *UseCaseUser) AddUserd(ctx context.Context, user *entities.Users) (*enti
 		}, err
 	}
 
-	respFile := utils.SetByCurlImage(ctx, user.File)
-	if respFile.Result.Code != 0 {
+	respFile, err := utils.SetByCurlImage(ctx, user.File)
+	if respFile.Result.Code != 0 || err != nil {
 		return &entities.UserResp{
 			Result:  respFile.Result,
 			Created: utils.GenerateTimestamp(),

@@ -17,7 +17,7 @@ import (
 	"strings"
 )
 
-func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.UploadResponse {
+func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) (*entities.UploadResponse, error) {
 
 	filePath := file.Filename
 	fileExt := strings.ToLower(filepath.Ext(file.Filename))
@@ -38,7 +38,7 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 				Code:    7,
 				Message: "Định dạng file không hợp lệ",
 			},
-		}
+		}, nil
 	}
 
 	// Tạo một multipart form data
@@ -53,7 +53,7 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 				Code:    4,
 				Message: "Lỗi server",
 			},
-		}
+		}, nil
 	}
 	fh, err := file.Open()
 	if err != nil {
@@ -62,7 +62,7 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 				Code:    4,
 				Message: "Lỗi server",
 			},
-		}
+		}, nil
 	}
 	defer fh.Close()
 	_, err = io.Copy(fileWriter, fh)
@@ -72,7 +72,7 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 				Code:    4,
 				Message: "Lỗi server",
 			},
-		}
+		}, nil
 	}
 
 	// Kết thúc form data
@@ -88,7 +88,7 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 				Code:    404,
 				Message: fmt.Sprintf("Không thể tìm thấy tài nguyên: %s", err),
 			},
-		}
+		}, nil
 	}
 	defer resp.Body.Close()
 
@@ -100,7 +100,7 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 				Code:    4,
 				Message: "Lỗi server",
 			},
-		}
+		}, nil
 	}
 
 	// Decode phản hồi thành struct
@@ -112,7 +112,7 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 				Code:    4,
 				Message: "Lỗi server",
 			},
-		}
+		}, nil
 	}
 	switch uploadResp.Result.Code {
 	case 1:
@@ -121,24 +121,37 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) *entities.U
 				Code:    1,
 				Message: "tệp rỗng 1 ",
 			},
-		}
+		}, nil
 	case 2:
 		return &entities.UploadResponse{
 			Result: entities.Result{
 				Code:    2,
 				Message: "Không có tệp được tải lên 1",
 			},
-		}
+		}, nil
 	case 3:
 		return &entities.UploadResponse{
 			Result: entities.Result{
 				Code:    3,
 				Message: "Tệp không hợp lệ 1",
 			},
-		}
+		}, nil
 	default:
-		return &uploadResp
+		return &uploadResp, nil
 	}
+}
+
+func SetListFile(ctx context.Context, files []*multipart.FileHeader) ([]*entities.UploadResponse, error) {
+
+	var responses = make([]*entities.UploadResponse, 0)
+	for _, file := range files {
+		response, err := SetByCurlImage(ctx, file)
+		if err != nil || response.Result.Code != 0 {
+			return nil, err
+		}
+		responses = append(responses, response)
+	}
+	return responses, nil
 }
 
 // SetByCurlImageQr gửi dữ liệu hình ảnh đến dịch vụ khác

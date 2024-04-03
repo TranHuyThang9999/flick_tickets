@@ -21,6 +21,7 @@ func NewApiRouter(
 	order *controllers.ControllerOrder,
 	aes *controllers.ControllerAes,
 	middlewares *middlewares.MiddleWare,
+	customer *controllers.ControllerCustomer,
 	cf *configs.Configs,
 ) *ApiRouter {
 	engine := gin.New()
@@ -30,18 +31,22 @@ func NewApiRouter(
 	engine.Use(cors.AllowAll())
 	//middlewares.recovy
 	engine.Use(gin.Recovery())
-	engine.Use(gin.Recovery())
 
 	r := engine.RouterGroup.Group("/manager")
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong"})
 	})
+	//admin
 	r.POST("/user/register", user.AddUser)
 	r.POST("/user/login", auth.LoginUser)
 	r.POST("/user/upload/ticket", ticket.AddTicket)
 	r.GET("/user/load", file_lc.GetListFileById)
-	r.POST("/user/register/ticket", order.OrdersTicket)
 	r.POST("/user/verify/", aes.VerifyTickets)
+	// user
+	r.POST("/customer/register/ticket", order.OrdersTicket)
+	r.GET("/customer/order/ticket", order.GetOrderById)
+	r.POST("/customer/send", customer.SendOtptoEmail)
+	r.POST("/customer/verify/", customer.CheckOtpByEmail)
 	//r.Use(middlewares.Authenticate())
 	return &ApiRouter{
 		Engine: engine,

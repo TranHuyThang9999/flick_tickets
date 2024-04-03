@@ -15,10 +15,14 @@ CREATE Table users (
 );
 CREATE Table customers (
     id BIGINT PRIMARY KEY,
-    name VARCHAR(255),
+    use_name VARCHAR(255),
+    address VARCHAR(255),
+    age INT ,
     email VARCHAR(255),
-    phone VARCHAR(20),
-    OTP BIGINT
+    phone_number VARCHAR(20),
+    OTP BIGINT,
+    created_at int,
+    updated_at int
 );
 
 CREATE TABLE orders (
@@ -72,8 +76,5 @@ CREATE Table transactions (
     transaction_date INT,
     status int
 );
-
-INSERT INTO "orders" ("ticket_id","showtime","release_date","email","otp","description","status","price","file","seats","sale","created_at","updated_at","id") VALUES 
-(3744462,121213,0,'thuynguyen151387@gmail.com',0,'ves vipo',0,120000,'',10,0,1711287384,1711287654,3246993) RETURNING "id"
 
 

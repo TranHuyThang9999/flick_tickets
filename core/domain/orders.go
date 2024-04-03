@@ -16,7 +16,6 @@ type Orders struct {
 	Description string  `json:"description"`
 	Status      int     `json:"status"`
 	Price       float64 `json:"price"`
-	File        string  `json:"file"`
 	Seats       int     `json:"seats"`
 	Sale        int     `json:"sale"`
 	CreatedAt   int     `json:"created_at"`
@@ -25,4 +24,5 @@ type Orders struct {
 type RepositoryOrder interface {
 	RegisterTicket(ctx context.Context, tx *gorm.DB, req *Orders) error
 	CancelTicket(ctx context.Context, id int64) error // update
+	GetOrderById(ctx context.Context, id int64) (*Orders, error)
 }

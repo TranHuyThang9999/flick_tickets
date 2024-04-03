@@ -19,14 +19,14 @@ type TicketReqUpload struct {
 	Name  string  `form:"name"`
 	Price float64 `form:"price"`
 	//MaxTicket    int64                 `form:"max_ticket"`
-	Quantity     int                   `form:"quantity"`
-	Description  string                `form:"description"`
-	Sale         int                   `form:"sale"`
-	Showtime     int                   `form:"showtime"`
-	ReleaseDate  int                   `form:"release_date"`
-	File         *multipart.FileHeader `form:"file"`
-	SelectedSeat string                `form:"selected_seat"`
-	UserId       int64                 `form:"user_id"`
+	Quantity     int                     `form:"quantity"`
+	Description  string                  `form:"description"`
+	Sale         int                     `form:"sale"`
+	Showtime     int                     `form:"showtime"`
+	ReleaseDate  int                     `form:"release_date"`
+	File         []*multipart.FileHeader `form:"file"`
+	SelectedSeat string                  `form:"selected_seat"`
+	UserId       int64                   `form:"user_id"`
 }
 type TicketRespUpload struct {
 	Result    Result `json:"result"`

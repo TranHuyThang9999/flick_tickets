@@ -10,5 +10,8 @@
     "fromEmail" : "tranhuythang9999@gmail.com",
 	"passwordEmail" : "nvkq qdrq ecpa bapz",
     "smtpHost" :"smtp.gmail.com",
-	"smtpPort" :"587"
+	"smtpPort" :"587",
+    "addressRedis":"localhost:6379",
+    "passwordRedis":"",
+    "databaseredisIndex":"1"
 }

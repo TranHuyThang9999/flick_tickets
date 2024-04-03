@@ -13,6 +13,12 @@ type CollectionOrder struct {
 	collection *gorm.DB
 }
 
+func NewCollectionOrder(cf *configs.Configs, order *adapter.PostGresql) domain.RepositoryOrder {
+	return &CollectionOrder{
+		collection: order.CreateCollection(),
+	}
+}
+
 // CancelTicket implements domain.RepositoryOrder.
 func (c *CollectionOrder) CancelTicket(ctx context.Context, id int64) error {
 	panic("unimplemented")
@@ -23,9 +29,11 @@ func (c *CollectionOrder) RegisterTicket(ctx context.Context, tx *gorm.DB, req *
 	result := tx.Create(req)
 	return result.Error
 }
-
-func NewCollectionOrder(cf *configs.Configs, order *adapter.PostGresql) domain.RepositoryOrder {
-	return &CollectionOrder{
-		collection: order.CreateCollection(),
+func (c *CollectionOrder) GetOrderById(ctx context.Context, id int64) (*domain.Orders, error) {
+	var order *domain.Orders
+	result := c.collection.Where("id = ?", id).First(&order)
+	if result.RowsAffected == 0 {
+		return nil, nil
 	}
+	return order, result.Error
 }
