@@ -40,3 +40,11 @@ func (c *ControllerTicket) AddTicket(ctx *gin.Context) {
 	c.baseController.Response(ctx, resp, err)
 
 }
+func (c *ControllerTicket) GetTicketById(ctx *gin.Context) {
+
+	id := ctx.Query("id")
+
+	resp, err := c.ticket.GetTicketById(ctx, id)
+	c.baseController.Response(ctx, resp, err)
+
+}

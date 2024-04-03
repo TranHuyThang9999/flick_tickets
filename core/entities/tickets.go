@@ -1,6 +1,9 @@
 package entities
 
-import "mime/multipart"
+import (
+	"flick_tickets/core/domain"
+	"mime/multipart"
+)
 
 type TicketreqFindByForm struct {
 	ID          int64   `form:"id"`
@@ -31,4 +34,9 @@ type TicketReqUpload struct {
 type TicketRespUpload struct {
 	Result    Result `json:"result"`
 	CreatedAt int    `json:"created_at"`
+}
+type TicketRespgetById struct {
+	Result    Result          `json:"result"`
+	Ticket    *domain.Tickets `json:"ticket"`
+	CreatedAt int             `json:"created_at"`
 }

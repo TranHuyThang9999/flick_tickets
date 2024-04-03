@@ -62,6 +62,9 @@ const (
 
 	OTP_ERR_VERIFY_CODE = 22
 	OTP_ERR_VERIFY_MESS = "error verify otp send email"
+
+	CACHE_ERR_CODE = 24
+	CACHE_ERR_MESS = "error set cache"
 )
 const (
 	ROLE_ADMIN     = 1

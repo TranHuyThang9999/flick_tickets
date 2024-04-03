@@ -57,9 +57,17 @@ func (c *CollectionCustomers) UpdateWhenCheckOtp(ctx context.Context, otp int64,
 	result := c.collection.Model(&domain.Customers{}).Where("email = ? AND otp = ?", email, otp).UpdateColumn("is_active", true)
 	return result.Error
 }
-func (c *CollectionCustomers) GetCustomersByEmail(ctx context.Context, email string, otp int64) (*domain.Customers, error) {
+func (c *CollectionCustomers) GetCustomersByEmailUseCheckOtp(ctx context.Context, email string, otp int64) (*domain.Customers, error) {
 	var customer *domain.Customers
 	result := c.collection.Where("email=? and otp =?", email, otp).First(&customer)
+	if result.RowsAffected == 0 {
+		return nil, nil
+	}
+	return customer, result.Error
+}
+func (c *CollectionCustomers) GetCustomerByEmail(ctx context.Context, email string) (*domain.Customers, error) {
+	var customer *domain.Customers
+	result := c.collection.Where("email=? ", email).First(&customer)
 	if result.RowsAffected == 0 {
 		return nil, nil
 	}

@@ -7,6 +7,7 @@ import (
 	"flick_tickets/core/adapter"
 	"flick_tickets/core/adapter/repository"
 	"flick_tickets/core/events/caching"
+	"flick_tickets/core/events/caching/cache"
 	"flick_tickets/core/usecase"
 
 	"github.com/go-playground/validator/v10"
@@ -30,6 +31,7 @@ func loadUseCase() []fx.Option {
 		fx.Provide(usecase.NewUsecaseOrder),
 		fx.Provide(usecase.NewUseCaseAes),
 		fx.Provide(usecase.NewUseCaseCustomer),
+		fx.Provide(cache.NewCache),
 	}
 }
 
@@ -61,7 +63,7 @@ func loadAdapter() []fx.Option {
 		fx.Provide(repository.NewConllectionFileStore),
 		fx.Provide(repository.NewCollectionTickets),
 		fx.Provide(repository.NewCollectionOrder),
-		fx.Provide(caching.NewRedisCache),
+		fx.Provide(caching.NewRedisDb),
 		fx.Provide(repository.NewCollectionCustomer),
 	}
 }

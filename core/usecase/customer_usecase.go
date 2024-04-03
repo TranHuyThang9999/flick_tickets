@@ -45,15 +45,8 @@ func (e *UseCaseCustomer) SendOtpToEmail(ctx context.Context, email string) (*en
 		}, nil
 	}
 
-	err = e.cus.RegisterCustomers(ctx, tx, &domain.Customers{
-		ID:        utils.GenerateUniqueKey(),
-		OTP:       codeOtp,
-		Email:     email,
-		CreatedAt: utils.GenerateTimestamp(),
-		UpdatedAt: utils.GenerateTimestamp(),
-	})
+	customer, err := e.cus.GetCustomerByEmail(ctx, email)
 	if err != nil {
-		tx.Rollback()
 		return &entities.SendOtpResponse{
 			Result: entities.Result{
 				Code:    enums.DB_ERR_CODE,
@@ -62,6 +55,42 @@ func (e *UseCaseCustomer) SendOtpToEmail(ctx context.Context, email string) (*en
 			CreatedAt: utils.GenerateTimestamp(),
 		}, nil
 	}
+	if customer == nil {
+		err = e.cus.RegisterCustomers(ctx, tx, &domain.Customers{
+			ID:        utils.GenerateUniqueKey(),
+			OTP:       codeOtp,
+			Email:     email,
+			CreatedAt: utils.GenerateTimestamp(),
+			UpdatedAt: utils.GenerateTimestamp(),
+		})
+		if err != nil {
+			tx.Rollback()
+			return &entities.SendOtpResponse{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+				CreatedAt: utils.GenerateTimestamp(),
+			}, nil
+		}
+	} else {
+		err = e.cus.UpdateProfile(ctx, tx, &domain.Customers{
+			ID:        customer.ID,
+			OTP:       codeOtp,
+			UpdatedAt: utils.GenerateTimestamp(),
+		})
+		if err != nil {
+			tx.Rollback()
+			return &entities.SendOtpResponse{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+				CreatedAt: utils.GenerateTimestamp(),
+			}, nil
+		}
+	}
+
 	err = utils.SendOtpToEmail(email, "Mã Xác Minh Tài Khoản - Vui lòng không chia sẻ với người khác", codeOtp)
 	if err != nil {
 		return &entities.SendOtpResponse{
@@ -83,7 +112,7 @@ func (e *UseCaseCustomer) SendOtpToEmail(ctx context.Context, email string) (*en
 }
 func (e *UseCaseCustomer) CheckOtp(ctx context.Context, req *entities.CustomersReqVerifyOtp) (*entities.CustomersRespVerifyOtp, error) {
 
-	customer, err := e.cus.GetCustomersByEmail(ctx, req.Email, req.Otp)
+	customer, err := e.cus.GetCustomersByEmailUseCheckOtp(ctx, req.Email, req.Otp)
 	if err != nil {
 		return &entities.CustomersRespVerifyOtp{
 			Result: entities.Result{

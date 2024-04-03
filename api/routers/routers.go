@@ -40,6 +40,7 @@ func NewApiRouter(
 	r.POST("/user/register", user.AddUser)
 	r.POST("/user/login", auth.LoginUser)
 	r.POST("/user/upload/ticket", ticket.AddTicket)
+	r.GET("/user/ticket", ticket.GetTicketById)
 	r.GET("/user/load", file_lc.GetListFileById)
 	r.POST("/user/verify/", aes.VerifyTickets)
 	// user

@@ -38,5 +38,6 @@ type RepositoryCustomers interface {
 	RegisterCustomers(ctx context.Context, tx *gorm.DB, req *Customers) error
 	UpdateProfile(ctx context.Context, tx *gorm.DB, req *Customers) error
 	UpdateWhenCheckOtp(ctx context.Context, otp int64, email string) error
-	GetCustomersByEmail(ctx context.Context, email string, otp int64) (*Customers, error)
+	GetCustomersByEmailUseCheckOtp(ctx context.Context, email string, otp int64) (*Customers, error)
+	GetCustomerByEmail(ctx context.Context, email string) (*Customers, error)
 }
