@@ -213,3 +213,22 @@ func (c *UseCaseTicker) GetTicketById(ctx context.Context, id string) (*entities
 		CreatedAt: utils.GenerateTimestamp(),
 	}, nil
 }
+func (c *UseCaseTicker) GetAllTickets(ctx context.Context, req *domain.TicketreqFindByForm) (*entities.TicketRespGetAll, error) {
+
+	tickets, err := c.ticket.GetAllTickets(ctx, req)
+	if err != nil {
+		return &entities.TicketRespGetAll{
+			Result: entities.Result{
+				Code:    enums.CACHE_ERR_CODE,
+				Message: enums.CACHE_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.TicketRespGetAll{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Tickets: tickets,
+	}, nil
+}

@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
+	"flick_tickets/core/events/sockets"
 	"flick_tickets/core/usecase"
 	"net/http"
 
@@ -11,15 +13,18 @@ import (
 type ControllerTicket struct {
 	ticket *usecase.UseCaseTicker
 	*baseController
+	socket *sockets.ManagerClient
 }
 
 func NewControllerTicket(
 	ticket *usecase.UseCaseTicker,
 	baseController *baseController,
+	socket *sockets.ManagerClient,
 ) *ControllerTicket {
 	return &ControllerTicket{
 		ticket:         ticket,
 		baseController: baseController,
+		socket:         socket,
 	}
 }
 func (c *ControllerTicket) AddTicket(ctx *gin.Context) {
@@ -47,4 +52,16 @@ func (c *ControllerTicket) GetTicketById(ctx *gin.Context) {
 	resp, err := c.ticket.GetTicketById(ctx, id)
 	c.baseController.Response(ctx, resp, err)
 
+}
+
+func (c *ControllerTicket) GetAllTickets(ctx *gin.Context) {
+	var req domain.TicketreqFindByForm
+
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := c.ticket.GetAllTickets(ctx, &req)
+
+	c.baseController.Response(ctx, resp, err)
 }

@@ -1,56 +1,87 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net/http"
+	"sync"
 
-type Action interface {
-	Run() Action
-	Swim() Action
-	Fly() Action
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+)
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
-type Animal struct {
-	name string
+type Client struct {
+	conn *websocket.Conn
+	mu   sync.Mutex
 }
 
-func (a *Animal) Run() Action {
-	fmt.Printf("%s is running.\n", a.name)
-	return a
-}
-
-func (a *Animal) Swim() Action {
-	fmt.Printf("%s is swimming.\n", a.name)
-	return a
-}
-
-func (a *Animal) Fly() Action {
-	fmt.Printf("%s is flying.\n", a.name)
-	return a
-}
-
-type Human struct {
-	name string
-}
-
-func (h *Human) Run() Action {
-	fmt.Printf("%s is running.\n", h.name)
-	return h
-}
-
-func (h *Human) Swim() Action {
-	fmt.Printf("%s is swimming.\n", h.name)
-	return h
-}
-
-func (h *Human) Fly() Action {
-	fmt.Printf("%s is flying.\n", h.name)
-	return h
-}
+var clients []*Client
+var mu sync.Mutex
 
 func main() {
-	animal := &Animal{name: "Bird"}
-	human := &Human{name: "John"}
+	r := gin.Default()
 
-	// Gọi các phương thức liên tiếp
-	animal.Run().Swim().Fly()
-	human.Run().Swim().Fly()
+	r.GET("/ws", func(c *gin.Context) {
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			log.Println("Failed to upgrade HTTP connection to WebSocket:", err)
+			return
+		}
+
+		client := &Client{
+			conn: conn,
+		}
+
+		mu.Lock()
+		clients = append(clients, client)
+		mu.Unlock()
+
+		for {
+			// Read message from client
+			_, message, err := conn.ReadMessage()
+			if err != nil {
+				log.Println("Failed to read message from WebSocket client:", err)
+				break
+			}
+
+			// Process message
+			processMessage(string(message))
+		}
+
+		mu.Lock()
+		for i, c := range clients {
+			if c == client {
+				clients = append(clients[:i], clients[i+1:]...)
+				break
+			}
+		}
+		mu.Unlock()
+
+		conn.Close()
+	})
+
+	r.Run(":9090")
+}
+
+func processMessage(message string) {
+	// Process the message sent from the admin
+	// ...
+
+	// Broadcast the message to all connected clients
+	mu.Lock()
+	defer mu.Unlock()
+
+	for _, client := range clients {
+		client.mu.Lock()
+		err := client.conn.WriteMessage(websocket.TextMessage, []byte(message))
+		client.mu.Unlock()
+		if err != nil {
+			log.Println("Failed to send message to WebSocket client:", err)
+		}
+	}
 }

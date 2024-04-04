@@ -37,7 +37,7 @@ func (u *CollectionTickets) GetAllTickets(ctx context.Context, req *domain.Ticke
 		ReleaseDate: req.ReleaseDate,
 		CreatedAt:   req.CreatedAt,
 		UpdatedAt:   req.UpdatedAt,
-	}).Find(tickets)
+	}).Find(&tickets)
 	return tickets, result.Error
 }
 func (u *CollectionTickets) UpdateTicketById(ctx context.Context, tx *gorm.DB, req *domain.TicketReqUpdateById) error {

@@ -40,3 +40,7 @@ type TicketRespgetById struct {
 	Ticket    *domain.Tickets `json:"ticket"`
 	CreatedAt int             `json:"created_at"`
 }
+type TicketRespGetAll struct {
+	Result  Result            `json:"result"`
+	Tickets []*domain.Tickets `json:"`
+}

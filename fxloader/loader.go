@@ -8,6 +8,7 @@ import (
 	"flick_tickets/core/adapter/repository"
 	"flick_tickets/core/events/caching"
 	"flick_tickets/core/events/caching/cache"
+	"flick_tickets/core/events/sockets"
 	"flick_tickets/core/usecase"
 
 	"github.com/go-playground/validator/v10"
@@ -32,6 +33,8 @@ func loadUseCase() []fx.Option {
 		fx.Provide(usecase.NewUseCaseAes),
 		fx.Provide(usecase.NewUseCaseCustomer),
 		fx.Provide(cache.NewCache),
+		fx.Provide(sockets.NewManagerClient),
+		fx.Provide(sockets.NewServer),
 	}
 }
 

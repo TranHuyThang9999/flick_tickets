@@ -4,6 +4,7 @@ import (
 	"flick_tickets/api/controllers"
 	"flick_tickets/api/middlewares"
 	"flick_tickets/configs"
+	"flick_tickets/core/events/sockets"
 
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
@@ -22,6 +23,7 @@ func NewApiRouter(
 	aes *controllers.ControllerAes,
 	middlewares *middlewares.MiddleWare,
 	customer *controllers.ControllerCustomer,
+	managerClient *sockets.ManagerClient,
 	cf *configs.Configs,
 ) *ApiRouter {
 	engine := gin.New()
@@ -41,8 +43,10 @@ func NewApiRouter(
 	r.POST("/user/login", auth.LoginUser)
 	r.POST("/user/upload/ticket", ticket.AddTicket)
 	r.GET("/user/ticket", ticket.GetTicketById)
+	r.GET("customers/ticket", ticket.GetAllTickets)
 	r.GET("/user/load", file_lc.GetListFileById)
 	r.POST("/user/verify/", aes.VerifyTickets)
+	r.GET("/ws", managerClient.ServerWs) //auto pool
 	// user
 	r.POST("/customer/register/ticket", order.OrdersTicket)
 	r.GET("/customer/order/ticket", order.GetOrderById)
