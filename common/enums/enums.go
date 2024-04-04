@@ -65,6 +65,9 @@ const (
 
 	CACHE_ERR_CODE = 24
 	CACHE_ERR_MESS = "error set cache"
+
+	SHOW_TIME_CODE = 26
+	SHOW_TIME_MESS = "error show existing"
 )
 const (
 	ROLE_ADMIN     = 1

@@ -13,8 +13,9 @@ type TicketreqFindByForm struct {
 	Quantity    int     `form:"quantity"`
 	Description string  `form:"description"`
 	Sale        int     `form:"sale"`
-	Showtime    int     `form:"showtime"`
+	Showtime    string  `form:"showtime"`
 	ReleaseDate int     `form:"release_date"`
+	Status      int     `form:"status"`
 	CreatedAt   int     `form:"created_at"`
 	UpdatedAt   int     `form:"updated_at"`
 }
@@ -22,14 +23,16 @@ type TicketReqUpload struct {
 	Name  string  `form:"name"`
 	Price float64 `form:"price"`
 	//MaxTicket    int64                 `form:"max_ticket"`
-	Quantity     int                     `form:"quantity"`
-	Description  string                  `form:"description"`
-	Sale         int                     `form:"sale"`
-	Showtime     int                     `form:"showtime"`
+	Quantity    int    `form:"quantity"`
+	Description string `form:"description"`
+	Sale        int    `form:"sale"`
+	// Showtime     string                  `form:"showtime"`
+	Status       int                     `form:"status"`
 	ReleaseDate  int                     `form:"release_date"`
 	File         []*multipart.FileHeader `form:"file"`
 	SelectedSeat string                  `form:"selected_seat"`
-	UserId       int64                   `form:"user_id"`
+	CinemaName   string                  `form:"cinema_name"`
+	MovieTime    string                  `form:"movie_time"`
 }
 type TicketRespUpload struct {
 	Result    Result `json:"result"`

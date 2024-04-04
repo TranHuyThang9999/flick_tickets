@@ -35,6 +35,7 @@ func loadUseCase() []fx.Option {
 		fx.Provide(cache.NewCache),
 		fx.Provide(sockets.NewManagerClient),
 		fx.Provide(sockets.NewServer),
+		fx.Provide(usecase.NewUseCaseShowTime),
 	}
 }
 
@@ -56,6 +57,7 @@ func loadEngine() []fx.Option {
 		fx.Provide(controllers.NewControllerOrder),
 		fx.Provide(controllers.NewControllerAes),
 		fx.Provide(controllers.NewControllerCustomer),
+		fx.Provide(controllers.NewControllerShowTIme),
 	}
 }
 func loadAdapter() []fx.Option {
@@ -68,5 +70,7 @@ func loadAdapter() []fx.Option {
 		fx.Provide(repository.NewCollectionOrder),
 		fx.Provide(caching.NewRedisDb),
 		fx.Provide(repository.NewCollectionCustomer),
+		fx.Provide(repository.NewCollectionShowTime),
+		fx.Provide(repository.NewCollectionCinemas),
 	}
 }

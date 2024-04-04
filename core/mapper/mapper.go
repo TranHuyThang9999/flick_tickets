@@ -39,3 +39,16 @@ func ConvertIntArrayToString(intArray []int) string {
 	result := strings.Join(stringArray, ",")
 	return result
 }
+func HasDuplicate(list []int) bool {
+	n := len(list)
+	for i := 0; i < n; i++ {
+		for j := i + 1; j < n; j++ {
+			if list[i] == list[j] {
+				// Nếu tìm thấy hai phần tử giống nhau, trả về true
+				return true
+			}
+		}
+	}
+	// Nếu không tìm thấy phần tử nào giống nhau, trả về false
+	return false
+}

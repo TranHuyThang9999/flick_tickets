@@ -24,6 +24,7 @@ func NewApiRouter(
 	middlewares *middlewares.MiddleWare,
 	customer *controllers.ControllerCustomer,
 	managerClient *sockets.ManagerClient,
+	showTime *controllers.ControllerShowTime,
 	cf *configs.Configs,
 ) *ApiRouter {
 	engine := gin.New()
@@ -41,7 +42,12 @@ func NewApiRouter(
 	//admin
 	r.POST("/user/register", user.AddUser)
 	r.POST("/user/login", auth.LoginUser)
-	r.POST("/user/upload/ticket", ticket.AddTicket)
+
+	r.Use(middlewares.Authenticate())
+	{
+		r.POST("/user/upload/ticket", ticket.AddTicket)
+	}
+
 	r.GET("/user/ticket", ticket.GetTicketById)
 	r.GET("customers/ticket", ticket.GetAllTickets)
 	r.GET("/user/load", file_lc.GetListFileById)
@@ -52,6 +58,10 @@ func NewApiRouter(
 	r.GET("/customer/order/ticket", order.GetOrderById)
 	r.POST("/customer/send", customer.SendOtptoEmail)
 	r.POST("/customer/verify/", customer.CheckOtpByEmail)
+
+	//show time
+	r.POST("/use/add/time", showTime.AddShowTime)
+	r.DELETE("/use/delete/time", showTime.DeleteShowTime)
 	//r.Use(middlewares.Authenticate())
 	return &ApiRouter{
 		Engine: engine,

@@ -6,6 +6,7 @@ import (
 	"flick_tickets/common/utils"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
+	"flick_tickets/core/events/caching/cache"
 	"flick_tickets/core/mapper"
 	"strconv"
 )
@@ -15,6 +16,7 @@ type UseCaseOrder struct {
 	tickets domain.RepositoryTickets
 	trans   domain.RepositoryTransaction
 	aes     *UseCaseAes
+	menory  cache.RepositoryCache
 }
 
 func NewUsecaseOrder(
@@ -22,6 +24,7 @@ func NewUsecaseOrder(
 	tickets domain.RepositoryTickets,
 	trans domain.RepositoryTransaction,
 	aes *UseCaseAes,
+	menory cache.RepositoryCache,
 
 ) *UseCaseOrder {
 	return &UseCaseOrder{
@@ -29,6 +32,7 @@ func NewUsecaseOrder(
 		tickets: tickets,
 		trans:   trans,
 		aes:     aes,
+		menory:  menory,
 	}
 }
 func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersReq) (*entities.OrdersResponseResgister, error) {
@@ -85,7 +89,6 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		Email:       req.Email,
 		Seats:       req.Seats,
 		TicketID:    ticket.ID,
-		Showtime:    ticket.Showtime,
 		ReleaseDate: ticket.ReleaseDate,
 		Description: ticket.Description,
 		Status:      ticket.Status, //need update
@@ -184,6 +187,29 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 			Result: entities.Result{
 				Code:    enums.DB_ERR_CODE,
 				Message: err.Error(),
+			},
+		}, nil
+	}
+	err = u.menory.SetObjectById(ctx, strconv.FormatInt(req.TicketId, 10), &domain.Tickets{
+		ID:           ticket.ID,
+		Name:         ticket.Name,
+		Price:        ticket.Price,
+		MaxTicket:    ticket.MaxTicket,
+		Quantity:     ticketsAfter,
+		Description:  ticket.Description,
+		Sale:         ticket.Sale,
+		ReleaseDate:  ticket.ReleaseDate,
+		Status:       ticket.Status, //need update
+		SelectedSeat: stringSeat,
+		CreatedAt:    ticket.CreatedAt,
+		UpdatedAt:    utils.GenerateTimestamp(),
+	})
+	if err != nil {
+		tx.Rollback()
+		return &entities.OrdersResponseResgister{
+			Result: entities.Result{
+				Code:    enums.CACHE_ERR_CODE,
+				Message: enums.CACHE_ERR_MESS,
 			},
 		}, nil
 	}

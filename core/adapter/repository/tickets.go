@@ -33,8 +33,8 @@ func (u *CollectionTickets) GetAllTickets(ctx context.Context, req *domain.Ticke
 		Quantity:    req.Quantity,
 		Description: req.Description,
 		Sale:        req.Sale,
-		Showtime:    req.Showtime,
 		ReleaseDate: req.ReleaseDate,
+		Status:      req.Status,
 		CreatedAt:   req.CreatedAt,
 		UpdatedAt:   req.UpdatedAt,
 	}).Find(&tickets)

@@ -9,7 +9,7 @@ import (
 type Orders struct {
 	ID          int64   `json:"id"`
 	TicketID    int64   `json:"ticket_id"`
-	Showtime    int     `json:"showtime"`
+	Showtime    string  `json:"showtime"`
 	ReleaseDate int     `json:"release_date"`
 	Email       string  `json:"email"`
 	OTP         int64   `json:"otp"`

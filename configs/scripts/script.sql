@@ -76,5 +76,17 @@ CREATE Table transactions (
     transaction_date INT,
     status int
 );
+CREATE Table show_times (
+    id BIGINT PRIMARY KEY,
+    ticket_id BIGINT,
+    created_at int,
+    updated_at int
+)
+--tức là 1 vé sẽ được chiếu ở nhiều phòng, 1 phòng sẽ có nhiều h chiếu'
 
+CREATE Table cinemas(
+    id BIGINT PRIMARY KEY,
+    cinema_name VARCHAR(255)
+);
 
+SELECT * FROM "show_times" WHERE cinema_name = 'A' and movie_time ='2,3' 
