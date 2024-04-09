@@ -1,24 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { DatePicker, Button } from 'antd';
-import moment from 'moment';
+import React, { useState, useEffect } from "react";
+import { DatePicker, Button } from "antd";
+import moment from "moment";
 
 const App = () => {
-  
   const [timestampsList, setTimestampsList] = useState([]);
-
-  useEffect(() => {
-    const updatedTimestampsList = timestampsList.map((timestamp) => moment.unix(timestamp));
-    setTimestampsList(updatedTimestampsList);
-  }, []);
+  const [, setSavedTimestampsList] = useState([]);
 
   const handleDateChange = (date, dateString) => {
     if (date && moment(date).isValid()) {
-      setTimestampsList((prevTimestampsList) => [...prevTimestampsList, moment(dateString).unix()]);
+      setTimestampsList((prevTimestampsList) => [
+        ...prevTimestampsList,
+        moment(dateString).unix(),
+      ]);
     }
   };
 
+  useEffect(() => {
+    const updatedTimestampsList = timestampsList.map((timestamp) =>
+      moment.unix(timestamp)
+    );
+    setTimestampsList(updatedTimestampsList);
+  }, []);
+
   const handleSaveDates = () => {
-    console.log('List of Selected Dates:');
+    setSavedTimestampsList(timestampsList);
     console.log(timestampsList);
   };
 
@@ -40,7 +45,8 @@ const App = () => {
             <div key={index}>
               <p>Timestamp: {timestamp}</p>
               <p>
-                Hour: {date.format('HH')}, Day: {date.format('DD')}, Month: {date.format('MM')}, Year: {date.format('YYYY')}
+                Hour: {date.format("HH")}, Day: {date.format("DD")}, Month:{" "}
+                {date.format("MM")}, Year: {date.format("YYYY")}
               </p>
             </div>
           );

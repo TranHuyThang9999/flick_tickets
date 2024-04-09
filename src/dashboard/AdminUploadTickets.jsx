@@ -1,11 +1,16 @@
+
+
+
 import React, { useState } from 'react';
 import { showError, showSuccess } from '../common/log/log';
-import { Form, DatePicker,Upload } from 'antd';
+import { Form, DatePicker, Upload } from 'antd';
 import { Axios } from 'axios';
+
 
 
 export default function AdminUploadTickets() {
 
+    const [form] = Form.useForm();
 
     const [fileList, setFileList] = useState([]);
 
@@ -18,7 +23,6 @@ export default function AdminUploadTickets() {
     const handleFormSubmit = async (values) => {
 
         try {
-            const [] = Form.useForm();
 
             const token = localStorage.getItem('token');
 
@@ -29,7 +33,12 @@ export default function AdminUploadTickets() {
             formData.append('description', values.description);
             formData.append('showtime', values.showtime);
             formData.append('status', values.status ? values.status.value : '');
-            formData.append('sales_discount', values.sales_discount);
+            formData.append('sale', values.sale);
+            formData.append('release_date', values.release_date);
+            formData.append('cinema_name',values.cinema_name);
+            formData.append('movie_time',values.movie_time);
+
+
 
             fileList.forEach((file) => {
                 formData.append('file', file.originFileObj);
@@ -92,10 +101,7 @@ export default function AdminUploadTickets() {
                     >
                         {fileList.length < 5 && '+ Upload'}
                     </Upload>
-                    {/* {fileList.length > 5 && (
-                // <p style={{ color: 'red' }}>Upload tối đa 5 ảnh mô tả sản phẩm</p>
-                message.warning('Upload tối đa 5 ảnh mô tả sản phẩm')
-            )} */}
+                  
                 </Form.Item>
 
                 <Form.Item>
