@@ -9,7 +9,7 @@ export default function CinemasGetAll() {
             try {
                 const response = await axios.get('http://localhost:8080/manager/user/get/cinema');
                 const data = response.data;
-                if (data.Result.code === 0) {
+                if (data.result.code === 0) {
                     setCinemas(data.cinemas);
                 } else {
                     console.error('Error retrieving cinemas:', data.Result.message);

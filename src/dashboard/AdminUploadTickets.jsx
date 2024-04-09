@@ -10,6 +10,7 @@ export default function AdminUploadTickets() {
 
     const [cinemaName, setCinemaName] = useState('');
     const [timestampsList, setTimestampsList] = useState([]);
+    const [timestampListAdd, setTimestampListAdd] = useState([]);
 
     const [form] = Form.useForm();
     const [fileList, setFileList] = useState([]);
@@ -28,7 +29,7 @@ export default function AdminUploadTickets() {
     };
 
     console.log("time : ", timestampsList);
-
+    console.log("name : ", cinemaName);
     //
     const options = [];
     const cinemas = CinemasGetAll();
@@ -41,10 +42,7 @@ export default function AdminUploadTickets() {
     }
 
     console.log("cinema:", cinemaName);
-    const optionsGetTime = timestampsList.map((timestamp) => ({
-        value: timestamp,
-        label: moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss')
-    }));
+
     const handleFormSubmit = async (values) => {
         try {
             const releaseDateTimestamp = moment(values.release_date).unix();
@@ -60,7 +58,7 @@ export default function AdminUploadTickets() {
             formData.append('sale', values.sale);
             formData.append('release_date', releaseDateTimestamp);
             formData.append('cinema_name', cinemaName);// sua lai
-            formData.append('movie_time', timestampsList);
+            formData.append('movie_time', timestampListAdd);
 
             fileList.forEach((file) => {
                 formData.append('file', file.originFileObj);
@@ -80,10 +78,16 @@ export default function AdminUploadTickets() {
 
             if (response.data.result.code === 0) {
                 showSuccess('Upload vé thành công');
-            } else if (response.data.result.code == 26) {
+                return;
+            } else if (response.data.result.code === 26) {
                 showWarning('các phòng vé đã tồn tại thời gian chiếu phim  vui lòng chọn phòng khác hoặc thời gian khác');
+                return;
+            } else if (response.data.result.code === 28) {
+                showError('lỗi phía máy khách');
+                return;
             } else {
                 showError('Lỗi server, vui lòng thử lại');
+                return;
             }
         } catch (error) {
             console.log(error);
@@ -191,7 +195,7 @@ export default function AdminUploadTickets() {
                     label="Thời gian chiếu phim"
                     className="form-row"
                     name="movie_time"
-                    rules={[{ required: true, message: 'Vui lòng nhập thời lượng phim!' }]}
+                // rules={[{ required: true, message: 'Vui lòng nhập thời lượng phim!' }]}
                 >
                     <div className='showTime'>
                         <DatePicker
@@ -205,6 +209,7 @@ export default function AdminUploadTickets() {
                             mode="multiple"
                             placeholder="Please select"
                             options={optionsGetTimeSelect}
+                            onChange={(value) => setTimestampListAdd(value)}
                         />
                     </div>
                 </Form.Item>
