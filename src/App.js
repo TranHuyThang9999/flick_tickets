@@ -5,9 +5,10 @@ import HomeaAdmin from './dashboard/HomeaAdmin'
 import DisplayTickets from './common/customers/DisplayTickets'
 import QRScanner from './QRScanner/QRScanner'
 import CheckQr from './QRScanner/CheckQr'
+import HTMLContent from './common/test/test'
+import OpenApiAddress from './common/OpenApiAddress/OpenApiAddress'
 
 export default function App() {
-  const token = 'mz20CA3h%2Fn0ybLeU0uMJCg%3D%3D';
 
   return (
     <div>
@@ -15,8 +16,9 @@ export default function App() {
       {/* <CinemasAdd/> */}
       {/* <HomeaAdmin/> */}
       {/* <DisplayTickets/> */}
-      <QRScanner/>
-      {/* <CheckQr token={token}/> */}
+      {/* <QRScanner/> */}
+      {/* <HTMLContent/> */}
+      <OpenApiAddress/>
    </div>
   )
 }
