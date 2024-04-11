@@ -1,3 +1,45 @@
 .showTime{
     display: flex;
 }
+
+/* :where(.css-dev-only-do-not-override-11xg00t).ant-layout .ant-layout-sider-children {
+    height: 1288px;
+    margin-top: -0.1px;
+    padding-top: 0.1px;
+} */
+.col_span_list{
+    display: flex;
+    justify-content: space-between;
+}
+.header-menu{
+    display: flex;
+    justify-content: space-between;
+}
+.header-menu-login{
+    display: flex;
+    justify-items: center;
+    margin-right: 20px;
+    margin-top:auto;
+    color: brown;
+
+}
+/* index.css */
+
+/* Phần CSS cho Sider */
+.fixed-sider {
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Đặt z-index lớn hơn các phần tử khác để đảm bảo nằm trên đầu */
+  }
+  
+  /* Phần CSS cho Header */
+  .fixed-header {
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Đặt z-index lớn hơn các phần tử khác để đảm bảo nằm trên đầu */
+  }
+  
+  /* Phần CSS cho Content */
+  .content-container {
+    margin-top: 64px; /* Đặt margin-top để tránh bị đè bởi Sider và Header */
+  }

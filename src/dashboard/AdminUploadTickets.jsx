@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { showError, showSuccess, showWarning } from '../common/log/log';
 import { Form, DatePicker, Upload, Input, Button, Select, InputNumber } from 'antd';
 import Axios from 'axios';
@@ -29,7 +29,6 @@ export default function AdminUploadTickets() {
     };
 
     console.log("time : ", timestampsList);
-    console.log("name : ", cinemaName);
     //
     const options = [];
     const cinemas = CinemasGetAll();
@@ -41,7 +40,7 @@ export default function AdminUploadTickets() {
 
     }
 
-    console.log("cinema:", cinemaName);
+    console.log("cinema 1:", cinemaName);
 
     const handleFormSubmit = async (values) => {
         try {
@@ -59,7 +58,12 @@ export default function AdminUploadTickets() {
             formData.append('release_date', releaseDateTimestamp);
             formData.append('cinema_name', cinemaName);// sua lai
             formData.append('movie_time', timestampListAdd);
-
+            //
+            formData.append('movie_duration', values.movie_duration);
+            formData.append('age_limit', values.age_limit);
+            formData.append('director', values.director);
+            formData.append('actor', values.actor);
+            formData.append('producer', values.producer);
             fileList.forEach((file) => {
                 formData.append('file', file.originFileObj);
             });
@@ -192,7 +196,7 @@ export default function AdminUploadTickets() {
                 </Form.Item>
 
                 <Form.Item
-                    label="Thời gian chiếu phim"
+                    label="Lịch chiếu phim"
                     className="form-row"
                     name="movie_time"
                 // rules={[{ required: true, message: 'Vui lòng nhập thời lượng phim!' }]}
@@ -215,7 +219,7 @@ export default function AdminUploadTickets() {
                 </Form.Item>
 
                 <Form.Item
-                    label="Nhập tên rạp"
+                    label="Chọn phòng để chiếu phim"
                     className="form-row"
                     name="cinema_name"
                 // rules={[{ required: true, message: 'Vui lòng nhập tên rạp!' }]}
@@ -229,6 +233,27 @@ export default function AdminUploadTickets() {
                     />
 
                 </Form.Item>
+
+                <Form.Item label="Thời lượng phim" name="movie_duration" rules={[{ required: true }]}>
+                    <InputNumber />
+                </Form.Item>
+
+                <Form.Item label="Giới hạn độ tuổi" name="age_limit" rules={[{ required: true }]}>
+                    <InputNumber />
+                </Form.Item>
+
+                <Form.Item label="Đạo diễn" name="director" rules={[{ required: true }]}>
+                    <Input />
+                </Form.Item>
+
+                <Form.Item label="Diễn viên" name="actor" rules={[{ required: true }]}>
+                    <Input />
+                </Form.Item>
+
+                <Form.Item label="Nhà sản xuất" name="producer" rules={[{ required: true }]}>
+                    <Input />
+                </Form.Item>
+
 
                 <Form.Item
                     label="Nhập ảnh mô tả sản phẩm"
