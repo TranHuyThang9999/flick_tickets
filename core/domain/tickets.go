@@ -29,7 +29,6 @@ type TicketreqFindByForm struct {
 	Quantity    int     `form:"quantity"`
 	Description string  `form:"description"`
 	Sale        int     `form:"sale"`
-	Showtime    string  `form:"showtime"`
 	ReleaseDate int     `form:"release_date"`
 	Status      int     `json:"status"`
 	CreatedAt   int     `form:"created_at"`

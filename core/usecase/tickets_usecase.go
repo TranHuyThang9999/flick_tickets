@@ -19,6 +19,7 @@ type UseCaseTicker struct {
 	file     domain.RepositoryFileStorages
 	menory   cache.RepositoryCache
 	showTime domain.RepositoryShowTime
+	cinema   domain.RepositoryCinemas
 }
 
 func NewUsecaseTicker(
@@ -27,6 +28,7 @@ func NewUsecaseTicker(
 	file domain.RepositoryFileStorages,
 	menory cache.RepositoryCache,
 	showTime domain.RepositoryShowTime,
+	cinema domain.RepositoryCinemas,
 
 ) *UseCaseTicker {
 	return &UseCaseTicker{
@@ -35,10 +37,14 @@ func NewUsecaseTicker(
 		file:     file,
 		menory:   menory,
 		showTime: showTime,
+		cinema:   cinema,
 	}
 }
 func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUpload) (*entities.TicketRespUpload, error) {
 
+	var idTicket int64 = utils.GenerateUniqueKey()
+	log.Infof("req : ", req.CinemaName)
+	log.Infof("req : ", req.MovieTime)
 	tx, err := c.trans.BeginTransaction(ctx)
 	if err != nil {
 		return &entities.TicketRespUpload{
@@ -49,7 +55,6 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 		}, nil
 	}
 
-	var idTicket int64 = utils.GenerateUniqueKey()
 	ticketAdd := &domain.Tickets{
 		ID:          idTicket,
 		Name:        req.Name,
@@ -75,47 +80,22 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 		}, nil
 	}
 
-	showTimes, err := c.showTime.GetTimeUseCheckAddTicket(ctx, &domain.ShowTimeCheckList{
-		CinemaName: req.CinemaName,
-		MovieTime:  req.MovieTime,
-	})
-	if err != nil {
-		tx.Rollback()
-		return &entities.TicketRespUpload{
-			Result: entities.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
-			},
-		}, nil
-	}
-	log.Infof("len", len(showTimes))
-	if len(showTimes) >= 1 {
-		log.Info("*************** 0")
-		return &entities.TicketRespUpload{
-			Result: entities.Result{
-				Code:    enums.SHOW_TIME_CODE,
-				Message: enums.SHOW_TIME_MESS,
-			},
-		}, nil
-	}
-
 	//check show time
 	listShowTimeInt, err := mapper.ParseToIntSlice(req.MovieTime)
+	log.Infof("time : ", listShowTimeInt)
 	if err != nil {
 		tx.Rollback()
 		return &entities.TicketRespUpload{
 			Result: entities.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
+				Code:    enums.CONVERT_STRING_TO_ARRAY_CODE,
+				Message: enums.CONVERT_STRING_TO_ARRAY_MESS,
 			},
 		}, nil
 	}
 
 	//check show
 	statusCheckList := mapper.HasDuplicate(listShowTimeInt)
-	log.Infof("$$$ ", statusCheckList)
 	if statusCheckList {
-		log.Info("*************** 1")
 		return &entities.TicketRespUpload{
 			Result: entities.Result{
 				Code:    enums.SHOW_TIME_CODE,
@@ -124,16 +104,41 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 		}, nil
 	}
 
-	// add show time
-	err = c.showTime.AddShowTime(ctx, &domain.ShowTime{
-		ID:         utils.GenerateUniqueKey(),
-		TicketID:   idTicket,
-		CinemaName: req.CinemaName,
-		MovieTime:  mapper.ConvertIntArrayToString(listShowTimeInt), //array
-	})
+	listCinemasName := mapper.ConvertListToStringSlice(req.CinemaName)
+	log.Infof("list time : ", listCinemasName)
+	// if err != nil {
+	// 	tx.Rollback()
+	// 	return &entities.TicketRespUpload{
+	// 		Result: entities.Result{
+	// 			Code:    enums.CONVERT_STRING_TO_ARRAY_CODE,
+	// 			Message: enums.CONVERT_STRING_TO_ARRAY_MESS,
+	// 		},
+	// 	}, nil
+	// }
+
+	// listCinema, err := c.cinema.GetAllCinemaByName(ctx, req.Name)
+	// if err != nil {
+	// 	tx.Rollback()
+	// 	return &entities.TicketRespUpload{
+	// 		Result: entities.Result{
+	// 			Code:    enums.DB_ERR_CODE,
+	// 			Message: enums.DB_ERR_MESS,
+	// 		},
+	// 	}, nil
+	// }
+	//
+
+	checkTime, err := c.showTime.FindDuplicateShowTimes(ctx, listShowTimeInt, listCinemasName)
 	if err != nil {
-		log.Info("*************** 2")
 		tx.Rollback()
+		return &entities.TicketRespUpload{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(checkTime) > 1 {
 		return &entities.TicketRespUpload{
 			Result: entities.Result{
 				Code:    enums.SHOW_TIME_CODE,
@@ -141,10 +146,48 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 			},
 		}, nil
 	}
+	///add show time
+	var reqListShowTime = make([]*domain.ShowTime, 0)
+
+	// for i := 0; i < len(listShowTimeInt); i++ {
+	// 	reqListShowTime = append(reqListShowTime, &domain.ShowTime{
+	// 		ID:         utils.GenerateUniqueKey(),
+	// 		TicketID:   idTicket,
+	// 		CinemaName: req.CinemaName,
+	// 		MovieTime:  listShowTimeInt[i],
+	// 		CreatedAt:  utils.GenerateTimestamp(),
+	// 		UpdatedAt:  utils.GenerateTimestamp(),
+	// 	})
+	// }
+
+	for i := 0; i < len(listCinemasName); i++ {
+		for j := 0; j < len(listShowTimeInt); j++ {
+			reqListShowTime = append(reqListShowTime, &domain.ShowTime{
+				ID:         utils.GenerateUniqueKey(),
+				TicketID:   idTicket,
+				CinemaName: listCinemasName[i],
+				MovieTime:  listShowTimeInt[j],
+				CreatedAt:  utils.GenerateTimestamp(),
+				UpdatedAt:  utils.GenerateTimestamp(),
+			})
+		}
+	}
+
+	err = c.showTime.AddListShowTime(ctx, tx, reqListShowTime)
+	if err != nil {
+		tx.Rollback()
+		return &entities.TicketRespUpload{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+
 	//set cache
 	err = c.menory.SetObjectById(ctx, strconv.FormatInt(idTicket, 10), ticketAdd)
-	log.Infof("error cache", err)
 	if err != nil {
+		log.Infof("error cache", err)
 		tx.Rollback()
 		return &entities.TicketRespUpload{
 			Result: entities.Result{
@@ -283,22 +326,74 @@ func (c *UseCaseTicker) GetTicketById(ctx context.Context, id string) (*entities
 		CreatedAt: utils.GenerateTimestamp(),
 	}, nil
 }
+
 func (c *UseCaseTicker) GetAllTickets(ctx context.Context, req *domain.TicketreqFindByForm) (*entities.TicketRespGetAll, error) {
 
-	tickets, err := c.ticket.GetAllTickets(ctx, req)
+	var listTicketResp = make([]*entities.Tickets, 0)
+	var listShowTime []*domain.ShowTime
+	var mapShowTimes = make(map[int64][]*domain.ShowTime)
+	var mapListFile = make(map[int64][]*domain.FileStorages)
+	var listFile []*domain.FileStorages
+
+	listTicket, err := c.ticket.GetAllTickets(ctx, req)
 	if err != nil {
 		return &entities.TicketRespGetAll{
 			Result: entities.Result{
-				Code:    enums.CACHE_ERR_CODE,
-				Message: enums.CACHE_ERR_MESS,
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, err
+	}
+	if len(listTicket) == 0 {
+		return &entities.TicketRespGetAll{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
 			},
 		}, nil
 	}
+	listShowTime, err = c.showTime.GetAll(ctx)
+	if err != nil {
+		return &entities.TicketRespGetAll{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, err
+	}
+	listFile, err = c.file.GetAll(ctx)
+	if err != nil {
+		return &entities.TicketRespGetAll{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, err
+	}
+	// Xây dựng mapShowTimes từ danh sách showtime
+	for _, showTime := range listShowTime {
+		ticketID := showTime.TicketID
+		mapShowTimes[ticketID] = append(mapShowTimes[ticketID], showTime)
+	}
+	for _, v := range listFile {
+		ticketID := v.TicketID
+		mapListFile[ticketID] = append(mapListFile[ticketID], v)
+	}
+	for _, ticket := range listTicket {
+		showTimes := mapShowTimes[ticket.ID]
+		listFile := mapListFile[ticket.ID]
+		listTicketResp = append(listTicketResp, &entities.Tickets{
+			Ticket:    ticket,
+			ShowTimes: showTimes,
+			ListUrl:   listFile,
+		})
+	}
+
 	return &entities.TicketRespGetAll{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
-		Tickets: tickets,
+		Tickets: listTicketResp,
 	}, nil
 }

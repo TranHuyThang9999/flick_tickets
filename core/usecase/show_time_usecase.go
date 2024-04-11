@@ -21,13 +21,36 @@ func NewUseCaseShowTime(
 }
 func (s *UseCaseShowTime) AddShowTime(ctx context.Context, req *entities.ShowTimeAddReq) (*entities.ShowTimeAddResponse, error) {
 
-	err := s.st.AddShowTime(ctx, &domain.ShowTime{
+	resp, err := s.st.GetTimeUseCheckAddTicket(ctx, &domain.ShowTimeCheckList{
+		//	TicketID:   req.TicketID,
+		CinemaName: req.CinemaName,
+		MovieTime:  req.MovieTime,
+	})
+	if err != nil {
+		return &entities.ShowTimeAddResponse{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(resp) > 1 {
+		return &entities.ShowTimeAddResponse{
+			Result: entities.Result{
+				Code:    enums.SHOW_TIME_CODE,
+				Message: enums.SHOW_TIME_MESS,
+			},
+		}, nil
+	}
+	err = s.st.AddShowTime(ctx, &domain.ShowTime{
 		ID:         utils.GenerateUniqueKey(),
 		TicketID:   req.TicketID,
 		CinemaName: req.CinemaName,
+		MovieTime:  req.MovieTime,
 		CreatedAt:  utils.GenerateTimestamp(),
 		UpdatedAt:  utils.GenerateTimestamp(),
 	})
+
 	if err != nil {
 		return &entities.ShowTimeAddResponse{
 			Result: entities.Result{

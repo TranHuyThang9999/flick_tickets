@@ -248,13 +248,21 @@ func (u *UseCaseOrder) GetOrderById(ctx context.Context, id string) (*entities.O
 	if err != nil {
 		return &entities.OrdersResponseGetById{
 			Result: entities.Result{
-				Code:    enums.CONVERT_TO_NUMBER_CODE,
-				Message: enums.CONVERT_TO_NUMBER_MESS,
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
 			},
 			Created: int64(utils.GenerateTimestamp()),
 		}, nil
 	}
-
+	if order == nil {
+		return &entities.OrdersResponseGetById{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+			Created: int64(utils.GenerateTimestamp()),
+		}, nil
+	}
 	return &entities.OrdersResponseGetById{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,

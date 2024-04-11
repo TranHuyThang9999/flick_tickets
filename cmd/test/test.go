@@ -1,87 +1,113 @@
 package main
 
 import (
+	"io"
 	"log"
 	"net/http"
-	"sync"
+	"os"
+	"time"
 
+	"github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
+func main() {
+	//r := gin.Default()
+	// r.GET("/api/sse/:id", SSEHandler)
+
+	//	fmt.Println(result)
+
+	// r.Use(cors.AllowAll())
+	// r.GET("/load", LoadFileHtml)
+	// r.Run(":8080")
+
+}
+
+func LoadFileHtml(c *gin.Context) {
+	path := "cmd/test/index.html"
+	htmlBytes, err := os.ReadFile(path)
+	if err != nil {
+		// Xử lý lỗi nếu có
+		c.String(http.StatusInternalServerError, "Lỗi khi đọc tệp HTML")
+		return
+	}
+
+	// Trả về trang HTML
+	c.Data(http.StatusOK, "text/html; charset=utf-8", htmlBytes)
+}
+
+func SSEHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	c.Header("Content-Type", "text/event-stream")
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Connection", "keep-alive")
+	c.Header("Access-Control-Allow-Origin", "*")
+
+	// Tạo kênh SSE
+	ch := make(chan sse.Event)
+	defer close(ch)
+
+	// Goroutine để lấy dữ liệu từ use case khác và gửi SSE
+	go func() {
+		for {
+			// Lấy dữ liệu từ use case khác
+			data := GetDataFromUseCase(id)
+			event := sse.Event{
+				Event: "message",
+				Data:  data,
+			}
+			ch <- event
+			time.Sleep(1 * time.Second)
+		}
+	}()
+
+	// Gửi dữ liệu SSE đến client
+	c.Stream(func(w io.Writer) bool {
+		if _, ok := <-ch; ok {
+			sse.Encode(w, sse.Event{
+				Data: GetDataFromUseCase(id),
+			})
+			w.Write([]byte("\n"))
+			return true
+		}
+		return false
+	})
+
+	// Xử lý sự kiện đóng kết nối từ client
+	<-c.Writer.CloseNotify()
+	// Thực hiện các tác vụ khi kết nối bị đóng
+	println("Connection closed by client")
+}
+
+type SinhVien struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+var data = []SinhVien{
+	SinhVien{
+		Id:   "1",
+		Name: "A 11",
+	},
+	SinhVien{
+		Id:   "2",
+		Name: "B 22",
+	},
+	SinhVien{
+		Id:   "3",
+		Name: "B 3",
 	},
 }
 
-type Client struct {
-	conn *websocket.Conn
-	mu   sync.Mutex
-}
+func GetDataFromUseCase(id string) []SinhVien {
+	var list = make([]SinhVien, 0)
 
-var clients []*Client
-var mu sync.Mutex
-
-func main() {
-	r := gin.Default()
-
-	r.GET("/ws", func(c *gin.Context) {
-		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-		if err != nil {
-			log.Println("Failed to upgrade HTTP connection to WebSocket:", err)
-			return
-		}
-
-		client := &Client{
-			conn: conn,
-		}
-
-		mu.Lock()
-		clients = append(clients, client)
-		mu.Unlock()
-
-		for {
-			// Read message from client
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				log.Println("Failed to read message from WebSocket client:", err)
-				break
-			}
-
-			// Process message
-			processMessage(string(message))
-		}
-
-		mu.Lock()
-		for i, c := range clients {
-			if c == client {
-				clients = append(clients[:i], clients[i+1:]...)
-				break
-			}
-		}
-		mu.Unlock()
-
-		conn.Close()
-	})
-
-	r.Run(":9090")
-}
-
-func processMessage(message string) {
-	// Process the message sent from the admin
-	// ...
-
-	// Broadcast the message to all connected clients
-	mu.Lock()
-	defer mu.Unlock()
-
-	for _, client := range clients {
-		client.mu.Lock()
-		err := client.conn.WriteMessage(websocket.TextMessage, []byte(message))
-		client.mu.Unlock()
-		if err != nil {
-			log.Println("Failed to send message to WebSocket client:", err)
+	for i := 0; i < len(data); i++ {
+		if data[i].Id == id {
+			list = append(list, data[i])
 		}
 	}
+	log.Println("hi")
+	return list
 }

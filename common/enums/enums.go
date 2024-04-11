@@ -68,6 +68,15 @@ const (
 
 	SHOW_TIME_CODE = 26
 	SHOW_TIME_MESS = "error show existing"
+
+	CLIENT_ERROR_CODE = 28
+	CLIENT_ERROR_MESS = "error client"
+
+	ROOM_EXSTIS_CODE = 30
+	ROOM_EXSTIS_MESS = "room exists"
+
+	ACCOUNT_STAFF_LOCK_CODE = 32
+	ACCOUNT_STAFF_LOCK_MESS = "account locked"
 )
 const (
 	ROLE_ADMIN     = 1

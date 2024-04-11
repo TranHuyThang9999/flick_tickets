@@ -1,4 +1,4 @@
--- Active: 1701521287160@@127.0.0.1@5432@flick_tickets
+-- Active: 1712502908629@@127.0.0.1@5432@flick_tickets
 
 CREATE Table users (
     id BIGINT PRIMARY key,
@@ -76,12 +76,15 @@ CREATE Table transactions (
     transaction_date INT,
     status int
 );
-CREATE Table show_times (
-    id BIGINT PRIMARY KEY,
-    ticket_id BIGINT,
-    created_at int,
-    updated_at int
-)
+CREATE TABLE show_times(
+    id bigint NOT NULL,
+    ticket_id bigint,
+    movie_time int,
+    cinema_name varchar(255),
+    created_at integer,
+    updated_at integer,
+    PRIMARY KEY(id)
+);
 --tức là 1 vé sẽ được chiếu ở nhiều phòng, 1 phòng sẽ có nhiều h chiếu'
 
 CREATE Table cinemas(
@@ -89,4 +92,15 @@ CREATE Table cinemas(
     cinema_name VARCHAR(255)
 );
 
-SELECT * FROM "show_times" WHERE cinema_name = 'A' and movie_time ='2,3' 
+CREATE TABLE movie_theaters (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255),
+  address VARCHAR(255),
+  city VARCHAR(255),
+  state VARCHAR(255),
+  country VARCHAR(255)
+);
+
+select DISTINCT name from cities;
+
+SELECT DISTINCT district from cities where name in('Thành phố Hà Nội','Tỉnh Hưng Yên');

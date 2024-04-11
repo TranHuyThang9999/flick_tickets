@@ -31,3 +31,8 @@ func (c *CollectionFileStore) GetListFileById(ctx context.Context, id int64) ([]
 	result := c.fs.Where("ticket_id = ?", id).Find(&files)
 	return files, result.Error
 }
+func (c *CollectionFileStore) GetAll(ctx context.Context) ([]*domain.FileStorages, error) {
+	var files []*domain.FileStorages
+	result := c.fs.Find(&files)
+	return files, result.Error
+}

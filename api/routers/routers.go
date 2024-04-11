@@ -15,6 +15,7 @@ type ApiRouter struct {
 }
 
 func NewApiRouter(
+	cf *configs.Configs,
 	user *controllers.ControllersUser,
 	auth *controllers.ControllerAuth,
 	ticket *controllers.ControllerTicket,
@@ -25,16 +26,18 @@ func NewApiRouter(
 	customer *controllers.ControllerCustomer,
 	managerClient *sockets.ManagerClient,
 	showTime *controllers.ControllerShowTime,
-	cf *configs.Configs,
+	cinema *controllers.ControllerCinemas,
+	addresPublic *controllers.ControllerAddress,
+
 ) *ApiRouter {
 	engine := gin.New()
 	gin.DisableConsoleColor()
 
 	engine.Use(gin.Logger())
 	engine.Use(cors.AllowAll())
-	//middlewares.recovy
 	engine.Use(gin.Recovery())
-
+	engine.Use(gin.Recovery())
+	engine.Use(gin.Logger())
 	r := engine.RouterGroup.Group("/manager")
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong"})
@@ -43,26 +46,43 @@ func NewApiRouter(
 	r.POST("/user/register", user.AddUser)
 	r.POST("/user/login", auth.LoginUser)
 
-	r.Use(middlewares.Authenticate())
-	{
-		r.POST("/user/upload/ticket", ticket.AddTicket)
-	}
+	adminGroup := r.Group("/")
+	// adminGroup.Use(middlewares.Authenticate())
+	// {
+	adminGroup.POST("/user/upload/ticket", ticket.AddTicket)
+	//	}
 
 	r.GET("/user/ticket", ticket.GetTicketById)
 	r.GET("customers/ticket", ticket.GetAllTickets)
 	r.GET("/user/load", file_lc.GetListFileById)
 	r.POST("/user/verify/", aes.VerifyTickets)
-	r.GET("/ws", managerClient.ServerWs) //auto pool
+	//	r.GET("/ws", managerClient.ServerWs) //auto pool
+	//cinema
+	r.POST("/user/add/cinema", cinema.AddCinema)
+	r.GET("/user/get/cinema", cinema.GetAllCinema)
+	r.DELETE("/user/delete/cinema", cinema.DeleteCinemaByName)
 	// user
-	r.POST("/customer/register/ticket", order.OrdersTicket)
-	r.GET("/customer/order/ticket", order.GetOrderById)
+	r.POST("/customer/order/ticket", order.OrdersTicket)
+	r.GET("/customer/look/order/ticket", order.GetOrderById)
+	//customer
 	r.POST("/customer/send", customer.SendOtptoEmail)
 	r.POST("/customer/verify/", customer.CheckOtpByEmail)
-
+	r.POST("/customer/manager/register", customer.RegisterCustomersManager)
+	r.POST("/customer/manager/login", customer.LoginCustomerManager)
+	r.POST("/customer/staff/register", customer.CreateAccountAdminManagerForStaff)
+	r.POST("/customer/staff/login", customer.LoginCustomerStaff)
+	r.GET("customer/staff/getall", customer.GetAllStaff)
+	r.DELETE("/user/staff/delete", customer.DeleteStaffByName)
 	//show time
 	r.POST("/use/add/time", showTime.AddShowTime)
 	r.DELETE("/use/delete/time", showTime.DeleteShowTime)
 	//r.Use(middlewares.Authenticate())
+
+	//address public
+	r.GET("/public/customer/cities", addresPublic.GetAllCity)
+	r.GET("/public/customer/districts", addresPublic.GetAllDistrictsByCityName)
+	r.GET("/public/customer/communes", addresPublic.GetAllCommunesByDistrictName)
+
 	return &ApiRouter{
 		Engine: engine,
 	}

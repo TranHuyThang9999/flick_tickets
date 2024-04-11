@@ -3,6 +3,7 @@ package entities
 type ShowTimeAddReq struct {
 	TicketID   int64  `form:"ticket_id"`
 	CinemaName string `form:"cinema_name"`
+	MovieTime  int    `form:"movie_time"`
 }
 type ShowTimeDelete struct {
 	ID        int64 `form:"id"`

@@ -143,3 +143,33 @@ func SendOtpToEmail(email, title string, OTP int64) error {
 	log.Info("Email sent successfully")
 	return nil
 }
+func SendPasswordToEmail(email, title string, passwordInit string) error {
+	infomations := configs.Get()
+
+	username := infomations.FromEmail
+	password := infomations.PasswordEmail
+	smtpHost := infomations.SmtpHost
+	port, err := strconv.Atoi(infomations.SmtpPort)
+	if err != nil {
+		return err
+	}
+
+	// Create a new message.
+	message := gomail.NewMessage()
+	message.SetHeader("From", username)
+	message.SetHeader("To", email)
+	message.SetHeader("Subject", title)
+	message.SetBody("text/plain", passwordInit) // Set the email body as plain text
+
+	// Create a new SMTP dialer.
+	dialer := gomail.NewDialer(smtpHost, port, username, password)
+
+	// Sending email.
+	if err := dialer.DialAndSend(message); err != nil {
+		log.Error(err, "error sending email")
+		return err
+	}
+
+	log.Info("Email sent successfully")
+	return nil
+}

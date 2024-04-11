@@ -1,9 +1,7 @@
 package controllers
 
 import (
-	"flick_tickets/core/entities"
 	"flick_tickets/core/usecase"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,12 +22,8 @@ func NewControllerAes(
 }
 func (aes *ControllerAes) VerifyTickets(ctx *gin.Context) {
 
-	var req entities.TokenReqCheckQrCode
+	token := ctx.Query("token")
 
-	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-		return
-	}
-	resp, err := aes.aes.CheckQrCode(&req)
+	resp, err := aes.aes.CheckQrCode(ctx, token)
 	aes.baseController.Response(ctx, resp, err)
 }

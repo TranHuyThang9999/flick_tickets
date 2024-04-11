@@ -3,6 +3,8 @@ package fxloader
 import (
 	"flick_tickets/api/controllers"
 	"flick_tickets/api/middlewares"
+	"flick_tickets/api/public/assets/infrastructure"
+	"flick_tickets/api/public/assets/services"
 	"flick_tickets/api/routers"
 	"flick_tickets/core/adapter"
 	"flick_tickets/core/adapter/repository"
@@ -36,6 +38,8 @@ func loadUseCase() []fx.Option {
 		fx.Provide(sockets.NewManagerClient),
 		fx.Provide(sockets.NewServer),
 		fx.Provide(usecase.NewUseCaseShowTime),
+		fx.Provide(usecase.NewUseCaseCinemas),
+		fx.Provide(services.NewServiceAddress),
 	}
 }
 
@@ -58,6 +62,8 @@ func loadEngine() []fx.Option {
 		fx.Provide(controllers.NewControllerAes),
 		fx.Provide(controllers.NewControllerCustomer),
 		fx.Provide(controllers.NewControllerShowTIme),
+		fx.Provide(controllers.NewControllerCinamas),
+		fx.Provide(controllers.NewControllerAddress),
 	}
 }
 func loadAdapter() []fx.Option {
@@ -72,5 +78,6 @@ func loadAdapter() []fx.Option {
 		fx.Provide(repository.NewCollectionCustomer),
 		fx.Provide(repository.NewCollectionShowTime),
 		fx.Provide(repository.NewCollectionCinemas),
+		fx.Provide(infrastructure.NewCollectionAddress),
 	}
 }

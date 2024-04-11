@@ -21,6 +21,9 @@ type Configs struct {
 	AddressRedis       string `json:"addressRedis"`       // Địa chỉ và cổng Redis
 	PasswordRedis      string `json:"passwordRedis"`      // Mật khẩu Redis (nếu có)
 	DatabaseredisIndex string `json:"databaseredisIndex"` // Số DB trong Redis
+	ClientID           string `json:"client_id"`
+	ApiKey             string `json:"api_key"`
+	ChecksumKey        string `json:"checksumKey"`
 }
 
 var config *Configs

@@ -32,7 +32,8 @@ type TicketReqUpload struct {
 	File         []*multipart.FileHeader `form:"file"`
 	SelectedSeat string                  `form:"selected_seat"`
 	CinemaName   string                  `form:"cinema_name"`
-	MovieTime    string                  `form:"movie_time"`
+	//
+	MovieTime string `form:"movie_time"`
 }
 type TicketRespUpload struct {
 	Result    Result `json:"result"`
@@ -43,7 +44,14 @@ type TicketRespgetById struct {
 	Ticket    *domain.Tickets `json:"ticket"`
 	CreatedAt int             `json:"created_at"`
 }
+
+type Tickets struct {
+	Ticket    *domain.Tickets        `json:"ticket"`
+	ShowTimes []*domain.ShowTime     `json:"show_times"`
+	ListUrl   []*domain.FileStorages `json:"list_url"`
+}
+
 type TicketRespGetAll struct {
-	Result  Result            `json:"result"`
-	Tickets []*domain.Tickets `json:"`
+	Result  Result     `json:"result"`
+	Tickets []*Tickets `json:"tickets"`
 }

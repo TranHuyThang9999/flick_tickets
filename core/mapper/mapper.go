@@ -1,6 +1,8 @@
 package mapper
 
 import (
+	"flick_tickets/core/domain"
+	"flick_tickets/core/entities"
 	"strconv"
 	"strings"
 )
@@ -51,4 +53,74 @@ func HasDuplicate(list []int) bool {
 	}
 	// Nếu không tìm thấy phần tử nào giống nhau, trả về false
 	return false
+}
+
+// ["a","Hi"]
+
+func ParseToStringSlice(input string) ([]string, error) {
+	if input == "" {
+		// Trả về slice rỗng nếu chuỗi đầu vào là rỗng
+		return []string{}, nil
+	}
+
+	// Loại bỏ khoảng trắng dư thừa từ chuỗi
+	input = strings.TrimSpace(input)
+
+	// Loại bỏ dấu ngoặc vuông [ và ]
+	input = strings.TrimPrefix(input, "[")
+	input = strings.TrimSuffix(input, "]")
+
+	// Sử dụng hàm strings.Fields để tách chuỗi thành các từ dựa trên dấu cách
+	parts := strings.Fields(input)
+
+	// Thêm dấu ngoặc kép xung quanh từng từ trong slice
+	for i, part := range parts {
+		parts[i] = `"` + part + `"`
+	}
+
+	// Trả về slice kết quả và không có lỗi
+	return parts, nil
+}
+
+// letters := []string{"ayy", "Hi  b", "co VIP", "dapter jh"}
+func ConvertListToStringSlice(list string) []string {
+	// Loại bỏ khoảng trắng ở đầu và cuối chuỗi
+	list = strings.TrimSpace(list)
+
+	// Kiểm tra nếu chuỗi không có ký tự nào
+	if list == "" {
+		return []string{}
+	}
+
+	// Tách chuỗi thành các từ dựa trên dấu phẩy
+	words := strings.Split(list, ",")
+
+	// Loại bỏ khoảng trắng ở đầu và cuối mỗi từ
+	for i, word := range words {
+		words[i] = strings.TrimSpace(word)
+	}
+
+	return words
+}
+func ConvertCustomerDomainToCustomerEntity(req *domain.Customers) *entities.CustomersRespFindByForm {
+	return &entities.CustomersRespFindByForm{
+		ID:          req.ID,
+		UserName:    req.UserName,
+		AvatarUrl:   req.AvatarUrl,
+		Address:     req.Address,
+		Age:         req.Age,
+		Email:       req.Email,
+		PhoneNumber: req.PhoneNumber,
+		IsActive:    req.IsActive,
+		CreatedAt:   req.CreatedAt,
+	}
+}
+
+func ConvertListCustomerDomainToListCustomerEntity(reqList []*domain.Customers) []*entities.CustomersRespFindByForm {
+	entityList := make([]*entities.CustomersRespFindByForm, len(reqList))
+	for i, req := range reqList {
+		entity := ConvertCustomerDomainToCustomerEntity(req)
+		entityList[i] = entity
+	}
+	return entityList
 }

@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
@@ -54,11 +55,20 @@ func (c *UseCaseAes) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entiti
 		Created: utils.GenerateTimestamp(),
 	}, nil
 }
-func (c *UseCaseAes) CheckQrCode(req *entities.TokenReqCheckQrCode) (*entities.TokenResponseCheckQrCode, error) {
+func (c *UseCaseAes) CheckQrCode(ctx context.Context, token string) (*entities.TokenResponseCheckQrCode, error) {
+
+	if token == "" {
+		return &entities.TokenResponseCheckQrCode{
+			Result: entities.Result{
+				Code:    enums.INVALID_REQUEST_CODE,
+				Message: enums.INVALID_REQUEST_MESS,
+			},
+		}, nil
+	}
 
 	key := []byte(c.config.KeyAES128)
 
-	data, err := c.DecryptAes(req.Token, key)
+	data, err := c.DecryptAes(token, key)
 	if err != nil {
 		return &entities.TokenResponseCheckQrCode{
 			Result: entities.Result{

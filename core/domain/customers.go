@@ -17,6 +17,8 @@ type Customers struct {
 	PhoneNumber string `json:"phone_number"`
 	OTP         int64  `json:"otp"`
 	IsActive    bool   `json:"is_active"`
+	ExpiredTime int    `json:"expired_time"`
+	Role        int    `json:"role"`
 	CreatedAt   int    `json:"created_at"`
 	UpdatedAt   int    `json:"updated_at"`
 }
@@ -32,6 +34,7 @@ type CustomersFindByForm struct {
 	OTP         int64  `form:"otp"`
 	CreatedAt   int    `form:"created_at"`
 	UpdatedAt   int    `form:"updated_at"`
+	Role        int    `form:"role"`
 }
 type RepositoryCustomers interface {
 	FindCustomers(ctx context.Context, req *CustomersFindByForm) ([]*Customers, error)
@@ -40,4 +43,5 @@ type RepositoryCustomers interface {
 	UpdateWhenCheckOtp(ctx context.Context, otp int64, email string) error
 	GetCustomersByEmailUseCheckOtp(ctx context.Context, email string, otp int64) (*Customers, error)
 	GetCustomerByEmail(ctx context.Context, email string) (*Customers, error)
+	DeleteStaffByName(ctx context.Context, name string) error
 }

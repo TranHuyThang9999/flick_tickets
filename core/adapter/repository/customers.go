@@ -34,6 +34,7 @@ func (c *CollectionCustomers) FindCustomers(ctx context.Context, req *domain.Cus
 		Email:       req.Email,
 		PhoneNumber: req.PhoneNumber,
 		OTP:         req.OTP,
+		Role:        req.Role,
 		CreatedAt:   req.CreatedAt,
 		UpdatedAt:   req.UpdatedAt,
 	}).Find(&customers)
@@ -72,4 +73,8 @@ func (c *CollectionCustomers) GetCustomerByEmail(ctx context.Context, email stri
 		return nil, nil
 	}
 	return customer, result.Error
+}
+func (c *CollectionCustomers) DeleteStaffByName(ctx context.Context, name string) error {
+	result := c.collection.Where("user_name = ?", name).Delete(&domain.Customers{})
+	return result.Error
 }
