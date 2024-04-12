@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"flick_tickets/common/log"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
 	"strconv"
@@ -123,4 +124,12 @@ func ConvertListCustomerDomainToListCustomerEntity(reqList []*domain.Customers) 
 		entityList[i] = entity
 	}
 	return entityList
+}
+func ConvertStringToInt(id string) int {
+	resp, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err, "error convert string to daate")
+		return 0
+	}
+	return resp
 }

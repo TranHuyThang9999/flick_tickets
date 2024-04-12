@@ -58,3 +58,12 @@ func GenerateTimestamp() int {
 	timeNow := time.Now()
 	return int(timeNow.Unix())
 }
+func ConvertTimestampToDateTime(timestamp int64) string {
+	// Chuyển đổi timestamp thành đối tượng thời gian
+	t := time.Unix(timestamp, 0)
+
+	// Định dạng lại ngày tháng theo ý muốn
+	formattedDateTime := t.Format("2006-01-02 15:04:05")
+
+	return formattedDateTime
+}

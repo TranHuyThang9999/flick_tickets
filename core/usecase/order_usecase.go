@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"flick_tickets/common/enums"
+	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
@@ -12,11 +13,12 @@ import (
 )
 
 type UseCaseOrder struct {
-	order   domain.RepositoryOrder
-	tickets domain.RepositoryTickets
-	trans   domain.RepositoryTransaction
-	aes     *UseCaseAes
-	menory  cache.RepositoryCache
+	order    domain.RepositoryOrder
+	tickets  domain.RepositoryTickets
+	trans    domain.RepositoryTransaction
+	aes      *UseCaseAes
+	menory   cache.RepositoryCache
+	showTime domain.RepositoryShowTime
 }
 
 func NewUsecaseOrder(
@@ -25,14 +27,16 @@ func NewUsecaseOrder(
 	trans domain.RepositoryTransaction,
 	aes *UseCaseAes,
 	menory cache.RepositoryCache,
+	showTime domain.RepositoryShowTime,
 
 ) *UseCaseOrder {
 	return &UseCaseOrder{
-		order:   order,
-		tickets: tickets,
-		trans:   trans,
-		aes:     aes,
-		menory:  menory,
+		order:    order,
+		tickets:  tickets,
+		trans:    trans,
+		aes:      aes,
+		menory:   menory,
+		showTime: showTime,
 	}
 }
 func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersReq) (*entities.OrdersResponseResgister, error) {
@@ -91,6 +95,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		TicketID:    ticket.ID,
 		ReleaseDate: ticket.ReleaseDate,
 		Description: ticket.Description,
+		MovieTime:   req.MovieTime,
 		Status:      ticket.Status, //need update
 		Sale:        ticket.Sale,
 		Price:       ticket.Price,
@@ -139,11 +144,20 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		}, nil
 	}
 	defer func() *entities.OrdersResponseResgister {
-
+		log.Infof("id order : ", idOrder)
+		log.Infof("req : ", req)
 		resp, err := u.aes.GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(&entities.TokenRequestSendQrCode{
 			Content:   strconv.FormatInt(idOrder, 10),
 			FromEmail: req.Email,
 			Title:     "Xin gửi bạn mã QR Code vé xem phim tại dạp vui lòng không để lộ ra ngoài",
+			Order: &entities.OrderSendTicketToEmail{
+				ID:          idOrder, // ko co
+				MoviceName:  ticket.Name,
+				ReleaseDate: req.MovieTime,
+				Price:       ticket.Price,
+				Seats:       req.Seats, //ko co
+				CinemaName:  req.CinemaName,
+			},
 		})
 
 		if err != nil || resp.Result.Code != 0 {

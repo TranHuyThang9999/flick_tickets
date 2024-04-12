@@ -4,17 +4,20 @@ import (
 	"bytes"
 	"flick_tickets/common/log"
 	"flick_tickets/configs"
+	"flick_tickets/core/entities"
 	"fmt"
 	"image/png"
 	"io"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/skip2/go-qrcode"
 	"gopkg.in/gomail.v2"
 )
 
 // GeneratesQrCodeAndSendQrWithEmail tạo mã QR từ token và gửi mã QR đến địa chỉ email.
-func GeneratesQrCodeAndSendQrWithEmail(addressEmail, title, token string) error {
+func GeneratesQrCodeAndSendQrWithEmail(addressEmail string, req *entities.OrderSendTicketToEmail, title, token string) error {
 	// Tạo mã QR từ token
 	qrCode, err := qrcode.New(token, qrcode.Medium)
 	if err != nil {
@@ -47,7 +50,7 @@ func GeneratesQrCodeAndSendQrWithEmail(addressEmail, title, token string) error 
 
 	// Sử dụng goroutine để gửi hình ảnh mã QR đến địa chỉ email
 	go func(email string, attachment []byte) {
-		err := SendEmail(email, title, attachment)
+		err := SendEmail(email, title, req, attachment)
 		if err != nil {
 			emailErrCh <- fmt.Errorf("error sending email: %v", err)
 		} else {
@@ -68,15 +71,9 @@ func GeneratesQrCodeAndSendQrWithEmail(addressEmail, title, token string) error 
 	return nil
 }
 
-func SendEmail(to, title string, attachment []byte) error {
+func SendEmail(to, title string, req *entities.OrderSendTicketToEmail, attachment []byte) error {
 	infomations := configs.Get()
-	// Sender data.
-	// username := "tranhuythang9999@gmail.com"
-	// password := "nvkq qdrq ecpa bapz"
 
-	// // // smtp server configuration.
-	// smtpHost := "smtp.gmail.com"
-	// smtpPort := 587
 	username := infomations.FromEmail
 	password := infomations.PasswordEmail
 	smtpHost := infomations.SmtpHost
@@ -90,7 +87,20 @@ func SendEmail(to, title string, attachment []byte) error {
 	message.SetHeader("From", username)
 	message.SetHeader("To", to)
 	message.SetHeader("Subject", title) // Đặt giá trị tiêu đề
-
+	// Read HTML template file
+	renderHtml, err := os.ReadFile("api/public/send/index.html")
+	if err != nil {
+		log.Error(err, "error reading file")
+		return err
+	}
+	// Set HTML body using template and request data
+	body := strings.ReplaceAll(string(renderHtml), "{{id_ve}}", strconv.Itoa(int(req.ID)))
+	body = strings.ReplaceAll(body, "{{ten_phim}}", req.MoviceName)
+	body = strings.ReplaceAll(body, "{{vi_tri_ghe}}", strconv.Itoa(req.Seats))
+	body = strings.ReplaceAll(body, "{{gia_ve}}", strconv.FormatFloat(req.Price, 'f', -1, 64))
+	body = strings.ReplaceAll(body, "{{thoi_gian_chieu}}", ConvertTimestampToDateTime(int64(req.ReleaseDate)))
+	body = strings.ReplaceAll(body, "{{tai_dap}}", req.CinemaName)
+	message.SetBody("text/html", body)
 	// Attach the image to the message.
 	message.Attach("QRCode.png", gomail.SetCopyFunc(func(w io.Writer) error {
 		_, err := w.Write(attachment)

@@ -20,20 +20,22 @@ type TicketreqFindByForm struct {
 	UpdatedAt   int     `form:"updated_at"`
 }
 type TicketReqUpload struct {
-	Name  string  `form:"name"`
-	Price float64 `form:"price"`
-	//MaxTicket    int64                 `form:"max_ticket"`
-	Quantity    int    `form:"quantity"`
-	Description string `form:"description"`
-	Sale        int    `form:"sale"`
-	// Showtime     string                  `form:"showtime"`
-	Status       int                     `form:"status"`
-	ReleaseDate  int                     `form:"release_date"`
-	File         []*multipart.FileHeader `form:"file"`
-	SelectedSeat string                  `form:"selected_seat"`
-	CinemaName   string                  `form:"cinema_name"`
-	//
-	MovieTime string `form:"movie_time"`
+	Name          string                  `form:"name"`
+	Price         float64                 `form:"price"`
+	Quantity      int                     `form:"quantity"`
+	Description   string                  `form:"description"`
+	Sale          int                     `form:"sale"`
+	Status        int                     `form:"status"`
+	ReleaseDate   int                     `form:"release_date"`
+	File          []*multipart.FileHeader `form:"file"`
+	SelectedSeat  string                  `form:"selected_seat"`
+	CinemaName    string                  `form:"cinema_name"`
+	MovieTime     string                  `form:"movie_time"`
+	MovieDuration int                     `form:"movieDuration"`
+	AgeLimit      int                     `form:"age_limit"`
+	Director      string                  `form:"director"`
+	Actor         string                  `form:"actor"`
+	Producer      string                  `form:"producer"`
 }
 type TicketRespUpload struct {
 	Result    Result `json:"result"`
@@ -52,6 +54,7 @@ type Tickets struct {
 }
 
 type TicketRespGetAll struct {
-	Result  Result     `json:"result"`
-	Tickets []*Tickets `json:"tickets"`
+	Result Result `json:"result"`
+	//Tickets []*Tickets `json:"tickets"`
+	ListTickets []*domain.Tickets `json:"list_tickets"`
 }

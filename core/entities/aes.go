@@ -1,9 +1,10 @@
 package entities
 
 type TokenRequestSendQrCode struct {
-	Title     string `form:"title"`
-	Content   string `form:"content"`
-	FromEmail string `form:"fromEmail"`
+	Title     string                  `form:"title"`
+	Content   string                  `form:"content"`
+	FromEmail string                  `form:"fromEmail"`
+	Order     *OrderSendTicketToEmail `form:"order"`
 }
 type TokenRespSendQrCode struct {
 	Token   string `json:"token"`

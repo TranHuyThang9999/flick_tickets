@@ -61,6 +61,7 @@ func NewApiRouter(
 	r.POST("/user/add/cinema", cinema.AddCinema)
 	r.GET("/user/get/cinema", cinema.GetAllCinema)
 	r.DELETE("/user/delete/cinema", cinema.DeleteCinemaByName)
+	r.GET("/user/getByName", cinema.GetAllCinemaByName)
 	// user
 	r.POST("/customer/order/ticket", order.OrdersTicket)
 	r.GET("/customer/look/order/ticket", order.GetOrderById)
@@ -76,6 +77,7 @@ func NewApiRouter(
 	//show time
 	r.POST("/use/add/time", showTime.AddShowTime)
 	r.DELETE("/use/delete/time", showTime.DeleteShowTime)
+	r.GET("/user/getlist/time", showTime.GetShowTimeByTicketId)
 	//r.Use(middlewares.Authenticate())
 
 	//address public

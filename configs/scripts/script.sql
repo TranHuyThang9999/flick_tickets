@@ -104,3 +104,5 @@ CREATE TABLE movie_theaters (
 select DISTINCT name from cities;
 
 SELECT DISTINCT district from cities where name in('Thành phố Hà Nội','Tỉnh Hưng Yên');
+ INSERT INTO "orders" ("ticket_id","showtime","release_date","email","otp","description","status","price","seats","sale","created_at","updated_at","id") VALUES 
+(7133536,'',2,'thuynguyen151387@gmail.com',0,'ves vipo',2,360000,24,2,1712849341,1712894764,7414645) RETURNING "id";

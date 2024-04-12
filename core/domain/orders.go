@@ -9,7 +9,6 @@ import (
 type Orders struct {
 	ID          int64   `json:"id"`
 	TicketID    int64   `json:"ticket_id"`
-	Showtime    string  `json:"showtime"`
 	ReleaseDate int     `json:"release_date"`
 	Email       string  `json:"email"`
 	OTP         int64   `json:"otp"`
@@ -18,6 +17,7 @@ type Orders struct {
 	Price       float64 `json:"price"`
 	Seats       int     `json:"seats"`
 	Sale        int     `json:"sale"`
+	MovieTime   int     `json:"movie_time"`
 	CreatedAt   int     `json:"created_at"`
 	UpdatedAt   int     `json:"updated_at"`
 }

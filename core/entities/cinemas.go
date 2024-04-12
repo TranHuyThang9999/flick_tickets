@@ -20,3 +20,7 @@ type CinemasResGetAll struct {
 type CinemasRespDelete struct {
 	Result Result `json:"result"`
 }
+type CinemasRespGetByName struct {
+	Cinema *domain.Cinemas `json:"cinema"`
+	Result Result          `json:"result"`
+}

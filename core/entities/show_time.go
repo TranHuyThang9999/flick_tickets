@@ -1,5 +1,7 @@
 package entities
 
+import "flick_tickets/core/domain"
+
 type ShowTimeAddReq struct {
 	TicketID   int64  `form:"ticket_id"`
 	CinemaName string `form:"cinema_name"`
@@ -17,4 +19,8 @@ type ShowTimeAddResponse struct {
 type ShowTimeDeleteResponse struct {
 	Result    Result `json:"result"`
 	CreatedAt int    `json:"created_at"`
+}
+type ShowTimeByTicketIdresp struct {
+	Result    Result             `json:"result"`
+	Showtimes []*domain.ShowTime `json:"showtimes"`
 }

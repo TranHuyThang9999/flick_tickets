@@ -56,17 +56,22 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 	}
 
 	ticketAdd := &domain.Tickets{
-		ID:          idTicket,
-		Name:        req.Name,
-		Price:       req.Price,
-		MaxTicket:   int64(req.Quantity),
-		Quantity:    req.Quantity,
-		Description: req.Description,
-		Sale:        req.Sale,
-		ReleaseDate: req.ReleaseDate,
-		Status:      req.Status,
-		CreatedAt:   utils.GenerateTimestamp(),
-		UpdatedAt:   utils.GenerateTimestamp(),
+		ID:            idTicket,
+		Name:          req.Name,
+		Price:         req.Price,
+		MaxTicket:     int64(req.Quantity),
+		Quantity:      req.Quantity,
+		Description:   req.Description,
+		Sale:          req.Sale,
+		ReleaseDate:   req.ReleaseDate,
+		Status:        req.Status,
+		MovieDuration: req.MovieDuration,
+		AgeLimit:      req.AgeLimit,
+		Director:      req.Director,
+		Actor:         req.Actor,
+		Producer:      req.Producer,
+		CreatedAt:     utils.GenerateTimestamp(),
+		UpdatedAt:     utils.GenerateTimestamp(),
 	}
 
 	err = c.ticket.AddTicket(ctx, tx, ticketAdd)
@@ -329,13 +334,75 @@ func (c *UseCaseTicker) GetTicketById(ctx context.Context, id string) (*entities
 
 func (c *UseCaseTicker) GetAllTickets(ctx context.Context, req *domain.TicketreqFindByForm) (*entities.TicketRespGetAll, error) {
 
-	var listTicketResp = make([]*entities.Tickets, 0)
-	var listShowTime []*domain.ShowTime
-	var mapShowTimes = make(map[int64][]*domain.ShowTime)
-	var mapListFile = make(map[int64][]*domain.FileStorages)
-	var listFile []*domain.FileStorages
+	// var listTicketResp = make([]*entities.Tickets, 0)
+	// var listShowTime []*domain.ShowTime
+	// var mapShowTimes = make(map[int64][]*domain.ShowTime)
+	// var mapListFile = make(map[int64][]*domain.FileStorages)
+	// var listFile []*domain.FileStorages
 
-	listTicket, err := c.ticket.GetAllTickets(ctx, req)
+	// listTicket, err := c.ticket.GetAllTickets(ctx, req) //get all
+	// if err != nil {
+	// 	return &entities.TicketRespGetAll{
+	// 		Result: entities.Result{
+	// 			Code:    enums.DB_ERR_CODE,
+	// 			Message: enums.DB_ERR_MESS,
+	// 		},
+	// 	}, err
+	// }
+	// if len(listTicket) == 0 {
+	// 	return &entities.TicketRespGetAll{
+	// 		Result: entities.Result{
+	// 			Code:    enums.DATA_EMPTY_ERR_CODE,
+	// 			Message: enums.DATA_EMPTY_ERR_MESS,
+	// 		},
+	// 	}, nil
+	// }
+	// listShowTime, err = c.showTime.GetAll(ctx)
+	// if err != nil {
+	// 	return &entities.TicketRespGetAll{
+	// 		Result: entities.Result{
+	// 			Code:    enums.DB_ERR_CODE,
+	// 			Message: enums.DB_ERR_MESS,
+	// 		},
+	// 	}, err
+	// }
+	// listFile, err = c.file.GetAll(ctx)
+	// if err != nil {
+	// 	return &entities.TicketRespGetAll{
+	// 		Result: entities.Result{
+	// 			Code:    enums.DB_ERR_CODE,
+	// 			Message: enums.DB_ERR_MESS,
+	// 		},
+	// 	}, err
+	// }
+	// // Xây dựng mapShowTimes từ danh sách showtime
+	// for _, showTime := range listShowTime {
+	// 	ticketID := showTime.TicketID
+	// 	mapShowTimes[ticketID] = append(mapShowTimes[ticketID], showTime)
+	// }
+	// for _, v := range listFile {
+	// 	ticketID := v.TicketID
+	// 	mapListFile[ticketID] = append(mapListFile[ticketID], v)
+	// }
+	// for _, ticket := range listTicket {
+	// 	showTimes := mapShowTimes[ticket.ID]
+	// 	listFile := mapListFile[ticket.ID]
+	// 	listTicketResp = append(listTicketResp, &entities.Tickets{
+	// 		Ticket:    ticket,
+	// 		ShowTimes: showTimes,
+	// 		ListUrl:   listFile,
+	// 	})
+	// }
+
+	// return &entities.TicketRespGetAll{
+	// 	Result: entities.Result{
+	// 		Code:    enums.SUCCESS_CODE,
+	// 		Message: enums.SUCCESS_MESS,
+	// 	},
+	// 	Tickets: listTicketResp,
+	// }, nil
+
+	listTicket, err := c.ticket.GetAllTickets(ctx, req) //get all
 	if err != nil {
 		return &entities.TicketRespGetAll{
 			Result: entities.Result{
@@ -352,48 +419,11 @@ func (c *UseCaseTicker) GetAllTickets(ctx context.Context, req *domain.Ticketreq
 			},
 		}, nil
 	}
-	listShowTime, err = c.showTime.GetAll(ctx)
-	if err != nil {
-		return &entities.TicketRespGetAll{
-			Result: entities.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
-			},
-		}, err
-	}
-	listFile, err = c.file.GetAll(ctx)
-	if err != nil {
-		return &entities.TicketRespGetAll{
-			Result: entities.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
-			},
-		}, err
-	}
-	// Xây dựng mapShowTimes từ danh sách showtime
-	for _, showTime := range listShowTime {
-		ticketID := showTime.TicketID
-		mapShowTimes[ticketID] = append(mapShowTimes[ticketID], showTime)
-	}
-	for _, v := range listFile {
-		ticketID := v.TicketID
-		mapListFile[ticketID] = append(mapListFile[ticketID], v)
-	}
-	for _, ticket := range listTicket {
-		showTimes := mapShowTimes[ticket.ID]
-		listFile := mapListFile[ticket.ID]
-		listTicketResp = append(listTicketResp, &entities.Tickets{
-			Ticket:    ticket,
-			ShowTimes: showTimes,
-			ListUrl:   listFile,
-		})
-	}
-
 	return &entities.TicketRespGetAll{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
-		Tickets: listTicketResp,
+		ListTickets: listTicket,
 	}, nil
 }

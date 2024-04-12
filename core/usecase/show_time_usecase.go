@@ -6,6 +6,7 @@ import (
 	"flick_tickets/common/utils"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
+	"flick_tickets/core/mapper"
 )
 
 type UseCaseShowTime struct {
@@ -86,5 +87,35 @@ func (s *UseCaseShowTime) DeleteShowTime(ctx context.Context, req *entities.Show
 			Code:    enums.DB_ERR_CODE,
 			Message: enums.DB_ERR_MESS,
 		},
+	}, nil
+}
+func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) (*entities.ShowTimeByTicketIdresp, error) {
+
+	number := mapper.ConvertStringToInt(id)
+	resp, err := s.st.GetShowTimeByTicketId(ctx, int64(number))
+
+	if err != nil {
+		return &entities.ShowTimeByTicketIdresp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(resp) == 0 {
+		return &entities.ShowTimeByTicketIdresp{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+			Showtimes: resp,
+		}, nil
+	}
+	return &entities.ShowTimeByTicketIdresp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Showtimes: resp,
 	}, nil
 }

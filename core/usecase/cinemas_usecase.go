@@ -105,3 +105,29 @@ func (c *UseCaseCinemas) DeleteCinemaByName(ctx context.Context, name string) (*
 		},
 	}, nil
 }
+func (c *UseCaseCinemas) GetAllCinemaByName(ctx context.Context, name string) (*entities.CinemasRespGetByName, error) {
+	cinemaByName, err := c.cm.GetAllCinemaByName(ctx, name)
+	if err != nil {
+		return &entities.CinemasRespGetByName{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, err
+	}
+	if cinemaByName == nil {
+		return &entities.CinemasRespGetByName{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.CinemasRespGetByName{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Cinema: cinemaByName,
+	}, nil
+}

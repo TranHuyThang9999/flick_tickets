@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dạp phim DHFlim</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        div {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        li:first-child {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Thông tin vé</h1>
+        <ul>
+            <li>ID vé: {{id_ve}}</li>
+            <li>Tên phim: {{ten_phim}}</li>
+            <li>Vị trí ghế ngồi: {{vi_tri_ghe}}</li>
+            <li>Giá vé: {{gia_ve}}</li>
+            <li>Thời gian chiếu: {{thoi_gian_chieu}}</li>
+            <li>Tại đạp: {{tai_dap}}</li>
+        </ul>
+    </div>
+</body>
+</html>

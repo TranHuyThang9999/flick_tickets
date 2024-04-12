@@ -44,3 +44,9 @@ func (c *ControllerCinemas) DeleteCinemaByName(ctx *gin.Context) {
 	c.baseController.Response(ctx, resp, err)
 
 }
+func (c *ControllerCinemas) GetAllCinemaByName(ctx *gin.Context) {
+	name := ctx.Query("name")
+	resp, err := c.cus.GetAllCinemaByName(ctx, name)
+	c.baseController.Response(ctx, resp, err)
+
+}
