@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './index.css';
 
-function Square({ size = 30, index, onClick, disabled, selected }) {
+function Square({ size = 30, index, onClick, disabled, selected, inSelectedSeatGetFormApi }) {
   const style = {
     width: `${size}px`,
     height: `${size}px`,
@@ -10,11 +10,17 @@ function Square({ size = 30, index, onClick, disabled, selected }) {
     justifyContent: 'center',
     cursor: 'pointer',
     border: '1px solid brown',
-    backgroundColor: disabled ? 'gray' : selected ? 'red' : 'white', // Thay đổi màu đỏ
+    backgroundColor: inSelectedSeatGetFormApi ? 'yellow' : selected ? 'red' : disabled ? 'gray' : 'white',
+  };
+
+  const handleClick = () => {
+    if (!disabled) {
+      onClick(index);
+    }
   };
 
   return (
-    <div style={style} onClick={onClick} disabled={disabled}>
+    <div style={style} onClick={handleClick} disabled={disabled}>
       {index}
     </div>
   );
@@ -45,41 +51,62 @@ export default function SelectedSeat({
   const [selectedSquares, setSelectedSquares] = useState([]);
   const [restored, setRestored] = useState(false);
 
-  const handleSquareClick = (index) => {
-    const updatedDisabledSquares = [...disabledSquares];
-    updatedDisabledSquares[index] = !updatedDisabledSquares[index];
-    setDisabledSquares(updatedDisabledSquares);
+  useEffect(() => {
+    // Lấy danh sách các ô bị vô hiệu hóa từ SelectedSeatGetFormApi
+    const disabledSquaresList = Array.from({ length: numSquares }).map((_, index) =>
+      SelectedSeatGetFormApi.includes(index + 1)
+    );
+    setDisabledSquares(disabledSquaresList);
 
-    const selectedSquareIndex = selectedSquares.indexOf(index);
-    if (selectedSquareIndex !== -1) {
-      const updatedSelectedSquares = [...selectedSquares];
-      updatedSelectedSquares.splice(selectedSquareIndex, 1);
+    // Đánh dấu những ô đã được chọn từ SelectedSeatGetFormApi
+    const selectedSquaresList = Array.from({ length: numSquares })
+      .map((_, index) => index + 1)
+      .filter((index) => SelectedSeatGetFormApi.includes(index));
+    setSelectedSquares(selectedSquaresList);
+  }, [SelectedSeatGetFormApi, numSquares]);
+
+  const handleSquareClick = (index) => {
+    const isDisabled = disabledSquares[index - 1];
+    const isSelected = selectedSquares.includes(index);
+
+    if (isDisabled) {
+      return;
+    }
+
+    if (isSelected) {
+      const updatedSelectedSquares = selectedSquares.filter((squareIndex) => squareIndex !== index);
       setSelectedSquares(updatedSelectedSquares);
     } else {
       setSelectedSquares([...selectedSquares, index]);
     }
   };
+  console.log(selectedSquares
+    .filter((index) => !SelectedSeatGetFormApi.includes(index))
+    .map((index) => `${index}`));
 
   return (
     <div>
       <SquareContainer width={containerWidth} height={containerHeight}>
         {Array.from({ length: numSquares }).map((_, index) => (
-          <Square
-            key={index}
-            index={index + 1}
-            onClick={() => handleSquareClick(index)}
-            disabled={disabledSquares[index]}
-            selected={selectedSquares.includes(index) || SelectedSeatGetFormApi.includes(index + 1)} // Thêm điều kiện để hiển thị màu đỏ
-          />
+        <Square
+        key={index + 1}
+        index={index + 1}
+        onClick={handleSquareClick}
+        disabled={disabledSquares[index]}
+        selected={selectedSquares.includes(index + 1)}
+        inSelectedSeatGetFormApi={SelectedSeatGetFormApi.includes(index + 1)}
+      />
         ))}
       </SquareContainer>
 
       <div>
         <h2>Selected Squares:</h2>
         <ul>
-          {selectedSquares.map((index) => (
-            <li key={index}>Square {index + 1}</li>
-          ))}
+          {selectedSquares
+            .filter((index) => !SelectedSeatGetFormApi.includes(index))
+            .map((index) => (
+              <li key={index}>Square {index}</li>
+            ))}
         </ul>
       </div>
     </div>

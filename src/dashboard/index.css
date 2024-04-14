@@ -18,7 +18,6 @@
 .header-menu-login{
     display: flex;
     justify-items: center;
-    margin-right: 20px;
     margin-top:auto;
     color: brown;
 
@@ -42,4 +41,8 @@
   /* Phần CSS cho Content */
   .content-container {
     margin-top: 64px; /* Đặt margin-top để tránh bị đè bởi Sider và Header */
+  }
+  .col-titile{
+    background-color: aqua;
+    padding: 10px;
   }

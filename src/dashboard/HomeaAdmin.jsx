@@ -10,11 +10,11 @@ import {
   SolutionOutlined
 } from '@ant-design/icons';
 import { Layout, Button, Tabs } from 'antd';
-import AdminUploadTickets from './AdminUploadTickets';
 import QRScanner from '../QRScanner/QRScanner';
 import CinemasAdd from '../common/cinemas/CinemasAdd';
 import CreateAccountStaff from './CreateAccountStaff';
 import GetAllStaff from './GetAllStaff';
+import AdminUploadTickets from './AdminUploadTickets';
 
 const { Header, Sider, Content } = Layout;
 
@@ -70,15 +70,20 @@ const HomeAdmin = () => {
   };
 
 
-
-
   return (
-    <Layout hasSider>
+    <Layout>
       <Sider
+        style={{
+          overflow: 'auto',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+        }}
         trigger={null}
         collapsible
         collapsed={collapsed}
-        width={200}
       >
         <div />
 
@@ -93,42 +98,57 @@ const HomeAdmin = () => {
             <Tabs.TabPane key={item.key} tab={<span>{item.icon}{!collapsed && item.label}</span>} />
           ))}
         </Tabs>
+        <div className="demo-logo-vertical" />
+
       </Sider>
-
       <Layout>
-        <Header
 
-      
-        >
-          <div className="header-menu">
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={handleToggleCollapse}
-              style={{
-                fontSize: '16px',
-                width: 64,
-                height: 64,
-                backgroundColor: 'red'
-              }}
-            />
-            <h2 className="header-menu-login">logout</h2>
-          </div>
-        </Header>
+        <div style={{ marginLeft: collapsed ? 80 : 196 }}>
 
-        <Content
-          style={{
-            margin: '24px 16px',
-            padding: 24,
-            minHeight: 280,
-            overflow:'auto'
-          }}
-        >
-          {/* Hiển thị nội dung tương ứng với tab được chọn */}
-          {items.map((item) => (
-            activeTab === item.key && item.children
-          ))}
-        </Content>
+          <Header
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 1,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+
+          >
+            <div className="header-menu">
+              <Button
+                type="text"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={handleToggleCollapse}
+                style={{
+                  fontSize: '70px',
+                  width: 70,
+                  height: 73,
+                  backgroundColor: 'white',
+                  marginLeft:'-50px',
+                  borderBottomLeftRadius:0,
+                  borderBottomRightRadius:0,
+                }}
+              />
+              <h2 className="header-menu-login">logout</h2>
+            </div>
+          </Header>
+
+          <Content
+            style={{
+              margin: '24px 16px',
+              padding: 24,
+              minHeight: 280,
+              overflow: 'auto'
+            }}
+          >
+            {/* Hiển thị nội dung tương ứng với tab được chọn */}
+            {items.map((item) => (
+              activeTab === item.key && item.children
+            ))}
+          </Content>
+        </div>
       </Layout>
     </Layout>
   );
