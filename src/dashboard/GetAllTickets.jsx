@@ -24,67 +24,6 @@ export default function GetAllTickets() {
 
     console.log(tickets);
 
-    const columns = [
-        {
-            title: 'Id',
-            dataIndex: 'id',
-            key: 'id',
-        },
-        {
-            title: 'Tên vé',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Số vé tối đa',
-            dataIndex: 'max_ticket',
-            key: 'max_ticket',
-        },
-        {
-            title: 'Số lượng',
-            dataIndex: 'quantity',
-            key: 'quantity',
-        },
-        {
-            title: 'Mô tả',
-            dataIndex: 'description',
-            key: 'description',
-        },
-        // {
-        //     title: 'Giảm giá',
-        //     dataIndex: 'sale',
-        //     key: 'sale',
-        // },
-        // {
-        //     title: 'Ngày phát hành',
-        //     dataIndex: 'release_date',
-        //     key: 'release_date',
-        // },
-        // {
-        //     title: 'Trạng thái',
-        //     dataIndex: 'status',
-        //     key: 'status',
-        // },
-        // {
-        //     title: 'Ghế đã chọn',
-        //     dataIndex: 'selected_seat',
-        //     key: 'selected_seat',
-        // },
-        // {
-        //     title: 'Thời lượng phim',
-        //     dataIndex: 'movieDuration',
-        //     key: 'movieDuration',
-        // },
-        {
-            title: 'Chi tiết',
-            key: 'details',
-            render: (_, record) => (
-                <Button type="link" onClick={() => showDrawer(record.id)}>
-                    Xem chi tiết
-                </Button>
-            ),
-        },
-    ];
 
     const showDrawer = (id) => {
         setSelectedTicketId(id);
@@ -98,10 +37,36 @@ export default function GetAllTickets() {
 
     return (
         <>
-            <Table dataSource={tickets} columns={columns} rowKey="id" />
+            <Table dataSource={tickets} rowKey="id">
+                <Table.Column title="Id" dataIndex="id" key="id" />
+                <Table.Column title="Tên vé" dataIndex="name" key="name" />
+                <Table.Column
+                    title="Số vé tối đa"
+                    dataIndex="max_ticket"
+                    key="max_ticket"
+                />
+                <Table.Column
+                    title="Số lượng"
+                    dataIndex="quantity"
+                    key="quantity"
+                />
+                <Table.Column
+                    title="Mô tả"
+                    dataIndex="description"
+                    key="description"
+                />
+                <Table.Column
+                    title="Chi tiết"
+                    key="details"
+                    render={(_, record) => (
+                        <Button type="link" onClick={() => showDrawer(record.id)}>
+                            Xem chi tiết
+                        </Button>
+                    )}
+                />
+            </Table>
 
             <Drawer
-
                 title="Chi tiết vé"
                 width={1300}
                 onClose={onClose}
@@ -110,7 +75,11 @@ export default function GetAllTickets() {
                     paddingBottom: 80
                 }}
             >
-                {selectedTicketId && <GetTicketById id={selectedTicketId} />}
+                {selectedTicketId && (
+                    <div>
+                        <GetTicketById id={selectedTicketId} />
+                    </div>
+                )}
             </Drawer>
         </>
     );

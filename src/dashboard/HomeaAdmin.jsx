@@ -15,6 +15,8 @@ import CinemasAdd from '../common/cinemas/CinemasAdd';
 import CreateAccountStaff from './CreateAccountStaff';
 import GetAllStaff from './GetAllStaff';
 import AdminUploadTickets from './AdminUploadTickets';
+import { icons } from 'antd/es/image/PreviewGroup';
+import GetAllTickets from './GetAllTickets';
 
 const { Header, Sider, Content } = Layout;
 
@@ -22,7 +24,7 @@ const items = [
   {
     key: '1',
     icon: <LineChartOutlined />,
-    label: 'Thống kế',
+    label: 'Thống kế', // login or logout
     children: null,
   },
   {
@@ -54,6 +56,12 @@ const items = [
     icon: <SolutionOutlined />,
     label: ' Quản lý nhân viên ',
     children: <GetAllStaff />
+  },
+  {
+    key:'7',
+    icon: <SolutionOutlined />,
+    label:'Quản lý vé',
+    children:<GetAllTickets/>
   }
 ];
 
@@ -131,7 +139,6 @@ const HomeAdmin = () => {
                   borderBottomRightRadius:0,
                 }}
               />
-              <h2 className="header-menu-login">logout</h2>
             </div>
           </Header>
 

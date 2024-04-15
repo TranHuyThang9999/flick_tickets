@@ -117,11 +117,7 @@ export default function AdminUploadTickets() {
 
     return (
         <div>
-            <Row>
-                <Col style={{padding:'0 160px'}}>
-                    <GetAllTickets />
-                </Col>
-                <Col>
+           
                     <Form {...layout} form={form} className="form-container" onFinish={handleFormSubmit}>
                         <Form.Item
                             label="Nhập tên vé"
@@ -142,7 +138,7 @@ export default function AdminUploadTickets() {
                         </Form.Item>
 
                         <Form.Item
-                            label="Nhập số lượng vé"
+                            label="Nhập số lượng vé trên 1 phòng"
                             className="form-row"
                             name="quantity"
                             rules={[{ required: true, message: 'Vui lòng nhập số lượng vé!' }]}
@@ -284,8 +280,7 @@ export default function AdminUploadTickets() {
                             </Button>
                         </Form.Item>
                     </Form>
-                </Col>
-            </Row>
+           
 
 
         </div>

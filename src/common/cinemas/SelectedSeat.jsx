@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
+import { Col, Row } from 'antd';
 
 function Square({ size = 30, index, onClick, disabled, selected, inSelectedSeatGetFormApi }) {
   const style = {
@@ -49,7 +50,6 @@ export default function SelectedSeat({
   const [containerHeight, setContainerHeight] = useState(heightContainerUseSaveData || 400);
   const [disabledSquares, setDisabledSquares] = useState([]);
   const [selectedSquares, setSelectedSquares] = useState([]);
-  const [restored, setRestored] = useState(false);
 
   useEffect(() => {
     // Lấy danh sách các ô bị vô hiệu hóa từ SelectedSeatGetFormApi
@@ -86,29 +86,35 @@ export default function SelectedSeat({
 
   return (
     <div>
-      <SquareContainer width={containerWidth} height={containerHeight}>
-        {Array.from({ length: numSquares }).map((_, index) => (
-        <Square
-        key={index + 1}
-        index={index + 1}
-        onClick={handleSquareClick}
-        disabled={disabledSquares[index]}
-        selected={selectedSquares.includes(index + 1)}
-        inSelectedSeatGetFormApi={SelectedSeatGetFormApi.includes(index + 1)}
-      />
-        ))}
-      </SquareContainer>
-
-      <div>
-        <h2>Selected Squares:</h2>
-        <ul>
-          {selectedSquares
-            .filter((index) => !SelectedSeatGetFormApi.includes(index))
-            .map((index) => (
-              <li key={index}>Square {index}</li>
+      <Row>
+        <Col style={{ padding: '0 16px' }}>
+          <SquareContainer width={containerWidth} height={containerHeight}>
+            {Array.from({ length: numSquares }).map((_, index) => (
+              <Square
+                key={index + 1}
+                index={index + 1}
+                onClick={handleSquareClick}
+                disabled={disabledSquares[index]}
+                selected={selectedSquares.includes(index + 1)}
+                inSelectedSeatGetFormApi={SelectedSeatGetFormApi.includes(index + 1)}
+              />
             ))}
-        </ul>
-      </div>
+          </SquareContainer>
+        </Col>
+        <Col style={{ display: 'flex', marginTop: '-18px' }}>
+          <div>
+            <h2>Selected Squares:</h2>
+            <ul>
+              {selectedSquares
+                .filter((index) => !SelectedSeatGetFormApi.includes(index))
+                .map((index) => (
+                  <li key={index}>Square {index}</li>
+                ))}
+            </ul>
+          </div>
+        </Col>
+      </Row>
+
     </div>
   );
 }

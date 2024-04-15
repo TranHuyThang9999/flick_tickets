@@ -1,10 +1,13 @@
-import { Col, Row, Table } from 'antd';
+import { Space, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import DetailedShowSchedule from '../common/Showtimes/DetailedShowSchedule';
 import GetListFileByTicketId from './GetListFileByTicketId';
 
+
 export default function GetTicketById({ id }) {
+
     const [ticket, setTicket] = useState([]);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -20,13 +23,14 @@ export default function GetTicketById({ id }) {
         fetchData();
     }, [id]);
 
-   
+
     if (!ticket.id) {
         return <div>Đang tải...</div>;
-      }
-
+    }
+    console.log("tikcet : ",ticket.selected_seat);
     return (
         <div>
+
             {ticket && (
                 <Table scroll={{ x: 190 }} dataSource={[ticket]} pagination={false}>
                     <Table.Column title="Tên" dataIndex="name" key="name" />
@@ -47,9 +51,19 @@ export default function GetTicketById({ id }) {
               <Table.Column title="Ngày cập nhật" dataIndex="updated_at" key="updated_at" render={formatTimestamp} /> */}
                 </Table>
 
-            )}
-            <DetailedShowSchedule id={ticket.id} />
-            <GetListFileByTicketId id={ticket.id}/>
+            )
+            }
+            <DetailedShowSchedule id={ticket.id} numSquares={ticket.quantity} selectedSeatGetFormApi={ticket.selected_seat} />
+            <GetListFileByTicketId id={ticket.id} />
+            <Space direction='vertical' style={{ marginLeft: '20px' }}>
+
+                <Space>
+                    {/* <UpdateSizeRoom ticket_id={ticket.id} /> */}
+                </Space>
+
+                <p>Mô tả phòng</p>
+            </Space>
+
         </div>
     );
 }
