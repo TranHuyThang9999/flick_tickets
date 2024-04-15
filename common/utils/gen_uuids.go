@@ -40,7 +40,7 @@ func GeneratePassword() string {
 	rand.Shuffle(len(shuff), func(i, j int) {
 		shuff[i], shuff[j] = shuff[j], shuff[i]
 	})
-	return (string(shuff))
+	return string(shuff)
 }
 func GenerateOtp() int64 {
 	var length = 6

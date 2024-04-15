@@ -56,12 +56,14 @@ func NewApiRouter(
 	r.GET("customers/ticket", ticket.GetAllTickets)
 	r.GET("/user/load", file_lc.GetListFileById)
 	r.POST("/user/verify/", aes.VerifyTickets)
+	// r.PUT("/user/update/size/room", ticket.UpdateSizeRoom)
 	//	r.GET("/ws", managerClient.ServerWs) //auto pool
 	//cinema
 	r.POST("/user/add/cinema", cinema.AddCinema)
 	r.GET("/user/get/cinema", cinema.GetAllCinema)
 	r.DELETE("/user/delete/cinema", cinema.DeleteCinemaByName)
 	r.GET("/user/getByName", cinema.GetAllCinemaByName)
+	r.PUT("/user/update/width/height", cinema.UpdateColumnWidthHeightContainer)
 	// user
 	r.POST("/customer/order/ticket", order.OrdersTicket)
 	r.GET("/customer/look/order/ticket", order.GetOrderById)

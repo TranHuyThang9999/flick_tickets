@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flick_tickets/common/utils"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -20,6 +22,10 @@ func main() {
 	// r.Use(cors.AllowAll())
 	// r.GET("/load", LoadFileHtml)
 	// r.Run(":8080")
+	for i := 0; i < 100; i++ {
+		fmt.Println(utils.GeneratePassword())
+
+	}
 
 }
 

@@ -13,6 +13,12 @@ type CollectionCinemas struct {
 	collection *gorm.DB
 }
 
+func NewCollectionCinemas(cf *configs.Configs, cm *adapter.PostGresql) domain.RepositoryCinemas {
+	return &CollectionCinemas{
+		collection: cm.CreateCollection(),
+	}
+}
+
 // AddCinema implements domain.RepositoryCinemas.
 func (c *CollectionCinemas) AddCinema(ctx context.Context, req *domain.Cinemas) error {
 	result := c.collection.Create(req)
@@ -36,8 +42,7 @@ func (c *CollectionCinemas) DeleteCinemaByName(ctx context.Context, name string)
 	result := c.collection.Where("cinema_name = ?", name).Delete(&domain.Cinemas{})
 	return result.Error
 }
-func NewCollectionCinemas(cf *configs.Configs, cm *adapter.PostGresql) domain.RepositoryCinemas {
-	return &CollectionCinemas{
-		collection: cm.CreateCollection(),
-	}
+func (c *CollectionCinemas) UpdateColumnWidthHeightContainer(ctx context.Context, req *domain.CinemaReqUpdateSizeRoom) error {
+	result := c.collection.Model(&domain.Cinemas{}).Where("cinema_name = ?", req.CinemaName).Updates(&req)
+	return result.Error
 }

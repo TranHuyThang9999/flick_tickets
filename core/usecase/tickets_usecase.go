@@ -87,7 +87,7 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 
 	//check show time
 	listShowTimeInt, err := mapper.ParseToIntSlice(req.MovieTime)
-	log.Infof("time : ", listShowTimeInt)
+	// log.Infof("time : ", listShowTimeInt)
 	if err != nil {
 		tx.Rollback()
 		return &entities.TicketRespUpload{
@@ -427,3 +427,24 @@ func (c *UseCaseTicker) GetAllTickets(ctx context.Context, req *domain.Ticketreq
 		ListTickets: listTicket,
 	}, nil
 }
+
+// func (c *UseCaseTicker) UpdateSizeRoom(ctx context.Context, req *entities.TicketReqUpdateSizeRoom) (*entities.TicketRespUpdateSizeRoom, error) {
+
+// 	log.Infof("req update : ", req)
+
+// 	err := c.ticket.UpdateSizeRoom(ctx, req.TicketId, req.WidthContainer, req.HeightContainer)
+// 	if err != nil {
+// 		return &entities.TicketRespUpdateSizeRoom{
+// 			Result: entities.Result{
+// 				Code:    enums.DB_ERR_CODE,
+// 				Message: enums.DB_ERR_MESS,
+// 			},
+// 		}, err
+// 	}
+// 	return &entities.TicketRespUpdateSizeRoom{
+// 		Result: entities.Result{
+// 			Code:    enums.SUCCESS_CODE,
+// 			Message: enums.SUCCESS_MESS,
+// 		},
+// 	}, nil
+// }

@@ -50,3 +50,14 @@ func (c *ControllerCinemas) GetAllCinemaByName(ctx *gin.Context) {
 	c.baseController.Response(ctx, resp, err)
 
 }
+func (c *ControllerCinemas) UpdateColumnWidthHeightContainer(ctx *gin.Context) {
+
+	var req entities.CinemaReqUpdateSizeRoom
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := c.cus.UpdateColumnWidthHeightContainer(ctx, &req)
+	c.baseController.Response(ctx, resp, err)
+
+}

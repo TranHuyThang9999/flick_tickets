@@ -90,38 +90,135 @@ func (us *ServiceAddress) GetAllCity(ctx context.Context) (*port.CitiesResp, err
 }
 func (us *ServiceAddress) GetAllDistrictsByCityName(ctx context.Context, cityName string) (*port.DistrictsResp, error) {
 
-	resp, err := us.addressRepo.GetAllDistrictsByCityName(ctx, cityName)
+	var district []*port.Districts
+
+	exists, err := us.menory.KeyExists(ctx, cityName)
 	if err != nil {
 		return &port.DistrictsResp{
 			Result: port.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
+				Code:    enums.CACHE_ERR_CODE,
+				Message: enums.CACHE_ERR_MESS,
 			},
-		}, err
+		}, nil
+	}
+	if !exists {
+
+		resp, err := us.addressRepo.GetAllDistrictsByCityName(ctx, cityName)
+		if err != nil {
+			return &port.DistrictsResp{
+				Result: port.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, err
+		}
+
+		err = us.menory.SetObjectById(ctx, cityName, resp)
+		if err != nil {
+			return &port.DistrictsResp{
+				Result: port.Result{
+					Code:    enums.CACHE_ERR_CODE,
+					Message: enums.CACHE_ERR_MESS,
+				},
+			}, nil
+		}
+		return &port.DistrictsResp{
+			Result: port.Result{
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
+			},
+			Districts: resp,
+		}, nil
+	}
+	dataString, err := us.menory.GetObjectById(ctx, cityName)
+	if err != nil {
+		return &port.DistrictsResp{
+			Result: port.Result{
+				Code:    enums.CACHE_ERR_CODE,
+				Message: enums.CACHE_ERR_MESS,
+			},
+		}, nil
+	}
+	err = json.Unmarshal([]byte(dataString), &district)
+	if err != nil {
+		return &port.DistrictsResp{
+			Result: port.Result{
+				Code:    enums.ERROR_CONVERT_JSON_CODE,
+				Message: enums.ERROR_CONVERT_JSON_MESS,
+			},
+		}, nil
 	}
 	return &port.DistrictsResp{
 		Result: port.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
-		Districts: resp,
+		Districts: district,
 	}, nil
 }
 func (us *ServiceAddress) GetAllCommunesByDistrictName(ctx context.Context, districname string) (*port.CommunesResp, error) {
-	resp, err := us.addressRepo.GetAllCommunesByDistrictName(ctx, districname)
+
+	var communes []*port.Communes
+
+	exists, err := us.menory.KeyExists(ctx, districname)
 	if err != nil {
 		return &port.CommunesResp{
 			Result: port.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
+				Code:    enums.CACHE_ERR_CODE,
+				Message: enums.CACHE_ERR_MESS,
 			},
-		}, err
+		}, nil
+	}
+	if !exists {
+		resp, err := us.addressRepo.GetAllCommunesByDistrictName(ctx, districname)
+		if err != nil {
+			return &port.CommunesResp{
+				Result: port.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, err
+		}
+		err = us.menory.SetObjectById(ctx, districname, resp)
+		if err != nil {
+			return &port.CommunesResp{
+				Result: port.Result{
+					Code:    enums.CACHE_ERR_CODE,
+					Message: enums.CACHE_ERR_MESS,
+				},
+			}, nil
+		}
+		return &port.CommunesResp{
+			Result: port.Result{
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
+			},
+			Communes: resp,
+		}, nil
+	}
+	dataString, err := us.menory.GetObjectById(ctx, districname)
+	if err != nil {
+		return &port.CommunesResp{
+			Result: port.Result{
+				Code:    enums.CACHE_ERR_CODE,
+				Message: enums.CACHE_ERR_MESS,
+			},
+		}, nil
+	}
+	err = json.Unmarshal([]byte(dataString), &communes)
+	if err != nil {
+		return &port.CommunesResp{
+			Result: port.Result{
+				Code:    enums.ERROR_CONVERT_JSON_CODE,
+				Message: enums.ERROR_CONVERT_JSON_MESS,
+			},
+		}, nil
 	}
 	return &port.CommunesResp{
 		Result: port.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
-		Communes: resp,
+		Communes: communes,
 	}, nil
 }

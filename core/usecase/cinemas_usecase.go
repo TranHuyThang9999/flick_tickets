@@ -131,3 +131,27 @@ func (c *UseCaseCinemas) GetAllCinemaByName(ctx context.Context, name string) (*
 		Cinema: cinemaByName,
 	}, nil
 }
+func (c *UseCaseCinemas) UpdateColumnWidthHeightContainer(
+	ctx context.Context,
+	req *entities.CinemaReqUpdateSizeRoom,
+) (*entities.CinemaRespUpdateSizeRoom, error) {
+	err := c.cm.UpdateColumnWidthHeightContainer(ctx, &domain.CinemaReqUpdateSizeRoom{
+		CinemaName:      req.CinemaName,
+		WidthContainer:  req.WidthContainer,
+		HeightContainer: req.HeightContainer,
+	})
+	if err != nil {
+		return &entities.CinemaRespUpdateSizeRoom{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, err
+	}
+	return &entities.CinemaRespUpdateSizeRoom{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
+}
