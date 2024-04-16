@@ -7,11 +7,11 @@ import SelectedSeat from './common/cinemas/SelectedSeat';
 import AppSquare from "./common/test/test";
 import DisplaySelectedSeat from "./dashboard/DisplaySelectedSeat";
 import GetAllTickets from "./dashboard/GetAllTickets";
-import GetTicketById from "./dashboard/GetTicketById";
 import DetailedShowSchedule from "./common/Showtimes/DetailedShowSchedule";
 import GetListFileByTicketId from "./dashboard/GetListFileByTicketId";
 import PageForUser from "./Home/Page/PageForUser";
-import GetListTicket from "./Home/GetListTickets/GetListTicket";
+import GetTicketById from "./Home/Tickets/GetTicketById";
+import ListFileByTicketId from "./Home/Tickets/ListFileByTicketId";
 
 export default function App() {
   return (
@@ -28,7 +28,9 @@ export default function App() {
       {/* <DetailedShowSchedule id={7133536}/> */}
       {/* <GetListFileByTicketId id={7133536}/> */}
       {/* <PageForUser/> */}
-      <GetListTicket/>
+      {/* <GetListTicket/> */}
+      {/* <GetTicketById id={7133536}/> */}
+      <ListFileByTicketId id={7133536}/>
     </div>
   );
 }
