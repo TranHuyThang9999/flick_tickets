@@ -27,16 +27,19 @@ func (u *CollectionTickets) AddTicket(ctx context.Context, tx *gorm.DB, req *dom
 func (u *CollectionTickets) GetAllTickets(ctx context.Context, req *domain.TicketreqFindByForm) ([]*domain.Tickets, error) {
 	var tickets []*domain.Tickets
 	result := u.collection.Where(&domain.Tickets{
-		ID:          req.ID,
-		Name:        req.Name,
-		Price:       req.Price,
-		Quantity:    req.Quantity,
-		Description: req.Description,
-		Sale:        req.Sale,
-		ReleaseDate: req.ReleaseDate,
-		Status:      req.Status,
-		CreatedAt:   req.CreatedAt,
-		UpdatedAt:   req.UpdatedAt,
+		ID:            req.ID,
+		Name:          req.Name,
+		Description:   req.Description,
+		Sale:          req.Sale,
+		ReleaseDate:   req.ReleaseDate,
+		Status:        req.Status,
+		MovieDuration: req.MovieDuration,
+		AgeLimit:      req.AgeLimit,
+		Director:      req.Director,
+		Actor:         req.Actor,
+		Producer:      req.Producer,
+		CreatedAt:     req.CreatedAt,
+		UpdatedAt:     req.UpdatedAt,
 	}).Find(&tickets)
 	return tickets, result.Error
 }
@@ -68,10 +71,11 @@ func (u *CollectionTickets) GetTicketById(ctx context.Context, id int64) (*domai
 	}
 	return ticket, nil
 }
-func (u *CollectionTickets) UpdateTicketSelectedSeat(ctx context.Context, tx *gorm.DB, id int64, selected_seat string) error {
 
-	if err := tx.Model(&domain.Tickets{}).Where("id = ?", id).UpdateColumn("selected_seat", selected_seat).Error; err != nil {
-		return err
-	}
-	return nil
-}
+// func (u *CollectionTickets) UpdateTicketSelectedSeat(ctx context.Context, tx *gorm.DB, id int64, selected_seat string) error {
+
+// 	if err := tx.Model(&domain.Tickets{}).Where("id = ?", id).UpdateColumn("selected_seat", selected_seat).Error; err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }

@@ -1,9 +1,13 @@
 package entities
 
+import "flick_tickets/core/domain"
+
 type ShowTimeAddReq struct {
-	TicketID   int64  `form:"ticket_id"`
-	CinemaName string `form:"cinema_name"`
-	MovieTime  int    `form:"movie_time"`
+	TicketID     int64  `form:"ticket_id"`
+	CinemaName   string `form:"cinema_name"`
+	MovieTime    int    `form:"movie_time"`
+	SelectedSeat string `form:"selected_seat"`
+	Quantity     int    `form:"quantity"`
 }
 type ShowTimeDelete struct {
 	ID        int64 `form:"id"`
@@ -35,4 +39,11 @@ type ShowTime struct {
 	AddressDetails  string `json:"address_details"`
 	WidthContainer  int    `json:"width_container"`
 	HeightContainer int    `json:"height_container"`
+	SelectedSeat    string `json:"selected_seat"`
+	Quantity        int    `json:"quantity"`
+	OriginalNumber  int    `json:"original_number"`
+}
+type ShowTimeDetail struct {
+	Result   Result           `json:"result"`
+	ShowTime *domain.ShowTime `json:"show_time,omitempty"`
 }

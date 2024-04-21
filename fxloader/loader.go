@@ -40,6 +40,7 @@ func loadUseCase() []fx.Option {
 		fx.Provide(usecase.NewUseCaseShowTime),
 		fx.Provide(usecase.NewUseCaseCinemas),
 		fx.Provide(services.NewServiceAddress),
+		fx.Provide(usecase.NewUseCasePayment),
 	}
 }
 
@@ -64,6 +65,7 @@ func loadEngine() []fx.Option {
 		fx.Provide(controllers.NewControllerShowTIme),
 		fx.Provide(controllers.NewControllerCinamas),
 		fx.Provide(controllers.NewControllerAddress),
+		fx.Provide(controllers.NewControllerParment),
 	}
 }
 func loadAdapter() []fx.Option {

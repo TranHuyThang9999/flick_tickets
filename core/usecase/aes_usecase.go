@@ -38,12 +38,12 @@ func (c *UseCaseAes) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entiti
 	}
 	log.Info(ciphertext)
 	err = utils.GeneratesQrCodeAndSendQrWithEmail(req.FromEmail, &entities.OrderSendTicketToEmail{
-		ID:          req.Order.ID,
-		MoviceName:  req.Order.CinemaName,
-		ReleaseDate: req.Order.ReleaseDate,
-		Price:       req.Order.Price,
-		Seats:       req.Order.Seats,
-		CinemaName:  req.Order.CinemaName,
+		ID:         req.Order.ID,
+		MoviceName: req.Order.MoviceName,
+		Price:      req.Order.Price,
+		Seats:      req.Order.Seats,
+		CinemaName: req.Order.CinemaName,
+		MovieTime:  req.Order.MovieTime,
 	}, req.Title, ciphertext)
 	if err != nil {
 		return &entities.TokenRespSendQrCode{

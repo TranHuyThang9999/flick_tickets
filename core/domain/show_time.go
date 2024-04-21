@@ -7,12 +7,15 @@ import (
 )
 
 type ShowTime struct {
-	ID         int64  `json:"id"`
-	TicketID   int64  `json:"ticket_id"`
-	CinemaName string `json:"cinema_name"`
-	MovieTime  int    `json:"movie_time"` //string
-	CreatedAt  int    `json:"created_at"`
-	UpdatedAt  int    `json:"updated_at"`
+	ID             int64  `json:"id"`
+	TicketID       int64  `json:"ticket_id"`
+	CinemaName     string `json:"cinema_name"`
+	MovieTime      int    `json:"movie_time"` //string
+	SelectedSeat   string `json:"selected_seat"`
+	Quantity       int    `json:"quantity"`
+	OriginalNumber int    `json:"original_number"`
+	CreatedAt      int    `json:"created_at"`
+	UpdatedAt      int    `json:"updated_at"`
 }
 type ShowTimeDelete struct {
 	ID        int64 `json:"id"`
@@ -33,4 +36,6 @@ type RepositoryShowTime interface {
 	FindDuplicateShowTimes(ctx context.Context, movieTimes []int, cinemaName []string) ([]*ShowTime, error)
 	GetShowTimeByTicketId(ctx context.Context, ticketId int64) ([]*ShowTime, error)
 	GetAll(ctx context.Context) ([]*ShowTime, error)
+	GetInformationShowTimeForTicketByTicketId(ctx context.Context, id int64) (*ShowTime, error)
+	UpdateQuantitySeat(ctx context.Context, tx *gorm.DB, showTimeId int64, quantity int, selected_seat string) error
 }

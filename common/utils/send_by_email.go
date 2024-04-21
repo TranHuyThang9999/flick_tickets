@@ -98,7 +98,7 @@ func SendEmail(to, title string, req *entities.OrderSendTicketToEmail, attachmen
 	body = strings.ReplaceAll(body, "{{ten_phim}}", req.MoviceName)
 	body = strings.ReplaceAll(body, "{{vi_tri_ghe}}", strconv.Itoa(req.Seats))
 	body = strings.ReplaceAll(body, "{{gia_ve}}", strconv.FormatFloat(req.Price, 'f', -1, 64))
-	body = strings.ReplaceAll(body, "{{thoi_gian_chieu}}", ConvertTimestampToDateTime(int64(req.ReleaseDate)))
+	body = strings.ReplaceAll(body, "{{thoi_gian_chieu}}", ConvertTimestampToDateTime(int64(req.MovieTime)))
 	body = strings.ReplaceAll(body, "{{tai_dap}}", req.CinemaName)
 	message.SetBody("text/html", body)
 	// Attach the image to the message.

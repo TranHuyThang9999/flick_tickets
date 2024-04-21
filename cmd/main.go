@@ -4,8 +4,10 @@ import (
 	"context"
 	"flag"
 	"flick_tickets/api/routers"
+	"flick_tickets/common/enums"
 	"flick_tickets/common/log"
 	"flick_tickets/configs"
+	"flick_tickets/core/usecase"
 	"flick_tickets/fxloader"
 	"net/http"
 	"os"
@@ -20,6 +22,10 @@ func init() {
 	flag.StringVar(&pathConfig, "configs", "configs/configs.json", "path config")
 	flag.Parse()
 	configs.LoadConfig(pathConfig)
+	err := usecase.InitKeyPayPos(enums.ClientIDPayOs, enums.ApiKeyPayOs, enums.ChecksumKeyPayOs)
+	if err != nil {
+		log.Error(err, "error")
+	}
 }
 
 func main() {

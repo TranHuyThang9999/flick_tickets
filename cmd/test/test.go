@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flick_tickets/common/utils"
 	"fmt"
 	"io"
 	"log"
@@ -22,11 +21,16 @@ func main() {
 	// r.Use(cors.AllowAll())
 	// r.GET("/load", LoadFileHtml)
 	// r.Run(":8080")
-	for i := 0; i < 100; i++ {
-		fmt.Println(utils.GeneratePassword())
+	// for i := 0; i < 100; i++ {
+	// 	fmt.Println(utils.GeneratePassword())
 
-	}
+	// }
+	timeNow := time.Now()
 
+	// Cộng thêm 5 phút vào thời điểm hiện tại
+	fiveMinutesLater := timeNow.Add(time.Minute * 5)
+
+	fmt.Println(fiveMinutesLater.Unix())
 }
 
 func LoadFileHtml(c *gin.Context) {

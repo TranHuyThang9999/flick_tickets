@@ -47,12 +47,14 @@ func (s *UseCaseShowTime) AddShowTime(ctx context.Context, req *entities.ShowTim
 		}, nil
 	}
 	err = s.st.AddShowTime(ctx, &domain.ShowTime{
-		ID:         utils.GenerateUniqueKey(),
-		TicketID:   req.TicketID,
-		CinemaName: req.CinemaName,
-		MovieTime:  req.MovieTime,
-		CreatedAt:  utils.GenerateTimestamp(),
-		UpdatedAt:  utils.GenerateTimestamp(),
+		ID:             utils.GenerateUniqueKey(),
+		TicketID:       req.TicketID,
+		CinemaName:     req.CinemaName,
+		MovieTime:      req.MovieTime,
+		SelectedSeat:   req.SelectedSeat,
+		OriginalNumber: req.Quantity,
+		CreatedAt:      utils.GenerateTimestamp(),
+		UpdatedAt:      utils.GenerateTimestamp(),
 	})
 
 	if err != nil {
@@ -161,6 +163,9 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			AddressDetails:  cinema.AddressDetails,
 			WidthContainer:  cinema.WidthContainer,
 			HeightContainer: cinema.HeightContainer,
+			SelectedSeat:    listShowTime[i].SelectedSeat,
+			Quantity:        listShowTime[i].Quantity,
+			OriginalNumber:  listShowTime[i].OriginalNumber,
 		})
 	}
 
@@ -170,5 +175,26 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			Message: enums.SUCCESS_MESS,
 		},
 		Showtimes: listRespDetail,
+	}, nil
+}
+func (s *UseCaseShowTime) DetailShowTime(ctx context.Context, id string) (*entities.ShowTimeDetail, error) {
+
+	showTimeId := mapper.ConvertStringToInt(id)
+
+	showTime, err := s.st.GetInformationShowTimeForTicketByTicketId(ctx, int64(showTimeId))
+	if err != nil {
+		return &entities.ShowTimeDetail{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.ShowTimeDetail{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		ShowTime: showTime,
 	}, nil
 }

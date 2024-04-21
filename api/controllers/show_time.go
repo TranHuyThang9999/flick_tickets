@@ -50,3 +50,8 @@ func (c *ControllerShowTime) GetShowTimeByTicketId(ctx *gin.Context) {
 	c.baseController.Response(ctx, resp, err)
 
 }
+func (c *ControllerShowTime) DetailShowTime(ctx *gin.Context) {
+	id := ctx.Query("id")
+	resp, err := c.st.DetailShowTime(ctx, id)
+	c.baseController.Response(ctx, resp, err)
+}

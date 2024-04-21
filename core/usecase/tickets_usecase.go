@@ -43,8 +43,7 @@ func NewUsecaseTicker(
 func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUpload) (*entities.TicketRespUpload, error) {
 
 	var idTicket int64 = utils.GenerateUniqueKey()
-	log.Infof("req : ", req.CinemaName)
-	log.Infof("req : ", req.MovieTime)
+
 	tx, err := c.trans.BeginTransaction(ctx)
 	if err != nil {
 		return &entities.TicketRespUpload{
@@ -59,8 +58,6 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 		ID:            idTicket,
 		Name:          req.Name,
 		Price:         req.Price,
-		MaxTicket:     int64(req.Quantity),
-		Quantity:      req.Quantity,
 		Description:   req.Description,
 		Sale:          req.Sale,
 		ReleaseDate:   req.ReleaseDate,
@@ -84,7 +81,6 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 			},
 		}, nil
 	}
-
 	//check show time
 	listShowTimeInt, err := mapper.ParseToIntSlice(req.MovieTime)
 	// log.Infof("time : ", listShowTimeInt)
@@ -111,15 +107,6 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 
 	listCinemasName := mapper.ConvertListToStringSlice(req.CinemaName)
 	log.Infof("list time : ", listCinemasName)
-	// if err != nil {
-	// 	tx.Rollback()
-	// 	return &entities.TicketRespUpload{
-	// 		Result: entities.Result{
-	// 			Code:    enums.CONVERT_STRING_TO_ARRAY_CODE,
-	// 			Message: enums.CONVERT_STRING_TO_ARRAY_MESS,
-	// 		},
-	// 	}, nil
-	// }
 
 	// listCinema, err := c.cinema.GetAllCinemaByName(ctx, req.Name)
 	// if err != nil {
@@ -168,12 +155,15 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 	for i := 0; i < len(listCinemasName); i++ {
 		for j := 0; j < len(listShowTimeInt); j++ {
 			reqListShowTime = append(reqListShowTime, &domain.ShowTime{
-				ID:         utils.GenerateUniqueKey(),
-				TicketID:   idTicket,
-				CinemaName: listCinemasName[i],
-				MovieTime:  listShowTimeInt[j],
-				CreatedAt:  utils.GenerateTimestamp(),
-				UpdatedAt:  utils.GenerateTimestamp(),
+				ID:             utils.GenerateUniqueKey(),
+				TicketID:       idTicket,
+				SelectedSeat:   "",
+				Quantity:       req.Quantity,
+				OriginalNumber: req.Quantity,
+				CinemaName:     listCinemasName[i],
+				MovieTime:      listShowTimeInt[j],
+				CreatedAt:      utils.GenerateTimestamp(),
+				UpdatedAt:      utils.GenerateTimestamp(),
 			})
 		}
 	}

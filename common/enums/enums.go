@@ -77,9 +77,39 @@ const (
 
 	ACCOUNT_STAFF_LOCK_CODE = 32
 	ACCOUNT_STAFF_LOCK_MESS = "account locked"
+
+	ORDER_REGISTER_TICKET_CODE = 34
+	ORDER_REGISTER_TICKET_MESS = "Hết vé"
 )
 const (
 	ROLE_ADMIN     = 1
 	ROLE_STAFF     = 3
 	ACCOUNT_ACTIVE = 5
+)
+const (
+	NoSignatureErrorMessage         = "No signature."
+	NoDataErrorMessage              = "No data."
+	InvalidSignatureErrorMessage    = "Invalid signature."
+	DataNotIntegrityErrorMessage    = "The data is unreliable because the signature of the response does not match the signature of the data."
+	WebhookURLInvalidErrorMessage   = "Webhook URL invalid."
+	UnauthorizedErrorMessage        = "Unauthorized."
+	InternalServerErrorErrorMessage = "Internal Server Error."
+	InvalidParameterErrorMessage    = "Invalid Parameter."
+	OrderCodeOuOfRange              = "orderCode is out of range."
+)
+
+const (
+	InternalServerErrorErrorCode = "20"
+	UnauthorizedErrorCode        = "401"
+	InvalidParameterErrorCode    = "21"
+	NoSignatureErrorCode         = "22"
+	NoDataErrorCode              = "23"
+	InvalidSignatureErrorCode    = "24"
+	DataNotIntegrityErrorCode    = "25"
+	WebhookURLInvalidErrorCode   = "26"
+)
+const (
+	ClientIDPayOs    = "c84c857d-160c-456a-91f2-384526d7a360"
+	ApiKeyPayOs      = "f74461b1-d7d3-4fca-b918-fcb39524ce8c"
+	ChecksumKeyPayOs = "a861fb19b44c840efe2632b492140200e6a2e496640e1312fb5b63d5bf54a47c"
 )

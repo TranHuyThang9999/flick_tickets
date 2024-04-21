@@ -41,7 +41,7 @@ func (b *baseController) validateRequest(obj interface{}) error {
 }
 func (b *baseController) Response(ctx *gin.Context, resp interface{}, err error) {
 	if err != nil {
-		ctx.JSON(200, err)
+		ctx.JSON(505, err)
 		return
 	}
 	ctx.JSON(200, resp)
