@@ -181,7 +181,7 @@ export default function DetailedShowSchedule({ id }) {
             />
           </div>
         )}
-        <Button type="primary" onClick={handleCreatePayment} loading={loadingPayment}> {/* Sử dụng loading từ antd cho nút thanh toán */}
+        <Button type="primary" onClick={handleCreatePayment} disabled={selectPopChid.length === 0 || loadingPayment}> {/* Sử dụng điều kiện để vô hiệu hóa nút khi selectPopChid rỗng hoặc loadingPayment đang true */}
           {loadingPayment ? 'Đang xử lý...' : 'Mua'}
         </Button>
       </Drawer>
