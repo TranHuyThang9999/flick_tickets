@@ -1,7 +1,6 @@
-import { Button, Drawer, Modal, Table } from 'antd';
+import { Button, Drawer, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { showError, showWarning } from '../log/log';
-import CinemaGetAllByRoomName from '../cinemas/CinemaGetAllByRoomName';
 import SelectedSeat from '../cinemas/SelectedSeat';
 
 export default function DetailedShowSchedule({ id, selectedSeatGetFormApi, numSquares }) {

@@ -55,6 +55,7 @@ export default function GetTicketById({ id }) {
             }
             <DetailedShowSchedule id={ticket.id} numSquares={ticket.quantity} selectedSeatGetFormApi={ticket.selected_seat} />
             <GetListFileByTicketId id={ticket.id} />
+            
             <Space direction='vertical' style={{ marginLeft: '20px' }}>
 
                 <Space>

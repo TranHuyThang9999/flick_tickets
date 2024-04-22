@@ -30,3 +30,6 @@
   .selected-seats-list li {
     margin-bottom: 5px;
   }
+  .form-selected-seat{
+    background: beige;
+  }

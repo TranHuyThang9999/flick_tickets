@@ -7,11 +7,14 @@ import SelectedSeat from './common/cinemas/SelectedSeat';
 import AppSquare from "./common/test/test";
 import DisplaySelectedSeat from "./dashboard/DisplaySelectedSeat";
 import GetAllTickets from "./dashboard/GetAllTickets";
-import DetailedShowSchedule from "./common/Showtimes/DetailedShowSchedule";
 import GetListFileByTicketId from "./dashboard/GetListFileByTicketId";
 import PageForUser from "./Home/Page/PageForUser";
-import GetTicketById from "./Home/Tickets/GetTicketById";
+import GetTicketById from "./Home/Tickets/DetailTicketById";
 import ListFileByTicketId from "./Home/Tickets/ListFileByTicketId";
+import GetListTicket from "./Home/Tickets/GetListTicket";
+import ShowAllTicket from "./Home/Tickets/ShowAllTicket";
+import AdminUploadTickets from "./dashboard/AdminUploadTickets";
+import TestDetailedShowSchedule from "./common/test/tesst1";
 
 export default function App() {
   return (
@@ -25,12 +28,14 @@ export default function App() {
       {/* <DisplaySelectedSeat/> */}
       {/* <GetAllTickets/> */}
       {/* <GetTicketById id={7133536}/> */}
-      {/* <DetailedShowSchedule id={7133536}/> */}
       {/* <GetListFileByTicketId id={7133536}/> */}
       {/* <PageForUser/> */}
-      {/* <GetListTicket/> */}
-      {/* <GetTicketById id={7133536}/> */}
-      <ListFileByTicketId id={7133536}/>
+      {/* <GetListTicket/> page */}
+      <GetTicketById id={1485296}/>
+      {/* <ListFileByTicketId id={1485296}/> */}
+      {/* <ShowAllTicket/> */}
+      {/* <AdminUploadTickets/> */}
+      {/* <TestDetailedShowSchedule/> */}
     </div>
   );
 }
