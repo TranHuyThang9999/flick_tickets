@@ -15,6 +15,9 @@ import GetListTicket from "./Home/Tickets/GetListTicket";
 import ShowAllTicket from "./Home/Tickets/ShowAllTicket";
 import AdminUploadTickets from "./dashboard/AdminUploadTickets";
 import TestDetailedShowSchedule from "./common/test/tesst1";
+import SendEmail from "./common/ProcessEmail/SendEmail";
+import VerifyEmail from "./common/ProcessEmail/VerifyEmail";
+import FormCheckOtpEmail from "./common/ProcessEmail/FormCheckOtpEmail";
 
 export default function App() {
   return (
@@ -36,6 +39,9 @@ export default function App() {
       {/* <ShowAllTicket/> */}
       {/* <AdminUploadTickets/> */}
       {/* <TestDetailedShowSchedule/> */}
+      {/* <SendEmail/>
+      <VerifyEmail/> */}
+      {/* <FormCheckOtpEmail/> */}
     </div>
   );
 }
