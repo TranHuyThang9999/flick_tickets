@@ -15,7 +15,7 @@ type Orders struct {
 	Description string  `json:"description"`
 	Status      int     `json:"status"`
 	Price       float64 `json:"price"`
-	Seats       int     `json:"seats"`
+	Seats       string  `json:"seats"`
 	Sale        int     `json:"sale"`
 	MovieTime   int     `json:"movie_time"`
 	CreatedAt   int     `json:"created_at"`

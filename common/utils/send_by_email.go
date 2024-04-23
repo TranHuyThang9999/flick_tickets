@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"encoding/json"
 	"flick_tickets/common/log"
 	"flick_tickets/configs"
 	"flick_tickets/core/entities"
@@ -82,25 +83,44 @@ func SendEmail(to, title string, req *entities.OrderSendTicketToEmail, attachmen
 	if err != nil {
 		return err
 	}
-	//Create a new message.
+
+	// Create a new message.
 	message := gomail.NewMessage()
 	message.SetHeader("From", username)
 	message.SetHeader("To", to)
-	message.SetHeader("Subject", title) // Đặt giá trị tiêu đề
+	message.SetHeader("Subject", title)
+
 	// Read HTML template file
 	renderHtml, err := os.ReadFile("api/public/send/index.html")
 	if err != nil {
 		log.Error(err, "error reading file")
 		return err
 	}
+
+	// Unmarshal cinemaName JSON into a map
+	var cinemaData map[string]string
+	err = json.Unmarshal([]byte(req.CinemaName), &cinemaData)
+	if err != nil {
+		log.Error(err, "error parsing cinema info JSON")
+		return err
+	}
+
 	// Set HTML body using template and request data
-	body := strings.ReplaceAll(string(renderHtml), "{{id_ve}}", strconv.Itoa(int(req.ID)))
+	body := string(renderHtml)
+	body = strings.ReplaceAll(body, "{{id_ve}}", strconv.Itoa(int(req.ID)))
 	body = strings.ReplaceAll(body, "{{ten_phim}}", req.MoviceName)
-	body = strings.ReplaceAll(body, "{{vi_tri_ghe}}", strconv.Itoa(req.Seats))
+	body = strings.ReplaceAll(body, "{{vi_tri_ghe}}", req.Seats)
 	body = strings.ReplaceAll(body, "{{gia_ve}}", strconv.FormatFloat(req.Price, 'f', -1, 64))
 	body = strings.ReplaceAll(body, "{{thoi_gian_chieu}}", ConvertTimestampToDateTime(int64(req.MovieTime)))
-	body = strings.ReplaceAll(body, "{{tai_dap}}", req.CinemaName)
+	body = strings.ReplaceAll(body, "{{tai_dap}}", cinemaData["cinema_name"])
+	body = strings.ReplaceAll(body, "{{description}}", cinemaData["description"])
+	body = strings.ReplaceAll(body, "{{conscious}}", cinemaData["conscious"])
+	body = strings.ReplaceAll(body, "{{district}}", cinemaData["district"])
+	body = strings.ReplaceAll(body, "{{commune}}", cinemaData["commune"])
+	body = strings.ReplaceAll(body, "{{address_details}}", cinemaData["address_details"])
+
 	message.SetBody("text/html", body)
+
 	// Attach the image to the message.
 	message.Attach("QRCode.png", gomail.SetCopyFunc(func(w io.Writer) error {
 		_, err := w.Write(attachment)
@@ -119,7 +139,8 @@ func SendEmail(to, title string, req *entities.OrderSendTicketToEmail, attachmen
 		log.Error(err, "error sending email")
 		return err
 	}
-	log.Info("oik")
+
+	log.Info("Email sent successfully")
 	return nil
 }
 func SendOtpToEmail(email, title string, OTP int64) error {

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"flick_tickets/common/enums"
 	"flick_tickets/common/utils"
 	"flick_tickets/core/domain"
@@ -18,6 +19,7 @@ type UseCaseOrder struct {
 	aes      *UseCaseAes
 	menory   cache.RepositoryCache
 	showTime domain.RepositoryShowTime
+	cinema   domain.RepositoryCinemas
 }
 
 func NewUsecaseOrder(
@@ -27,6 +29,7 @@ func NewUsecaseOrder(
 	aes *UseCaseAes,
 	menory cache.RepositoryCache,
 	showTime domain.RepositoryShowTime,
+	cinema domain.RepositoryCinemas,
 
 ) *UseCaseOrder {
 	return &UseCaseOrder{
@@ -36,6 +39,7 @@ func NewUsecaseOrder(
 		aes:      aes,
 		menory:   menory,
 		showTime: showTime,
+		cinema:   cinema,
 	}
 }
 func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersReq) (*entities.OrdersResponseResgister, error) {
@@ -103,17 +107,29 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 			},
 		}, nil
 	}
-	for _, v := range listSeat {
-		if v == req.Seats {
-			tx.Rollback()
-			return &entities.OrdersResponseResgister{
-				Result: entities.Result{
-					Code:    enums.TICKETS_REGISTERED_ERR_CODE,
-					Message: enums.TICKETS_REGISTERED_ERR_MESS,
-				},
-			}, nil
-		}
+
+	listSeatsChoice, err := mapper.ParseToIntSlice(req.Seats)
+	if err != nil {
+		tx.Rollback()
+		return &entities.OrdersResponseResgister{
+			Result: entities.Result{
+				Code:    enums.CONVERT_STRING_TO_ARRAY_CODE, //
+				Message: enums.CONVERT_STRING_TO_ARRAY_MESS,
+			},
+		}, nil
 	}
+
+	// for _, v := range listSeat {
+	// 	if v == listSeat[] {
+	// 		tx.Rollback()
+	// 		return &entities.OrdersResponseResgister{
+	// 			Result: entities.Result{
+	// 				Code:    enums.TICKETS_REGISTERED_ERR_CODE,
+	// 				Message: enums.TICKETS_REGISTERED_ERR_MESS,
+	// 			},
+	// 		}, nil
+	// 	}
+	// }
 
 	if err != nil {
 		tx.Rollback()
@@ -142,18 +158,48 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 			},
 		}, nil
 	}
+	addressCinema, err := u.cinema.GetAllCinemaByName(ctx, showTimeForUserRegisterOrder.CinemaName)
+	if err != nil {
+		tx.Rollback()
+		return &entities.OrdersResponseResgister{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	adsressRespnseData := entities.CinemaRespSendCustomer{
+		CinemaName:     addressCinema.CinemaName,
+		Description:    addressCinema.Description,
+		Conscious:      addressCinema.Conscious,
+		District:       addressCinema.District,
+		Commune:        addressCinema.Commune,
+		AddressDetails: addressCinema.AddressDetails,
+	}
+	addressCinemaTypeJson, err := json.Marshal(adsressRespnseData)
+	if err != nil {
+		tx.Rollback()
+		return &entities.OrdersResponseResgister{
+			Result: entities.Result{
+				Code:    enums.ERROR_CONVERT_JSON_CODE,
+				Message: enums.ERROR_CONVERT_JSON_MESS,
+			},
+		}, nil
+	}
+	price := float64(ticket.Price) * float64(len(listSeatsChoice))
+
 	// Đăng ký vé
 	err = u.order.RegisterTicket(ctx, tx, &domain.Orders{
 		ID:          idOrder,
 		Email:       req.Email,
-		Seats:       req.Seats,
+		Seats:       string(addressCinemaTypeJson),
 		ShowTimeID:  req.ShowTimeId,
 		ReleaseDate: ticket.ReleaseDate,
 		Description: ticket.Description,
 		MovieTime:   showTimeForUserRegisterOrder.MovieTime, //thoi gian chieu
 		Status:      enums.ORDER_INIT,                       //need update
 		Sale:        ticket.Sale,
-		Price:       ticket.Price,
+		Price:       price,
 		CreatedAt:   ticket.CreatedAt,
 	})
 	if err != nil {
@@ -165,6 +211,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 			},
 		}, nil
 	}
+
 	//send email
 	defer func() *entities.OrdersResponseResgister {
 		resp, err := u.aes.GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(&entities.TokenRequestSendQrCode{
@@ -176,7 +223,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 				MoviceName: ticket.Name,
 				Price:      ticket.Price,
 				Seats:      req.Seats,
-				CinemaName: showTimeForUserRegisterOrder.CinemaName,
+				CinemaName: string(addressCinemaTypeJson),
 				MovieTime:  showTimeForUserRegisterOrder.MovieTime,
 			},
 		})
@@ -199,7 +246,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		}
 	}()
 
-	listSeat = append(listSeat, req.Seats)
+	listSeat = append(listSeat, listSeatsChoice...)
 
 	stringConvertEdSeat := mapper.ConvertIntArrayToString(listSeat) // listShowTime
 	// Cập nhật số lượng vé sau khi đăng ký

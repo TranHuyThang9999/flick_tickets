@@ -35,3 +35,11 @@ type CinemaReqUpdateSizeRoom struct {
 type CinemaRespUpdateSizeRoom struct {
 	Result Result `json:"result"`
 }
+type CinemaRespSendCustomer struct {
+	CinemaName     string `json:"cinema_name"`
+	Description    string `json:"description"`
+	Conscious      string `json:"conscious"`
+	District       string `json:"district"`
+	Commune        string `json:"commune"`
+	AddressDetails string `json:"address_details"`
+}
