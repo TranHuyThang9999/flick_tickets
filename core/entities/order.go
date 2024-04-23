@@ -24,3 +24,10 @@ type OrderSendTicketToEmail struct {
 	Seats      int     `form:"seats"`
 	CinemaName string  `form:"cinema_name"`
 }
+type OrderReqUpSert struct {
+	Id int64 `form:"id"`
+}
+type OrderRespUpSert struct {
+	Result  Result `json:"result"`
+	Created int64  `json:"created"`
+}

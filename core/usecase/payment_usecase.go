@@ -47,6 +47,7 @@ func InitKeyPayPos(clientId string, apiKey string, checksumKey string) error {
 const PayOSBaseUrl = "https://api-merchant.payos.vn/"
 
 func (u *UseCasePayment) CreatePayment(ctx context.Context, paymentData entities.CheckoutRequestType) (*entities.CheckoutResponseDataType, error) {
+
 	if paymentData.OrderCode == 0 || paymentData.Amount == 0 || paymentData.Description == "" || paymentData.CancelUrl == "" || paymentData.ReturnUrl == "" {
 		requiredPaymentData := entities.CheckoutRequestType{
 			OrderCode:   paymentData.OrderCode,
@@ -153,6 +154,7 @@ func (u *UseCasePayment) CreatePayment(ctx context.Context, paymentData entities
 
 	return nil, resources.NewPayOSError(paymentLinkRes.Code, paymentLinkRes.Desc)
 }
+
 func (u *UseCasePayment) CreateSignatureFromObj(obj interface{}, key string) (string, error) {
 	sortedObj, err := u.SortObjByKey(obj)
 	if err != nil {
@@ -227,7 +229,6 @@ func (u *UseCasePayment) convertToString(value interface{}) string {
 }
 
 func (u *UseCasePayment) GetOrderById(orderID string) (*entities.PayMentResponseCheckOrder, error) {
-
 	url := fmt.Sprintf("https://api-merchant.payos.vn/v2/payment-requests/%s", orderID)
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -248,6 +249,10 @@ func (u *UseCasePayment) GetOrderById(orderID string) (*entities.PayMentResponse
 	}
 	defer resp.Body.Close()
 
+	// Cập nhật phần "Cookie" từ phản hồi API trước đó
+	newCookie := resp.Header.Get("Set-Cookie")
+	req.Header.Set("Cookie", newCookie)
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err, "error")
@@ -260,10 +265,37 @@ func (u *UseCasePayment) GetOrderById(orderID string) (*entities.PayMentResponse
 		log.Error(err, "error convert string to json")
 		return nil, fmt.Errorf(enums.ERROR_CONVERT_JSON_MESS+"%s", err)
 	}
+
 	if response.Code == "101" {
-		log.Info("Mã thanh toán không tồn tại	")
-		return &entities.PayMentResponseCheckOrder{}, nil
+		log.Info("Mã thanh toán không tồn tại")
+		a := []entities.Transaction{}
+		return &entities.PayMentResponseCheckOrder{
+			Code: "",
+			Desc: "Mã thanh toán không tồn tại",
+			Data: entities.Data{
+				ID:                 orderID,
+				OrderCode:          0,
+				Amount:             0,
+				AmountPaid:         0,
+				AmountRemaining:    0,
+				Status:             "",
+				CreatedAt:          "",
+				Transactions:       a,
+				CanceledAt:         nil,
+				CancellationReason: nil,
+			},
+			Signature: "",
+		}, nil
 	}
 
-	return &response, nil
+	if response.Data.Status == "EXPIRED" {
+		log.Info("Đơn hàng đã quá hạn thời gian")
+		return &entities.PayMentResponseCheckOrder{
+			Desc: "Đơn hàng đã quá hạn thời gian",
+		}, nil
+	} else if response.Data.Status == "PAID" {
+		return &response, nil
+	}
+
+	return nil, fmt.Errorf("Trạng thái đơn hàng không hợp lệ")
 }

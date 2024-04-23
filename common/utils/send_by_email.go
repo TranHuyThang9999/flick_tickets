@@ -122,7 +122,6 @@ func SendEmail(to, title string, req *entities.OrderSendTicketToEmail, attachmen
 	log.Info("oik")
 	return nil
 }
-
 func SendOtpToEmail(email, title string, OTP int64) error {
 	infomations := configs.Get()
 
@@ -139,7 +138,28 @@ func SendOtpToEmail(email, title string, OTP int64) error {
 	message.SetHeader("From", username)
 	message.SetHeader("To", email)
 	message.SetHeader("Subject", title)
-	message.SetBody("text/plain", strconv.FormatInt(OTP, 10)) // Set the email body as plain text
+
+	// HTML content with h2 tag and CSS styling
+	htmlBody := fmt.Sprintf(`
+		<!DOCTYPE html>
+		<html>
+		<head>
+		<style>
+		h2 {
+			color: #333;
+			font-family: Arial, sans-serif;
+			font-size: 24px;
+		}
+		</style>
+		</head>
+		<body>
+		<h2>%d</h2>
+		</body>
+		</html>
+	`, OTP)
+
+	// Set the email body with MIME type text/html
+	message.SetBody("text/html", htmlBody)
 
 	// Create a new SMTP dialer.
 	dialer := gomail.NewDialer(smtpHost, port, username, password)
@@ -153,6 +173,7 @@ func SendOtpToEmail(email, title string, OTP int64) error {
 	log.Info("Email sent successfully")
 	return nil
 }
+
 func SendPasswordToEmail(email, title string, passwordInit string) error {
 	infomations := configs.Get()
 

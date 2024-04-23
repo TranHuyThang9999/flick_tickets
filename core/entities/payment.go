@@ -76,6 +76,20 @@ type CheckoutRequestType struct {
 	ExpiredAt    *int    `json:"expiredAt"`
 }
 
+type CheckoutRequestController struct {
+	Amount       int     `json:"amount"`
+	Description  string  `json:"description"`
+	CancelUrl    string  `json:"cancelUrl"`
+	ReturnUrl    string  `json:"returnUrl"`
+	Signature    *string `json:"signature"`
+	Items        []Item  `json:"items"`
+	BuyerName    *string `json:"buyerName"`
+	BuyerEmail   *string `json:"buyerEmail"`
+	BuyerPhone   *string `json:"buyerPhone"`
+	BuyerAddress *string `json:"buyerAddress"`
+	// ExpiredAt    *int    `json:"expiredAt"`
+}
+
 type CheckoutResponseDataType struct {
 	Bin           string `json:"bin"`
 	AccountNumber string `json:"accountNumber"`

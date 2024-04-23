@@ -67,8 +67,9 @@ func NewApiRouter(
 	// user
 	r.POST("/customer/order/ticket", order.OrdersTicket)
 	r.GET("/customer/look/order/ticket", order.GetOrderById)
+	r.PUT("/customer/update/order", order.UpsertOrderById)
 	//customer
-	r.POST("/customer/send", customer.SendOtptoEmail)
+	r.POST("/customer/send/:email", customer.SendOtptoEmail)
 	r.POST("/customer/verify/", customer.CheckOtpByEmail)
 	r.POST("/customer/manager/register", customer.RegisterCustomersManager)
 	r.POST("/customer/manager/login", customer.LoginCustomerManager)

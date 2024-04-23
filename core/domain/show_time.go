@@ -7,15 +7,16 @@ import (
 )
 
 type ShowTime struct {
-	ID             int64  `json:"id"`
-	TicketID       int64  `json:"ticket_id"`
-	CinemaName     string `json:"cinema_name"`
-	MovieTime      int    `json:"movie_time"` //string
-	SelectedSeat   string `json:"selected_seat"`
-	Quantity       int    `json:"quantity"`
-	OriginalNumber int    `json:"original_number"`
-	CreatedAt      int    `json:"created_at"`
-	UpdatedAt      int    `json:"updated_at"`
+	ID             int64   `json:"id"`
+	TicketID       int64   `json:"ticket_id"`
+	CinemaName     string  `json:"cinema_name"`
+	MovieTime      int     `json:"movie_time"` //string
+	SelectedSeat   string  `json:"selected_seat"`
+	Quantity       int     `json:"quantity"`
+	OriginalNumber int     `json:"original_number"`
+	CreatedAt      int     `json:"created_at"`
+	UpdatedAt      int     `json:"updated_at"`
+	Price          float64 `json:"price"`
 }
 type ShowTimeDelete struct {
 	ID        int64 `json:"id"`

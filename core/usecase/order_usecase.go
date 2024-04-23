@@ -151,7 +151,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		ReleaseDate: ticket.ReleaseDate,
 		Description: ticket.Description,
 		MovieTime:   showTimeForUserRegisterOrder.MovieTime, //thoi gian chieu
-		Status:      ticket.Status,                          //need update
+		Status:      enums.ORDER_INIT,                       //need update
 		Sale:        ticket.Sale,
 		Price:       ticket.Price,
 		CreatedAt:   ticket.CreatedAt,
@@ -296,4 +296,22 @@ func (u *UseCaseOrder) GetOrderById(ctx context.Context, id string) (*entities.O
 		Created: int64(utils.GenerateTimestamp()),
 	}, nil
 
+}
+func (u *UseCaseOrder) UpsertOrderById(ctx context.Context, req *entities.OrderReqUpSert) (*entities.OrderRespUpSert, error) {
+
+	err := u.order.UpsertOrder(ctx, req.Id, enums.ORDER_SUCESS)
+	if err != nil {
+		return &entities.OrderRespUpSert{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.OrderRespUpSert{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
 }

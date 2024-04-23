@@ -43,3 +43,16 @@ func (order *ControllerOrder) GetOrderById(ctx *gin.Context) {
 	order.baseController.Response(ctx, resp, err)
 
 }
+
+func (order *ControllerOrder) UpsertOrderById(ctx *gin.Context) {
+
+	var req entities.OrderReqUpSert
+
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := order.order.UpsertOrderById(ctx, &req)
+
+	order.baseController.Response(ctx, resp, err)
+}

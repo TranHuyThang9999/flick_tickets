@@ -67,3 +67,12 @@ func ConvertTimestampToDateTime(timestamp int64) string {
 
 	return formattedDateTime
 }
+func GenerateTimestampExpiredAt(expiredAt int) *int {
+	timeNow := time.Now()
+
+	// Cộng thêm thời gian xác định vào thời điểm hiện tại
+	expirationTime := timeNow.Add(time.Duration(expiredAt) * time.Minute)
+
+	timestamp := int(expirationTime.Unix())
+	return &timestamp
+}

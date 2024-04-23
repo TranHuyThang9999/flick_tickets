@@ -37,3 +37,7 @@ func (c *CollectionOrder) GetOrderById(ctx context.Context, id int64) (*domain.O
 	}
 	return order, result.Error
 }
+func (c *CollectionOrder) UpsertOrder(ctx context.Context, orderId int64, status int) error {
+	err := c.collection.Model(&domain.Orders{}).Where("id = ?", orderId).UpdateColumn("status", status)
+	return err.Error
+}

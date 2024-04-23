@@ -25,4 +25,5 @@ type RepositoryOrder interface {
 	RegisterTicket(ctx context.Context, tx *gorm.DB, req *Orders) error
 	CancelTicket(ctx context.Context, id int64) error // update
 	GetOrderById(ctx context.Context, id int64) (*Orders, error)
+	UpsertOrder(ctx context.Context, orderId int64, status int) error
 }

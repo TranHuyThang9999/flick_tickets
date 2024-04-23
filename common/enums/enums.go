@@ -85,6 +85,9 @@ const (
 	ROLE_ADMIN     = 1
 	ROLE_STAFF     = 3
 	ACCOUNT_ACTIVE = 5
+	ORDER_SUCESS   = 7
+	ORDER_INIT     = 9
+	ROLE_CUSTOMER  = 10
 )
 const (
 	NoSignatureErrorMessage         = "No signature."

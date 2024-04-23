@@ -37,7 +37,7 @@ func NewUseCaseCustomer(
 	}
 }
 func (e *UseCaseCustomer) SendOtpToEmail(ctx context.Context, email string) (*entities.SendOtpResponse, error) {
-
+	log.Infof("req : ", email)
 	if email == "" {
 		return &entities.SendOtpResponse{
 			Result: entities.Result{
@@ -74,6 +74,7 @@ func (e *UseCaseCustomer) SendOtpToEmail(ctx context.Context, email string) (*en
 			ID:        utils.GenerateUniqueKey(),
 			OTP:       codeOtp,
 			Email:     email,
+			Role:      enums.ROLE_CUSTOMER,
 			CreatedAt: utils.GenerateTimestamp(),
 			UpdatedAt: utils.GenerateTimestamp(),
 		})

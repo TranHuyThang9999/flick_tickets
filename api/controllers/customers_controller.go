@@ -24,7 +24,7 @@ func NewControllerCustomer(
 }
 func (c *ControllerCustomer) SendOtptoEmail(ctx *gin.Context) {
 
-	email := ctx.Query("email")
+	email := ctx.Param("email")
 	resp, err := c.cus.SendOtpToEmail(ctx, email)
 	c.baseController.Response(ctx, resp, err)
 

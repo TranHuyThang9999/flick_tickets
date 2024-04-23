@@ -53,6 +53,8 @@ func (s *UseCaseShowTime) AddShowTime(ctx context.Context, req *entities.ShowTim
 		MovieTime:      req.MovieTime,
 		SelectedSeat:   req.SelectedSeat,
 		OriginalNumber: req.Quantity,
+		Quantity:       req.Quantity,
+		Price:          req.Price,
 		CreatedAt:      utils.GenerateTimestamp(),
 		UpdatedAt:      utils.GenerateTimestamp(),
 	})
@@ -166,6 +168,7 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			SelectedSeat:    listShowTime[i].SelectedSeat,
 			Quantity:        listShowTime[i].Quantity,
 			OriginalNumber:  listShowTime[i].OriginalNumber,
+			Price:           listShowTime[i].Price,
 		})
 	}
 

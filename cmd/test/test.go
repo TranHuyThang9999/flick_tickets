@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"flick_tickets/common/log"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -25,12 +24,8 @@ func main() {
 	// 	fmt.Println(utils.GeneratePassword())
 
 	// }
-	timeNow := time.Now()
+	log.LoadLogger()
 
-	// Cộng thêm 5 phút vào thời điểm hiện tại
-	fiveMinutesLater := timeNow.Add(time.Minute * 5)
-
-	fmt.Println(fiveMinutesLater.Unix())
 }
 
 func LoadFileHtml(c *gin.Context) {
@@ -118,6 +113,5 @@ func GetDataFromUseCase(id string) []SinhVien {
 			list = append(list, data[i])
 		}
 	}
-	log.Println("hi")
 	return list
 }
