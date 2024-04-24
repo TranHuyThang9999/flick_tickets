@@ -7,6 +7,7 @@ import (
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
 	"flick_tickets/core/mapper"
+	"sort"
 )
 
 type UseCaseShowTime struct {
@@ -97,21 +98,21 @@ func (s *UseCaseShowTime) DeleteShowTime(ctx context.Context, req *entities.Show
 	}, nil
 }
 func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) (*entities.ShowTimeByTicketIdresp, error) {
-
 	number := mapper.ConvertStringToInt(id)
-	var listRespDetail []*entities.ShowTime
-	var listCinema []*domain.Cinemas
-	var mapCinemaByName = make(map[string]*domain.Cinemas)
 
+	// Lấy danh sách thời gian chiếu từ cơ sở dữ liệu
 	listShowTime, err := s.st.GetShowTimeByTicketId(ctx, int64(number))
 	if err != nil {
+		// Trả về lỗi nếu không thể truy cập vào dữ liệu
 		return &entities.ShowTimeByTicketIdresp{
 			Result: entities.Result{
 				Code:    enums.DB_ERR_CODE,
 				Message: enums.DB_ERR_MESS,
 			},
-		}, nil
+		}, err
 	}
+
+	// Kiểm tra xem danh sách thời gian chiếu có rỗng không
 	if len(listShowTime) == 0 {
 		return &entities.ShowTimeByTicketIdresp{
 			Result: entities.Result{
@@ -120,15 +121,19 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			},
 		}, nil
 	}
-	listCinema, err = s.cinema.GetAllCinema(ctx)
+
+	// Lấy danh sách rạp chiếu
+	listCinema, err := s.cinema.GetAllCinema(ctx)
 	if err != nil {
 		return &entities.ShowTimeByTicketIdresp{
 			Result: entities.Result{
 				Code:    enums.DB_ERR_CODE,
 				Message: enums.DB_ERR_MESS,
 			},
-		}, nil
+		}, err
 	}
+
+	// Kiểm tra xem danh sách rạp chiếu có rỗng không
 	if len(listCinema) == 0 {
 		return &entities.ShowTimeByTicketIdresp{
 			Result: entities.Result{
@@ -138,13 +143,16 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 		}, nil
 	}
 
-	// Build mapCinema from the list of cinemas
+	// Tạo bản đồ các rạp chiếu từ danh sách rạp chiếu
+	mapCinemaByName := make(map[string]*domain.Cinemas)
 	for _, cinema := range listCinema {
 		mapCinemaByName[cinema.CinemaName] = cinema
 	}
 
-	for i := 0; i < len(listShowTime); i++ {
-		cinema := mapCinemaByName[listShowTime[i].CinemaName]
+	// Tạo danh sách chi tiết thời gian chiếu đã được chế biến
+	var listRespDetail []*entities.ShowTime
+	for _, showTime := range listShowTime {
+		cinema := mapCinemaByName[showTime.CinemaName]
 		if cinema == nil {
 			return &entities.ShowTimeByTicketIdresp{
 				Result: entities.Result{
@@ -153,11 +161,13 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 				},
 			}, nil
 		}
+
+		// Thêm chi tiết thời gian chiếu vào danh sách
 		listRespDetail = append(listRespDetail, &entities.ShowTime{
-			ID:              listShowTime[i].ID,
-			TicketID:        listShowTime[i].TicketID,
-			CinemaName:      listShowTime[i].CinemaName,
-			MovieTime:       listShowTime[i].MovieTime,
+			ID:              showTime.ID,
+			TicketID:        showTime.TicketID,
+			CinemaName:      showTime.CinemaName,
+			MovieTime:       showTime.MovieTime,
 			Description:     cinema.Description,
 			Conscious:       cinema.Conscious,
 			District:        cinema.District,
@@ -165,13 +175,19 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			AddressDetails:  cinema.AddressDetails,
 			WidthContainer:  cinema.WidthContainer,
 			HeightContainer: cinema.HeightContainer,
-			SelectedSeat:    listShowTime[i].SelectedSeat,
-			Quantity:        listShowTime[i].Quantity,
-			OriginalNumber:  listShowTime[i].OriginalNumber,
-			Price:           listShowTime[i].Price,
+			SelectedSeat:    showTime.SelectedSeat,
+			Quantity:        showTime.Quantity,
+			OriginalNumber:  showTime.OriginalNumber,
+			Price:           showTime.Price,
 		})
 	}
 
+	// Sắp xếp danh sách thời gian chiếu theo thời gian của phim
+	sort.Slice(listRespDetail, func(i, j int) bool {
+		return int(listRespDetail[i].ID) > int(listRespDetail[j].ID)
+	})
+
+	// Trả về danh sách thời gian chiếu đã được chế biến và không có lỗi
 	return &entities.ShowTimeByTicketIdresp{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
@@ -180,6 +196,7 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 		Showtimes: listRespDetail,
 	}, nil
 }
+
 func (s *UseCaseShowTime) DetailShowTime(ctx context.Context, id string) (*entities.ShowTimeDetail, error) {
 
 	showTimeId := mapper.ConvertStringToInt(id)

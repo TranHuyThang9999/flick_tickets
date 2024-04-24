@@ -37,7 +37,17 @@ func (c *CollectionOrder) GetOrderById(ctx context.Context, id int64) (*domain.O
 	}
 	return order, result.Error
 }
-func (c *CollectionOrder) UpsertOrder(ctx context.Context, orderId int64, status int) error {
-	err := c.collection.Model(&domain.Orders{}).Where("id = ?", orderId).UpdateColumn("status", status)
-	return err.Error
+func (c *CollectionOrder) UpsertOrder(ctx context.Context, email string, orderId int64, status int) error {
+	err := c.collection.Model(&domain.Orders{}).
+		Where("id = ? OR email = ?", orderId, email).
+		UpdateColumn("status", status).Error
+	return err
+}
+func (c *CollectionOrder) GetOrderByEmail(ctx context.Context, email string) (*domain.Orders, error) {
+	var order *domain.Orders
+	result := c.collection.Where("email = ?", email).First(&order)
+	if result.RowsAffected == 0 {
+		return nil, nil
+	}
+	return order, result.Error
 }

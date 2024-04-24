@@ -6,7 +6,6 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"flick_tickets/common/enums"
-	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
 	"flick_tickets/configs"
 	"flick_tickets/core/entities"
@@ -36,7 +35,6 @@ func (c *UseCaseAes) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entiti
 			},
 		}, nil
 	}
-	log.Info(ciphertext)
 	err = utils.GeneratesQrCodeAndSendQrWithEmail(req.FromEmail, &entities.OrderSendTicketToEmail{
 		ID:         req.Order.ID,
 		MoviceName: req.Order.MoviceName,

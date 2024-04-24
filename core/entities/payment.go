@@ -74,9 +74,12 @@ type CheckoutRequestType struct {
 	BuyerPhone   *string `json:"buyerPhone"`
 	BuyerAddress *string `json:"buyerAddress"`
 	ExpiredAt    *int    `json:"expiredAt"`
+	ShowTimeId   int64   `json:"showTimeId"`
+	Seats        string  `bson:"seats"`
 }
 
 type CheckoutRequestController struct {
+	OrderCode    int64   `json:"orderCode"`
 	Amount       int     `json:"amount"`
 	Description  string  `json:"description"`
 	CancelUrl    string  `json:"cancelUrl"`
@@ -87,21 +90,24 @@ type CheckoutRequestController struct {
 	BuyerEmail   *string `json:"buyerEmail"`
 	BuyerPhone   *string `json:"buyerPhone"`
 	BuyerAddress *string `json:"buyerAddress"`
+	ShowTimeId   int64   `json:"showTimeId"`
+	Seats        string  `bson:"seats"`
 	// ExpiredAt    *int    `json:"expiredAt"`
 }
 
 type CheckoutResponseDataType struct {
-	Bin           string `json:"bin"`
-	AccountNumber string `json:"accountNumber"`
-	AccountName   string `json:"accountName"`
-	Amount        int    `json:"amount"`
-	Description   string `json:"description"`
-	OrderCode     int64  `json:"orderCode"`
-	Currency      string `json:"currency"`
-	PaymentLinkId string `json:"paymentLinkId"`
-	Status        string `json:"status"`
-	CheckoutUrl   string `json:"checkoutUrl"`
-	QRCode        string `json:"qrCode"`
+	Bin           string      `json:"bin"`
+	AccountNumber string      `json:"accountNumber"`
+	AccountName   string      `json:"accountName"`
+	Amount        int         `json:"amount"`
+	Description   string      `json:"description"`
+	OrderCode     int64       `json:"orderCode"`
+	Currency      string      `json:"currency"`
+	PaymentLinkId string      `json:"paymentLinkId"`
+	Status        string      `json:"status"`
+	CheckoutUrl   string      `json:"checkoutUrl"`
+	QRCode        string      `json:"qrCode"`
+	RespOrder     interface{} `json:"resp_order"`
 }
 
 type CancelPaymentLinkRequestType struct {

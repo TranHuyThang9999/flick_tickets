@@ -12,6 +12,7 @@ import (
 	"flick_tickets/common/enums"
 	"flick_tickets/common/log"
 	"flick_tickets/core/entities"
+	"flick_tickets/core/mapper"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -22,10 +23,15 @@ import (
 )
 
 type UseCasePayment struct {
+	order *UseCaseOrder
 }
 
-func NewUseCasePayment() *UseCasePayment {
-	return &UseCasePayment{}
+func NewUseCasePayment(
+	order *UseCaseOrder,
+) *UseCasePayment {
+	return &UseCasePayment{
+		order: order,
+	}
 
 }
 
@@ -145,14 +151,130 @@ func (u *UseCasePayment) CreatePayment(ctx context.Context, paymentData entities
 				log.Error(err, "error 7")
 				return nil, resources.NewPayOSError(enums.InternalServerErrorErrorCode, enums.InternalServerErrorErrorMessage)
 			}
-			log.Infof("************8", paymentLinkData.CheckoutUrl)
-
+			log.Infof("next url", paymentLinkData.CheckoutUrl)
+			resp, err := u.order.RegisterTicket(ctx, &entities.OrdersReq{
+				Id:         paymentData.OrderCode,
+				ShowTimeId: paymentData.ShowTimeId,
+				Email:      *paymentData.BuyerEmail,
+				Seats:      paymentData.Seats,
+			})
+			if err != nil {
+				log.Error(err, "error payment")
+				return &entities.CheckoutResponseDataType{RespOrder: resp}, nil
+			}
+			if resp.Result.Code != 0 {
+				log.Error(err, "error payment")
+				return &entities.CheckoutResponseDataType{RespOrder: resp}, nil
+			}
 			return &paymentLinkData, nil
 		}
 
 	}
 
 	return nil, resources.NewPayOSError(paymentLinkRes.Code, paymentLinkRes.Desc)
+}
+
+func (u *UseCasePayment) GetOrderById(orderID string) (*entities.PayMentResponseCheckOrder, error) {
+	url := fmt.Sprintf("https://api-merchant.payos.vn/v2/payment-requests/%s", orderID)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Error(err, "error")
+		return nil, err
+	}
+
+	req.Header.Set("x-client-id", "c84c857d-160c-456a-91f2-384526d7a360")
+	req.Header.Set("x-api-key", "f74461b1-d7d3-4fca-b918-fcb39524ce8c")
+	req.Header.Set("Cookie", "connect.sid=s%3A-Sat8d9c-WFoxLgE3cJZTb9bi3oSwFC2.uiWQpbtmdJc8ARx1PevsohQW62U4QiaOgBPfX85%2F91s")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Error(err, "error")
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Cập nhật phần "Cookie" từ phản hồi API trước đó
+	newCookie := resp.Header.Get("Set-Cookie")
+	req.Header.Set("Cookie", newCookie)
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Error(err, "error")
+		return nil, err
+	}
+
+	var response entities.PayMentResponseCheckOrder
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Error(err, "error convert string to json")
+		return nil, fmt.Errorf(enums.ERROR_CONVERT_JSON_MESS+"%s", err)
+	}
+
+	if response.Code == "101" {
+		log.Info("Mã thanh toán không tồn tại")
+		a := []entities.Transaction{}
+		return &entities.PayMentResponseCheckOrder{
+			Code: "101",
+			Desc: "Mã thanh toán không tồn tại",
+			Data: entities.Data{
+				ID:                 orderID,
+				OrderCode:          0,
+				Amount:             0,
+				AmountPaid:         0,
+				AmountRemaining:    0,
+				Status:             "",
+				CreatedAt:          "",
+				Transactions:       a,
+				CanceledAt:         nil,
+				CancellationReason: nil,
+			},
+			Signature: "",
+		}, nil
+	}
+
+	if response.Data.Status == "EXPIRED" {
+		a := []entities.Transaction{}
+		log.Info("Đơn hàng đã quá hạn thời gian")
+		return &entities.PayMentResponseCheckOrder{
+			Code: "103",
+			Desc: "Đơn hàng đã quá hạn thời gian",
+			Data: entities.Data{
+				ID:                 "",
+				OrderCode:          mapper.ConvertStringToInt(orderID),
+				Amount:             0,
+				AmountPaid:         0,
+				AmountRemaining:    0,
+				Status:             "",
+				CreatedAt:          "",
+				Transactions:       a,
+				CanceledAt:         nil,
+				CancellationReason: nil,
+			},
+		}, nil
+	} else if response.Data.Status == "CANCELLED" {
+		a := []entities.Transaction{}
+		return &entities.PayMentResponseCheckOrder{
+			Code: "102",
+			Desc: "Đơn hàng đã hủy",
+			Data: entities.Data{
+				ID:                 "0",
+				OrderCode:          mapper.ConvertStringToInt(orderID),
+				Amount:             0,
+				AmountPaid:         0,
+				AmountRemaining:    0,
+				Status:             "",
+				CreatedAt:          "",
+				Transactions:       a,
+				CanceledAt:         nil,
+				CancellationReason: nil,
+			},
+			Signature: "",
+		}, nil
+	}
+
+	return &response, nil
 }
 
 func (u *UseCasePayment) CreateSignatureFromObj(obj interface{}, key string) (string, error) {
@@ -226,76 +348,4 @@ func (u *UseCasePayment) convertToString(value interface{}) string {
 	default:
 		return fmt.Sprint(value)
 	}
-}
-
-func (u *UseCasePayment) GetOrderById(orderID string) (*entities.PayMentResponseCheckOrder, error) {
-	url := fmt.Sprintf("https://api-merchant.payos.vn/v2/payment-requests/%s", orderID)
-
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		log.Error(err, "error")
-		return nil, err
-	}
-
-	req.Header.Set("x-client-id", "c84c857d-160c-456a-91f2-384526d7a360")
-	req.Header.Set("x-api-key", "f74461b1-d7d3-4fca-b918-fcb39524ce8c")
-	req.Header.Set("Cookie", "connect.sid=s%3A-Sat8d9c-WFoxLgE3cJZTb9bi3oSwFC2.uiWQpbtmdJc8ARx1PevsohQW62U4QiaOgBPfX85%2F91s")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Error(err, "error")
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	// Cập nhật phần "Cookie" từ phản hồi API trước đó
-	newCookie := resp.Header.Get("Set-Cookie")
-	req.Header.Set("Cookie", newCookie)
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err, "error")
-		return nil, err
-	}
-
-	var response entities.PayMentResponseCheckOrder
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		log.Error(err, "error convert string to json")
-		return nil, fmt.Errorf(enums.ERROR_CONVERT_JSON_MESS+"%s", err)
-	}
-
-	if response.Code == "101" {
-		log.Info("Mã thanh toán không tồn tại")
-		a := []entities.Transaction{}
-		return &entities.PayMentResponseCheckOrder{
-			Code: "",
-			Desc: "Mã thanh toán không tồn tại",
-			Data: entities.Data{
-				ID:                 orderID,
-				OrderCode:          0,
-				Amount:             0,
-				AmountPaid:         0,
-				AmountRemaining:    0,
-				Status:             "",
-				CreatedAt:          "",
-				Transactions:       a,
-				CanceledAt:         nil,
-				CancellationReason: nil,
-			},
-			Signature: "",
-		}, nil
-	}
-
-	if response.Data.Status == "EXPIRED" {
-		log.Info("Đơn hàng đã quá hạn thời gian")
-		return &entities.PayMentResponseCheckOrder{
-			Desc: "Đơn hàng đã quá hạn thời gian",
-		}, nil
-	} else if response.Data.Status == "PAID" {
-		return &response, nil
-	}
-
-	return nil, fmt.Errorf("Trạng thái đơn hàng không hợp lệ")
 }

@@ -68,6 +68,7 @@ func NewApiRouter(
 	r.POST("/customer/order/ticket", order.OrdersTicket)
 	r.GET("/customer/look/order/ticket", order.GetOrderById)
 	r.PUT("/customer/update/order", order.UpsertOrderById)
+	r.PUT("/customer/order/send", order.SubmitSendTicketByEmail)
 	//customer
 	r.POST("/customer/send/:email", customer.SendOtptoEmail)
 	r.POST("/customer/verify/", customer.CheckOtpByEmail)
@@ -91,6 +92,8 @@ func NewApiRouter(
 
 	//payment
 	r.POST("/public/customer/payment/pay", payment.CreatePayment)
+	r.GET("/public/customer/payment/request", payment.GetPaymentOrderById)
+	r.GET("/public/customer/payment/return", payment.ReturnUrlAfterPayment)
 	return &ApiRouter{
 		Engine: engine,
 	}

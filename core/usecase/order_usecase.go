@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"flick_tickets/common/enums"
+	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
@@ -44,8 +45,8 @@ func NewUsecaseOrder(
 }
 func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersReq) (*entities.OrdersResponseResgister, error) {
 
-	idOrder := utils.GenerateUniqueKey()
-
+	//idOrder := utils.GenerateUniqueKey()
+	idOrder := req.Id
 	// init transaction
 	tx, err := u.trans.BeginTransaction(ctx)
 	if err != nil {
@@ -62,21 +63,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 			return
 		}
 	}()
-	//showTime
-	// keyshowTime, err := u.menory.KeyExists(ctx, string(req.ShowTimeId))
-	// if err != nil {
-	// 	tx.Rollback()
-	// 	return &entities.OrdersResponseResgister{
-	// 		Result: entities.Result{
-	// 			Code:    enums.CACHE_ERR_CODE, //
-	// 			Message: enums.CACHE_ERR_MESS,
-	// 		},
-	// 	}, nil
-	// }
-	// if keyshowTime {
-
-	// }
-
+	log.Infof("req  : ", req.ShowTimeId)
 	showTimeForUserRegisterOrder, err := u.showTime.GetInformationShowTimeForTicketByTicketId(ctx, req.ShowTimeId)
 	if err != nil {
 		tx.Rollback()
@@ -87,7 +74,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 			},
 		}, nil
 	}
-
+	log.Infof("data : ", showTimeForUserRegisterOrder)
 	if showTimeForUserRegisterOrder.Quantity <= 0 {
 		return &entities.OrdersResponseResgister{
 			Result: entities.Result{
@@ -118,18 +105,6 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 			},
 		}, nil
 	}
-
-	// for _, v := range listSeat {
-	// 	if v == listSeat[] {
-	// 		tx.Rollback()
-	// 		return &entities.OrdersResponseResgister{
-	// 			Result: entities.Result{
-	// 				Code:    enums.TICKETS_REGISTERED_ERR_CODE,
-	// 				Message: enums.TICKETS_REGISTERED_ERR_MESS,
-	// 			},
-	// 		}, nil
-	// 	}
-	// }
 
 	if err != nil {
 		tx.Rollback()
@@ -176,7 +151,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		Commune:        addressCinema.Commune,
 		AddressDetails: addressCinema.AddressDetails,
 	}
-	addressCinemaTypeJson, err := json.Marshal(adsressRespnseData)
+	addressCinemaTypeJson, err := json.Marshal(adsressRespnseData) //send email
 	if err != nil {
 		tx.Rollback()
 		return &entities.OrdersResponseResgister{
@@ -190,17 +165,19 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 
 	// Đăng ký vé
 	err = u.order.RegisterTicket(ctx, tx, &domain.Orders{
-		ID:          idOrder,
-		Email:       req.Email,
-		Seats:       string(addressCinemaTypeJson),
-		ShowTimeID:  req.ShowTimeId,
-		ReleaseDate: ticket.ReleaseDate,
-		Description: ticket.Description,
-		MovieTime:   showTimeForUserRegisterOrder.MovieTime, //thoi gian chieu
-		Status:      enums.ORDER_INIT,                       //need update
-		Sale:        ticket.Sale,
-		Price:       price,
-		CreatedAt:   ticket.CreatedAt,
+		ID:             idOrder,
+		Email:          req.Email,
+		Seats:          req.Seats,
+		ShowTimeID:     req.ShowTimeId,
+		ReleaseDate:    ticket.ReleaseDate,
+		Description:    ticket.Description,
+		MovieTime:      showTimeForUserRegisterOrder.MovieTime, //thoi gian chieu
+		Status:         enums.ORDER_INIT,                       //need update
+		Sale:           ticket.Sale,
+		Price:          price,
+		AddressDetails: string(addressCinemaTypeJson),
+		UpdatedAt:      utils.GenerateTimestamp(),
+		CreatedAt:      ticket.CreatedAt,
 	})
 	if err != nil {
 		tx.Rollback()
@@ -212,47 +189,13 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		}, nil
 	}
 
-	//send email
-	defer func() *entities.OrdersResponseResgister {
-		resp, err := u.aes.GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(&entities.TokenRequestSendQrCode{
-			Content:   strconv.FormatInt(idOrder, 10),
-			FromEmail: req.Email,
-			Title:     "Xin gửi bạn mã QR Code vé xem phim tại dạp vui lòng không để lộ ra ngoài",
-			Order: &entities.OrderSendTicketToEmail{
-				ID:         idOrder,
-				MoviceName: ticket.Name,
-				Price:      ticket.Price,
-				Seats:      req.Seats,
-				CinemaName: string(addressCinemaTypeJson),
-				MovieTime:  showTimeForUserRegisterOrder.MovieTime,
-			},
-		})
-
-		if err != nil || resp.Result.Code != 0 {
-			return &entities.OrdersResponseResgister{
-				Result: entities.Result{
-					Code:    enums.SEND_EMAIL_ERR_CODE,
-					Message: enums.SEND_EMAIL_ERR_MESS,
-				},
-			}
-		}
-
-		// Trả về nil nếu không có lỗi
-		return &entities.OrdersResponseResgister{
-			Result: entities.Result{
-				Code:    enums.SUCCESS_CODE,
-				Message: enums.SUCCESS_MESS,
-			},
-		}
-	}()
-
 	listSeat = append(listSeat, listSeatsChoice...)
 
 	stringConvertEdSeat := mapper.ConvertIntArrayToString(listSeat) // listShowTime
 	// Cập nhật số lượng vé sau khi đăng ký
 	err = u.showTime.UpdateQuantitySeat(ctx, tx,
 		showTimeForUserRegisterOrder.ID,
-		showTimeForUserRegisterOrder.Quantity-1,
+		showTimeForUserRegisterOrder.Quantity-len(listSeatsChoice),
 		stringConvertEdSeat)
 	if err != nil {
 		tx.Rollback()
@@ -264,27 +207,6 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		}, nil
 	}
 
-	//update cache show time
-	// err = u.menory.SetObjectById(ctx, strconv.FormatInt(showTimeForUserRegisterOrder.ID, 10), &domain.ShowTime{
-	// 	ID:           showTimeForUserRegisterOrder.ID,
-	// 	TicketID:     showTimeForUserRegisterOrder.TicketID,
-	// 	CinemaName:   showTimeForUserRegisterOrder.CinemaName,
-	// 	MovieTime:    showTimeForUserRegisterOrder.MovieTime,
-	// 	SelectedSeat: showTimeForUserRegisterOrder.SelectedSeat,
-	// 	Quantity:     showTimeForUserRegisterOrder.Quantity,
-	// 	CreatedAt:    showTimeForUserRegisterOrder.CreatedAt,
-	// 	UpdatedAt:    utils.GenerateTimestamp(),
-	// })
-	// if err != nil {
-	// 	tx.Rollback()
-	// 	return &entities.OrdersResponseResgister{
-	// 		Result: entities.Result{
-	// 			Code:    enums.CACHE_ERR_CODE,
-	// 			Message: enums.CACHE_ERR_MESS,
-	// 		},
-	// 	}, nil
-	// }
-	// Commit giao dịch
 	err = tx.Commit().Error
 	if err != nil {
 		return &entities.OrdersResponseResgister{
@@ -300,8 +222,82 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
+		OrderId: idOrder,
 	}, nil
 }
+
+func (u *UseCaseOrder) SendticketAfterPayment(ctx context.Context, req *entities.OrderSendTicketAfterPaymentReq) (*entities.OrderSendTicketAfterPaymentResp, error) {
+	//send email
+	log.Infof("req : ", req)
+	order, err := u.order.GetOrderById(ctx, req.OrderId)
+	if err != nil {
+		return &entities.OrderSendTicketAfterPaymentResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	showTime, err := u.showTime.GetInformationShowTimeForTicketByTicketId(ctx, order.ShowTimeID)
+	if err != nil {
+		return &entities.OrderSendTicketAfterPaymentResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	log.Infof("showtime : ", showTime)
+	ticket, err := u.tickets.GetTicketById(ctx, showTime.TicketID)
+	if err != nil {
+		return &entities.OrderSendTicketAfterPaymentResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	err = u.order.UpsertOrder(ctx, order.Email, order.ID, enums.ORDER_SUCESS)
+	if err != nil {
+		return &entities.OrderSendTicketAfterPaymentResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	resp, err := u.aes.GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(&entities.TokenRequestSendQrCode{
+		Content:   strconv.FormatInt(order.ID, 10),
+		FromEmail: order.Email,
+		Title:     "Xin gửi bạn mã QR Code vé xem phim tại dạp vui lòng không để lộ ra ngoài",
+		Order: &entities.OrderSendTicketToEmail{
+			ID:         order.ID,
+			MoviceName: ticket.Name, // ten phim
+			Price:      order.Price,
+			Seats:      order.Seats,
+			CinemaName: order.AddressDetails, // ten phong
+			MovieTime:  showTime.MovieTime,
+		},
+	})
+	log.Infof("data : ", resp)
+	if err != nil || resp.Result.Code != 0 {
+		return &entities.OrderSendTicketAfterPaymentResp{
+			Result: entities.Result{
+				Code:    enums.SEND_EMAIL_ERR_CODE,
+				Message: enums.SEND_EMAIL_ERR_MESS,
+			},
+		}, nil
+	}
+
+	// Trả về nil nếu không có lỗi
+	return &entities.OrderSendTicketAfterPaymentResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
+}
+
 func (u *UseCaseOrder) GetOrderById(ctx context.Context, id string) (*entities.OrdersResponseGetById, error) {
 
 	numberId, err := strconv.Atoi(id)
@@ -346,7 +342,7 @@ func (u *UseCaseOrder) GetOrderById(ctx context.Context, id string) (*entities.O
 }
 func (u *UseCaseOrder) UpsertOrderById(ctx context.Context, req *entities.OrderReqUpSert) (*entities.OrderRespUpSert, error) {
 
-	err := u.order.UpsertOrder(ctx, req.Id, enums.ORDER_SUCESS)
+	err := u.order.UpsertOrder(ctx, req.Email, req.Id, enums.ORDER_SUCESS)
 	if err != nil {
 		return &entities.OrderRespUpSert{
 			Result: entities.Result{

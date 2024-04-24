@@ -1,11 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        body {
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0.9) 0%,
+                    rgba(230, 230, 255, 1) 35%,
+                    rgba(200, 240, 255, 1) 100%);
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #errorMessage {
+            background-color: rgba(255, 255, 255, 0.7);
+            /* Màu nền với độ trong suốt */
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+            max-width: 500px;
+            /* Đặt chiều rộng tối đa để giữ thông báo trong khung */
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
 </head>
+
 <body>
-    
+    <div id="paymentInfo"></div>
+    <div id="errorMessage"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script> <!-- Import thư viện js-cookie -->
+    <script>
+        // Lấy giá trị của id từ cookie
+        const id = Cookies.get('order_id');
+
+        // Gọi API khi trang được tải
+        window.onload = async function () {
+            // Kiểm tra xem id có tồn tại không trước khi gọi API
+            if (id) {
+                try {
+                    const response = await fetch(`http://localhost:8080/manager/customer/order/send`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: `order_id=${id}` // Truyền id trong form data của request
+                    });
+                    const data = await response.json();
+                    if (data.result.code === 0){
+                        window.location.href = 'http://localhost:3000';
+                    }
+                    // Hiển thị thông tin thanh toán trong thẻ div có id là 'paymentInfo'
+                    const paymentInfoDiv = document.getElementById('paymentInfo');
+                    paymentInfoDiv.innerText = JSON.stringify(data, null, 2);
+                } catch (error) {
+                    console.error('Error:', error);
+                    const errorMessageDiv = document.getElementById('errorMessage');
+                    errorMessageDiv.innerText = 'Đã xảy ra lỗi khi gửi yêu cầu.';
+                }
+            } else {
+                // Hiển thị thông báo lỗi nếu không tìm thấy id trong cookie
+                const errorMessageDiv = document.getElementById('errorMessage');
+                errorMessageDiv.innerText = 'Vui lòng chờ';
+            }
+        };
+    </script>
 </body>
+
 </html>

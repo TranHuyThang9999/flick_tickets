@@ -1,5 +1,7 @@
 package domain
 
+import "context"
+
 type PayOSResponseType struct {
 	Code      string      `json:"code"`
 	Desc      string      `json:"desc"`
@@ -101,4 +103,15 @@ type WebhookDataType struct {
 	CounterAccountNumber   *string `json:"counterAccountNumber"`
 	VirtualAccountName     *string `json:"virtualAccountName"`
 	VirtualAccountNumber   *string `json:"virtualAccountNumber"`
+}
+type Payment struct {
+	ID            int64   `json:"id"`
+	OrderID       int64   `json:"order_id"`
+	PaymentMethod string  `json:"payment_method"`
+	Amount        float64 `json:"amount"`
+	PaymentDate   int     `json:"payment_date"`
+}
+type RepositoryPayment interface {
+	AddPayment(ctx context.Context, req *Payment) error
+	GetOrderByOrderid(ctx context.Context, OrderId int64) (*Payment, error)
 }

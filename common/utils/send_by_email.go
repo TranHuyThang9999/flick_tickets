@@ -101,6 +101,7 @@ func SendEmail(to, title string, req *entities.OrderSendTicketToEmail, attachmen
 	var cinemaData map[string]string
 	err = json.Unmarshal([]byte(req.CinemaName), &cinemaData)
 	if err != nil {
+		log.Infof("****************  : ", req.CinemaName)
 		log.Error(err, "error parsing cinema info JSON")
 		return err
 	}
