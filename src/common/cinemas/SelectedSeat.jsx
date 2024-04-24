@@ -60,22 +60,22 @@ export default function SelectedSeat({
   }, [SelectedSeatGetFormApi, numSquares]);
 
   const handleSquareClick = (index) => {
-    setDisabledSquares((prevDisabledSquares) => {
-      const updatedDisabledSquares = [...prevDisabledSquares];
-      updatedDisabledSquares[index - 1] = !updatedDisabledSquares[index - 1];
-      return updatedDisabledSquares;
-    });
-
-    // Thêm hoặc loại bỏ vị trí ghế đã chọn trong mảng selectedSeats
+    if (disabledSquares[index - 1]) {
+      return; // Nếu ô đã bị disable thì không xử lý click
+    }
+  
     setSelectedSeats((prevSelectedSeats) => {
-      if (prevSelectedSeats.includes(index)) {
-        return prevSelectedSeats.filter(seat => seat !== index);
+      const selectedIndex = prevSelectedSeats.indexOf(index);
+      if (selectedIndex !== -1) {
+        // Nếu ô đã được chọn trước đó, loại bỏ nó khỏi danh sách
+        return [...prevSelectedSeats.slice(0, selectedIndex), ...prevSelectedSeats.slice(selectedIndex + 1)];
       } else {
+        // Nếu ô chưa được chọn, thêm nó vào danh sách
         return [...prevSelectedSeats, index];
       }
     });
   };
-
+  
   useEffect(() => {
     onCreate(selectedSeats.map(index => `${index}`)); // Truyền danh sách vị trí ghế đã chọn thay vì disabledSquares
   }, [selectedSeats, onCreate]);
