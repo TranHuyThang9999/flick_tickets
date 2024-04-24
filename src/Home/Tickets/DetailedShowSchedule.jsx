@@ -3,6 +3,7 @@ import { Button, Drawer, Table, Modal, Input, Popconfirm } from 'antd'; // Thêm
 import { showWarning, showError } from '../../common/log/log';
 import SelectedSeat from '../../common/cinemas/SelectedSeat';
 import axios from 'axios';
+import Cookies from 'js-cookie'; // Import thư viện js-cookie
 
 export default function DetailedShowSchedule({ id }) {
   const [showTimeTicket, setShowTimeTicket] = useState([]);
@@ -16,7 +17,8 @@ export default function DetailedShowSchedule({ id }) {
   const [email, setEmail] = useState(''); // Trạng thái để lưu email nhập vào
 
   const showDrawer = (record) => {
-    setSelectedRecord(record);
+    const { show_time_id } = record; // Extract the show_time_id from the record
+    setSelectedRecord({ ...record, show_time_id }); // Pass the show_time_id along with the record
     setOpen(true);
   };
 
@@ -25,24 +27,24 @@ export default function DetailedShowSchedule({ id }) {
     setOpen(false);
   };
 
- const fetchData = async () => {
-  setFetchingData(true);
-  try {
-    const response = await axios.get(`http://localhost:8080/manager/user/getlist/time?id=${id}`);
-    const data = response.data; // Truy cập dữ liệu từ response.data
-    setShowTimeTicket(data.showtimes);
-    if (data.result.code === 20) {
-      showWarning("Không tìm thấy bản ghi nào");
-    } else if (data.result.code === 4) {
-      showError("Lỗi server vui lòng thử lại");
+  const fetchData = async () => {
+    setFetchingData(true);
+    try {
+      const response = await axios.get(`http://localhost:8080/manager/user/getlist/time?id=${id}`);
+      const data = response.data; // Truy cập dữ liệu từ response.data
+      setShowTimeTicket(data.showtimes);
+      if (data.result.code === 20) {
+        showWarning("Không tìm thấy bản ghi nào");
+      } else if (data.result.code === 4) {
+        showError("Lỗi server vui lòng thử lại");
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showError("Lỗi server vui lòng thử lại", error);
+    } finally {
+      setFetchingData(false);
     }
-  } catch (error) {
-    console.error('Error:', error);
-    showError("Lỗi server vui lòng thử lại", error);
-  } finally {
-    setFetchingData(false);
-  }
-};
+  };
 
 
   useEffect(() => {
@@ -139,8 +141,10 @@ export default function DetailedShowSchedule({ id }) {
         amount: amount,
         description: 'Xin Cam on',
         items: items,
+        ShowTimeId: selectedRecord.id,
+        seats: selectPopChid.join(","),
         cancelUrl: "http://localhost:3000/",
-        returnUrl: "http://localhost:3000/",
+        returnUrl: "http://localhost:8080/manager/public/customer/payment/return",
         buyerName: "John Doe",
         buyerEmail: email, // Sử dụng email đã nhập vào
         buyerPhone: phoneNumber, // Sử dụng số điện thoại đã nhập vào
@@ -152,6 +156,9 @@ export default function DetailedShowSchedule({ id }) {
           'Content-Type': 'application/json'
         }
       });
+
+      localStorage.setItem("order_id", response.data.orderCode);
+      Cookies.set("order_id", response.data.orderCode, { expires: 30 }); // Đặt cookie với thời gian sống là 1 tháng (30 ngày)
 
       const paymentResult = response.data;
       if (paymentResult && paymentResult.checkoutUrl) {
@@ -165,7 +172,6 @@ export default function DetailedShowSchedule({ id }) {
     setLoadingPayment(false); // Kết thúc loading sau khi hoàn thành hoặc gặp lỗi
   };
 
-  console.log("list for pop : ", selectPopChid);
 
   return (
     <div>

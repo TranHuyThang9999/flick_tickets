@@ -19,6 +19,7 @@ import SendEmail from "./common/ProcessEmail/SendEmail";
 import VerifyEmail from "./common/ProcessEmail/VerifyEmail";
 import FormCheckOtpEmail from "./common/ProcessEmail/FormCheckOtpEmail";
 import DemoSend from "./common/test/test";
+import Cookies from 'js-cookie'; // Import thư viện js-cookie
 
 export default function App() {
 
@@ -45,6 +46,7 @@ export default function App() {
       {/* <FormCheckOtpEmail/> */}
       {/* <DemoSend/> */}
       <GetTicketById id={1485296} />
+
     </div>
   );
 }
