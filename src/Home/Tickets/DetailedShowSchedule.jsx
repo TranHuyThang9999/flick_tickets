@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Drawer, Table, Modal, Input, Spin } from 'antd'; // Thêm Modal và Input từ antd để hiển thị form và ô input
+import { Button, Drawer, Table, Modal, Input, Popconfirm } from 'antd'; // Thêm Modal và Input từ antd để hiển thị form và ô input
 import { showWarning, showError } from '../../common/log/log';
 import SelectedSeat from '../../common/cinemas/SelectedSeat';
 import axios from 'axios';
@@ -124,9 +124,9 @@ export default function DetailedShowSchedule({ id }) {
 
   const item = selectPopChid
   const items = item.map((item) => ({
-    name:"Vị trí ghế : "+ item,
+    name: "Vị trí ghế : " + item,
     quantity: 1,
-    price: selectedRecord.price
+    price: selectedRecord && selectedRecord.price
   }));
 
   const handleCreatePayment = async () => {
@@ -137,7 +137,7 @@ export default function DetailedShowSchedule({ id }) {
       const requestData = {
         amount: amount,
         description: 'Xin Cam on',
-        items:items,
+        items: items,
         cancelUrl: "http://localhost:3000/",
         returnUrl: "http://localhost:3000/",
         buyerName: "John Doe",
@@ -205,16 +205,24 @@ export default function DetailedShowSchedule({ id }) {
           <Button key="back" onClick={() => setShowModal(false)}>
             Quay lại
           </Button>,
-          <Button key="submit" type="primary" loading={loadingPayment} onClick={handleCreatePayment}>
-            {loadingPayment ? 'Đang xử lý...' : 'Thanh toán'}
-          </Button>,
+          //
+          <Popconfirm
+            title="Xác nhận thanh toán?"
+            okText="Xác nhận"
+            cancelText="Hủy"
+            onConfirm={handleCreatePayment}
+          >
+            <Button key="submit" type="primary" loading={loadingPayment}>
+              {loadingPayment ? 'Đang xử lý...' : 'Thanh toán'}
+            </Button>
+          </Popconfirm>,
         ]}
       >
         <div style={{ padding: '0 10px' }}>
           <label>Nhập số điện thoại</label>
           <Input onChange={(e) => setPhoneNumber(e.target.value)} />
           <label>Nhập email để nhận vé</label>
-          <Input onChange={(e) => setEmail(e.target.value)} />
+          <Input type='email' onChange={(e) => setEmail(e.target.value)} />
         </div>
       </Modal>
     </div>
