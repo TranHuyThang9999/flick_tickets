@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Space } from 'antd';
 
-function Square({ size = 30, index, onClick, disabled, selected, inSelectedSeatGetFormApi }) {
+function Square({ size = 30, index, onClick, disabled, selected }) {
   const style = {
     width: `${size}px`,
     height: `${size}px`,
@@ -10,7 +10,7 @@ function Square({ size = 30, index, onClick, disabled, selected, inSelectedSeatG
     justifyContent: 'center',
     cursor: 'pointer',
     border: '1px solid brown',
-    backgroundColor: inSelectedSeatGetFormApi ? 'yellow' : selected ? 'red' : disabled ? 'gray' : 'white',
+    backgroundColor: selected ? 'red' : disabled ? 'gray' : 'white',
   };
 
   const handleClick = () => {
@@ -49,45 +49,31 @@ export default function SelectedSeat({
   const [containerWidth, setContainerWidth] = useState(widthContainerUseSavedate || 400);
   const [containerHeight, setContainerHeight] = useState(heightContainerUseSaveData || 400);
   const [disabledSquares, setDisabledSquares] = useState([]);
-  const [selectedSquares, setSelectedSquares] = useState([]);
 
   useEffect(() => {
+    const selectedSeatsArray = SelectedSeatGetFormApi.split(',').map((seat) => parseInt(seat.trim(), 10));
     const disabledSquaresList = Array.from({ length: numSquares }).map((_, index) =>
-      SelectedSeatGetFormApi.includes(index + 1)
+      selectedSeatsArray.includes(index + 1)
     );
     setDisabledSquares(disabledSquaresList);
-
-    const selectedSquaresList = Array.from({ length: numSquares })
-      .map((_, index) => index + 1)
-      .filter((index) => SelectedSeatGetFormApi.includes(index));
-    setSelectedSquares(selectedSquaresList);
-    console.log("111", selectedSquaresList);
-    // Gọi hàm onCreate để truyền danh sách các square đã chọn sang component khác
   }, [SelectedSeatGetFormApi, numSquares]);
 
   const handleSquareClick = (index) => {
-    const isDisabled = disabledSquares[index - 1];
-    const isSelected = selectedSquares.includes(index);
-
-    if (isDisabled) {
-      return;
-    }
-
-    if (isSelected) {
-      const updatedSelectedSquares = selectedSquares.filter((squareIndex) => squareIndex !== index);
-      setSelectedSquares(updatedSelectedSquares);
-    } else {
-      setSelectedSquares([...selectedSquares, index]);
-    }
+    setDisabledSquares((prevDisabledSquares) => {
+      const updatedDisabledSquares = [...prevDisabledSquares];
+      updatedDisabledSquares[index - 1] = !updatedDisabledSquares[index - 1];
+      return updatedDisabledSquares;
+    });
   };
 
-
   useEffect(() => {
-    onCreate(selectedSquares
-      .filter((index) => !SelectedSeatGetFormApi.includes(index))
-      .map((index) => `${index}`));
-  }, [selectedSquares, SelectedSeatGetFormApi, onCreate]);
-
+    onCreate(
+      disabledSquares
+        .map((disabled, index) => (disabled ? index + 1 : null))
+        .filter((seat) => seat !== null)
+        .map((index) => `${index}`)
+    );
+  }, [disabledSquares, onCreate]);
 
   return (
     <div className="form-selected-seat">
@@ -101,8 +87,7 @@ export default function SelectedSeat({
                   index={index + 1}
                   onClick={handleSquareClick}
                   disabled={disabledSquares[index]}
-                  selected={selectedSquares.includes(index + 1)}
-                  inSelectedSeatGetFormApi={SelectedSeatGetFormApi.includes(index + 1)}
+                  selected={false} // Không cần kiểm tra selected nữa vì màu nền được xác định bởi disabled
                 />
               ))}
             </SquareContainer>
@@ -111,11 +96,9 @@ export default function SelectedSeat({
             <div>
               <h2>Selected Squares:</h2>
               <ul>
-                {selectedSquares
-                  .filter((index) => !SelectedSeatGetFormApi.includes(index))
-                  .map((index) => (
-                    <li key={index}>Square {index}</li>
-                  ))}
+                {disabledSquares.map((disabled, index) => (
+                  disabled && <li key={index}>Square {index + 1}</li>
+                ))}
               </ul>
             </div>
           </Col>

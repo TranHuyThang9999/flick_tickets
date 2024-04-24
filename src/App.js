@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import HomeaAdmin from "./dashboard/HomeaAdmin";
 import CreateAccountStaff from "./dashboard/CreateAccountStaff";
@@ -21,13 +21,14 @@ import FormCheckOtpEmail from "./common/ProcessEmail/FormCheckOtpEmail";
 import DemoSend from "./common/test/test";
 
 export default function App() {
+
   return (
     <div>
       {/* <HomeaAdmin /> */}
       {/* <CreateAccountStaff/> */}
       {/* <GetAllStaff/> */}
       {/* <AppTest/> */}
-      {/* <SelectedSeat SelectedSeatGetFormApi={[1,45,23,90]} numSquares={90} heightContainerUseSaveData={500} widthContainerUseSavedate={900}/> */}
+      {/* <SelectedSeat SelectedSeatGetFormApi={[1,12,13,14,15]} numSquares={100} heightContainerUseSaveData={500} widthContainerUseSavedate={900} onCreate={setSelectPopChid}/> */}
       {/* <AppSquare/> */}
       {/* <DisplaySelectedSeat/> */}
       {/* <GetAllTickets/> */}

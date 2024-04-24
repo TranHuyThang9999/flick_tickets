@@ -116,7 +116,7 @@ export default function DetailedShowSchedule({ id }) {
       ),
     },
   ];
-
+console.log(selectedRecord);
   const pagination = {
     pageSize: 4,
     position: ['bottomLeft'],
