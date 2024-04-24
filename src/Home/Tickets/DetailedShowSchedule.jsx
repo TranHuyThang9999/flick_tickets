@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Drawer, Table, Spin } from 'antd'; // Thêm Spin từ antd để hiển thị trạng thái loading
+import { Button, Drawer, Table, Modal, Input, Spin } from 'antd'; // Thêm Modal và Input từ antd để hiển thị form và ô input
 import { showWarning, showError } from '../../common/log/log';
 import SelectedSeat from '../../common/cinemas/SelectedSeat';
 import axios from 'axios';
@@ -11,6 +11,9 @@ export default function DetailedShowSchedule({ id }) {
   const [fetchingData, setFetchingData] = useState(false);
   const [selectPopChid, setSelectPopChid] = useState([]);
   const [loadingPayment, setLoadingPayment] = useState(false); // Trạng thái loading cho phần thanh toán
+  const [showModal, setShowModal] = useState(false); // Trạng thái hiển thị modal
+  const [phoneNumber, setPhoneNumber] = useState(''); // Trạng thái để lưu số điện thoại nhập vào
+  const [email, setEmail] = useState(''); // Trạng thái để lưu email nhập vào
 
   const showDrawer = (record) => {
     setSelectedRecord(record);
@@ -21,10 +24,6 @@ export default function DetailedShowSchedule({ id }) {
     setSelectedRecord(null);
     setOpen(false);
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [id]);
 
   const fetchData = async () => {
     setFetchingData(true);
@@ -44,6 +43,10 @@ export default function DetailedShowSchedule({ id }) {
       setFetchingData(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [id]);
 
   function formatTimestamp(timestamp) {
     const date = new Date(timestamp * 1000);
@@ -119,6 +122,13 @@ export default function DetailedShowSchedule({ id }) {
     position: ['bottomLeft'],
   };
 
+  const item = selectPopChid
+  const items = item.map((item) => ({
+    name:"Vị trí ghế : "+ item,
+    quantity: 1,
+    price: selectedRecord.price
+  }));
+
   const handleCreatePayment = async () => {
     setLoadingPayment(true); // Bắt đầu loading khi bắt đầu thanh toán
     try {
@@ -126,12 +136,13 @@ export default function DetailedShowSchedule({ id }) {
 
       const requestData = {
         amount: amount,
-        description: `Số ghế đã chọn: ${selectPopChid.join(', ')}`,
+        description: 'Xin Cam on',
+        items:items,
         cancelUrl: "http://localhost:3000/",
         returnUrl: "http://localhost:3000/",
         buyerName: "John Doe",
-        buyerEmail: "john@example.com",
-        buyerPhone: "123456789",
+        buyerEmail: email, // Sử dụng email đã nhập vào
+        buyerPhone: phoneNumber, // Sử dụng số điện thoại đã nhập vào
         buyerAddress: "123 Main St"
       };
 
@@ -181,10 +192,31 @@ export default function DetailedShowSchedule({ id }) {
             />
           </div>
         )}
-        <Button type="primary" onClick={handleCreatePayment} disabled={selectPopChid.length === 0 || loadingPayment}> {/* Sử dụng điều kiện để vô hiệu hóa nút khi selectPopChid rỗng hoặc loadingPayment đang true */}
+        <Button type="primary" onClick={() => setShowModal(true)} disabled={selectPopChid.length === 0 || loadingPayment}> {/* Sử dụng điều kiện để vô hiệu hóa nút khi selectPopChid rỗng hoặc loadingPayment đang true */}
           {loadingPayment ? 'Đang xử lý...' : 'Mua'}
         </Button>
       </Drawer>
+      {/* Modal */}
+      <Modal
+        title="Thông tin thanh toán"
+        visible={showModal} // Sử dụng trạng thái showModal để điều khiển sự hiển thị của modal
+        onCancel={() => setShowModal(false)}
+        footer={[
+          <Button key="back" onClick={() => setShowModal(false)}>
+            Quay lại
+          </Button>,
+          <Button key="submit" type="primary" loading={loadingPayment} onClick={handleCreatePayment}>
+            {loadingPayment ? 'Đang xử lý...' : 'Thanh toán'}
+          </Button>,
+        ]}
+      >
+        <div style={{ padding: '0 10px' }}>
+          <label>Nhập số điện thoại</label>
+          <Input onChange={(e) => setPhoneNumber(e.target.value)} />
+          <label>Nhập email để nhận vé</label>
+          <Input onChange={(e) => setEmail(e.target.value)} />
+        </div>
+      </Modal>
     </div>
   );
 }

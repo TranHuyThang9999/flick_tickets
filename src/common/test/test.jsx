@@ -1,42 +1,47 @@
-// SelectedSeatsPopup.js
-import React from 'react';
-import { Modal, Input } from 'antd';
+import { Button, Input, Modal, Space } from 'antd';
+import React, { useState } from 'react'
 
-function TestSelectedSeatsPopup({ selectedSeats, visible, onCancel, onCreate }) {
-  const [buyerName, setBuyerName] = React.useState('');
-  const [buyerEmail, setBuyerEmail] = React.useState('');
+export default function DemoSend() {
 
-  const handleNameChange = (e) => {
-    setBuyerName(e.target.value);
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const showModal = () => {
+    setOpen(true);
   };
 
-  const handleEmailChange = (e) => {
-    setBuyerEmail(e.target.value);
+  const handleOk = () => {
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpen(false);
+      setConfirmLoading(false);
+    }, 2000);
   };
 
-  const handleCreate = () => {
-    onCreate({ buyerName, buyerEmail });
-    setBuyerName('');
-    setBuyerEmail('');
+  const handleCancel = () => {
+    setOpen(false);
   };
-
+  
   return (
-    <Modal
-      visible={visible}
-      title="Selected Seats"
-      okText="Create"
-      onCancel={onCancel}
-      onOk={handleCreate}
-    >
-      <ul>
-        {selectedSeats.map((seat, index) => (
-          <li key={index}>{seat}</li>
-        ))}
-      </ul>
-      <Input placeholder="Name" value={buyerName} onChange={handleNameChange} />
-      <Input placeholder="Email" value={buyerEmail} onChange={handleEmailChange} />
-    </Modal>
+    <>
+      <Button type="primary" onClick={showModal}>
+        Open Modal with async logic
+      </Button>
+      <Modal
+        title="Title"
+        open={open}
+        onOk={handleOk}
+        confirmLoading={confirmLoading}
+        onCancel={handleCancel}
+      >
+       <div style={{padding:'0 10px'}}>
+          <label>Nhập số điện thoại</label>
+          <Input/>
+          <label>Nhập email để nhận vé</label>
+          <Input/>
+       </div>
+       
+      </Modal>
+    </>
   );
 }
-
-export default TestSelectedSeatsPopup;

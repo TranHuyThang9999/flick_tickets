@@ -8,6 +8,7 @@ import './index.css';
 const { Step } = Steps;
 
 export default function FormCheckOtpEmail() {
+    
     const [current, setCurrent] = useState(0);
     const [emailInput, setEmailInput] = useState('');
     const sendEmailRef = useRef(null);

@@ -3,7 +3,7 @@ import React from "react";
 import HomeaAdmin from "./dashboard/HomeaAdmin";
 import CreateAccountStaff from "./dashboard/CreateAccountStaff";
 import GetAllStaff from "./dashboard/GetAllStaff";
-import SelectedSeat from './common/cinemas/SelectedSeat';
+import SelectedSeat from "./common/cinemas/SelectedSeat";
 import AppSquare from "./common/test/test";
 import DisplaySelectedSeat from "./dashboard/DisplaySelectedSeat";
 import GetAllTickets from "./dashboard/GetAllTickets";
@@ -18,6 +18,7 @@ import TestDetailedShowSchedule from "./common/test/tesst1";
 import SendEmail from "./common/ProcessEmail/SendEmail";
 import VerifyEmail from "./common/ProcessEmail/VerifyEmail";
 import FormCheckOtpEmail from "./common/ProcessEmail/FormCheckOtpEmail";
+import DemoSend from "./common/test/test";
 
 export default function App() {
   return (
@@ -34,7 +35,6 @@ export default function App() {
       {/* <GetListFileByTicketId id={7133536}/> */}
       {/* <PageForUser/> */}
       {/* <GetListTicket/> page */}
-      <GetTicketById id={1485296}/>
       {/* <ListFileByTicketId id={1485296}/> */}
       {/* <ShowAllTicket/> */}
       {/* <AdminUploadTickets/> */}
@@ -42,6 +42,8 @@ export default function App() {
       {/* <SendEmail/>
       <VerifyEmail/> */}
       {/* <FormCheckOtpEmail/> */}
+      {/* <DemoSend/> */}
+      <GetTicketById id={1485296} />
     </div>
   );
 }
