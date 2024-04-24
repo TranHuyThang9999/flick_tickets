@@ -25,24 +25,25 @@ export default function DetailedShowSchedule({ id }) {
     setOpen(false);
   };
 
-  const fetchData = async () => {
-    setFetchingData(true);
-    try {
-      const response = await fetch(`http://localhost:8080/manager/user/getlist/time?id=${id}`);
-      const data = await response.json();
-      setShowTimeTicket(data.showtimes);
-      if (data.result.code === 20) {
-        showWarning("Không tìm thấy bản ghi nào");
-      } else if (data.result.code === 4) {
-        showError("Lỗi server vui lòng thử lại");
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      showError("Lỗi server vui lòng thử lại", error);
-    } finally {
-      setFetchingData(false);
+ const fetchData = async () => {
+  setFetchingData(true);
+  try {
+    const response = await axios.get(`http://localhost:8080/manager/user/getlist/time?id=${id}`);
+    const data = response.data; // Truy cập dữ liệu từ response.data
+    setShowTimeTicket(data.showtimes);
+    if (data.result.code === 20) {
+      showWarning("Không tìm thấy bản ghi nào");
+    } else if (data.result.code === 4) {
+      showError("Lỗi server vui lòng thử lại");
     }
-  };
+  } catch (error) {
+    console.error('Error:', error);
+    showError("Lỗi server vui lòng thử lại", error);
+  } finally {
+    setFetchingData(false);
+  }
+};
+
 
   useEffect(() => {
     fetchData();
@@ -116,7 +117,7 @@ export default function DetailedShowSchedule({ id }) {
       ),
     },
   ];
-console.log(selectedRecord);
+  console.log(selectedRecord);
   const pagination = {
     pageSize: 4,
     position: ['bottomLeft'],
@@ -192,6 +193,7 @@ console.log(selectedRecord);
             />
           </div>
         )}
+
         <Button type="primary" onClick={() => setShowModal(true)} disabled={selectPopChid.length === 0 || loadingPayment}> {/* Sử dụng điều kiện để vô hiệu hóa nút khi selectPopChid rỗng hoặc loadingPayment đang true */}
           {loadingPayment ? 'Đang xử lý...' : 'Mua'}
         </Button>

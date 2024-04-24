@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Space } from 'antd';
 
-function Square({ size = 30, index, onClick, disabled, selected }) {
+function Square({ size = 30, index, onClick, disabled, selected, inSelectedSeatGetFormApi }) {
   const style = {
     width: `${size}px`,
     height: `${size}px`,
@@ -10,7 +10,7 @@ function Square({ size = 30, index, onClick, disabled, selected }) {
     justifyContent: 'center',
     cursor: 'pointer',
     border: '1px solid brown',
-    backgroundColor: selected ? 'red' : disabled ? 'gray' : 'white',
+    backgroundColor: selected ? 'red' : inSelectedSeatGetFormApi ? 'yellow' : disabled ? 'gray' : 'white',
   };
 
   const handleClick = () => {
@@ -49,6 +49,7 @@ export default function SelectedSeat({
   const [containerWidth, setContainerWidth] = useState(widthContainerUseSavedate || 400);
   const [containerHeight, setContainerHeight] = useState(heightContainerUseSaveData || 400);
   const [disabledSquares, setDisabledSquares] = useState([]);
+  const [selectedSeats, setSelectedSeats] = useState([]); // Thêm state mới để lưu trữ vị trí các ghế đã chọn
 
   useEffect(() => {
     const selectedSeatsArray = SelectedSeatGetFormApi.split(',').map((seat) => parseInt(seat.trim(), 10));
@@ -64,16 +65,20 @@ export default function SelectedSeat({
       updatedDisabledSquares[index - 1] = !updatedDisabledSquares[index - 1];
       return updatedDisabledSquares;
     });
+
+    // Thêm hoặc loại bỏ vị trí ghế đã chọn trong mảng selectedSeats
+    setSelectedSeats((prevSelectedSeats) => {
+      if (prevSelectedSeats.includes(index)) {
+        return prevSelectedSeats.filter(seat => seat !== index);
+      } else {
+        return [...prevSelectedSeats, index];
+      }
+    });
   };
 
   useEffect(() => {
-    onCreate(
-      disabledSquares
-        .map((disabled, index) => (disabled ? index + 1 : null))
-        .filter((seat) => seat !== null)
-        .map((index) => `${index}`)
-    );
-  }, [disabledSquares, onCreate]);
+    onCreate(selectedSeats.map(index => `${index}`)); // Truyền danh sách vị trí ghế đã chọn thay vì disabledSquares
+  }, [selectedSeats, onCreate]);
 
   return (
     <div className="form-selected-seat">
@@ -87,7 +92,7 @@ export default function SelectedSeat({
                   index={index + 1}
                   onClick={handleSquareClick}
                   disabled={disabledSquares[index]}
-                  selected={false} // Không cần kiểm tra selected nữa vì màu nền được xác định bởi disabled
+                  selected={selectedSeats.includes(index + 1)} // Sử dụng selectedSeats thay vì disabledSquares
                 />
               ))}
             </SquareContainer>
@@ -96,8 +101,8 @@ export default function SelectedSeat({
             <div>
               <h2>Selected Squares:</h2>
               <ul>
-                {disabledSquares.map((disabled, index) => (
-                  disabled && <li key={index}>Square {index + 1}</li>
+                {selectedSeats.map((seat, index) => ( // Hiển thị danh sách các ghế đã chọn
+                  <li key={index}>Square {seat}</li>
                 ))}
               </ul>
             </div>
