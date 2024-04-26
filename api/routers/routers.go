@@ -3,10 +3,13 @@ package routers
 import (
 	"flick_tickets/api/controllers"
 	"flick_tickets/api/middlewares"
+	"flick_tickets/common/log"
 	"flick_tickets/configs"
 	"flick_tickets/core/events/sockets"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron"
 	cors "github.com/rs/cors/wrapper/gin"
 )
 
@@ -42,6 +45,7 @@ func NewApiRouter(
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong"})
 	})
+
 	//admin
 	r.POST("/user/register", user.AddUser)
 	r.POST("/user/login", auth.LoginUser)
@@ -56,6 +60,7 @@ func NewApiRouter(
 	r.GET("customers/ticket", ticket.GetAllTickets)
 	r.GET("/user/load", file_lc.GetListFileById)
 	r.POST("/user/verify/", aes.VerifyTickets)
+
 	// r.PUT("/user/update/size/room", ticket.UpdateSizeRoom)
 	//	r.GET("/ws", managerClient.ServerWs) //auto pool
 	//cinema
@@ -68,7 +73,11 @@ func NewApiRouter(
 	r.POST("/customer/order/ticket", order.OrdersTicket)
 	r.GET("/customer/look/order/ticket", order.GetOrderById)
 	r.PUT("/customer/update/order", order.UpsertOrderById)
-	r.PUT("/customer/order/send", order.SubmitSendTicketByEmail)
+	r.PUT("/customer/order/send", order.SubmitSendTicketByEmail) //webhook
+	r.PUT("/customer/order/calcel", order.UpdateOrderWhenCancel)
+	r.GET("/user/order/getlist", order.GetAllOrder)
+	r.GET("/user/trigger", order.TriggerOrder)
+
 	//customer
 	r.POST("/customer/send/:email", customer.SendOtptoEmail)
 	r.POST("/customer/verify/", customer.CheckOtpByEmail)
@@ -92,8 +101,26 @@ func NewApiRouter(
 
 	//payment
 	r.POST("/public/customer/payment/pay", payment.CreatePayment)
-	r.GET("/public/customer/payment/request", payment.GetPaymentOrderById)
+	r.GET("/public/customer/payment/request", payment.GetPaymentOrderByIdFromPayOs)
 	r.GET("/public/customer/payment/return", payment.ReturnUrlAfterPayment)
+	r.GET("/public/customer/payment/calcel", payment.ReturnUrlAftercanCelPayment)
+
+	// Thêm công việc vào lịch để chạy mỗi 3 phút
+	scheduler := cron.New()
+	scheduler.AddFunc("*/900 * * * *", func() {
+		resp, err := http.Get("http://localhost:8080/manager/user/trigger")
+		if err != nil {
+			// Xử lý lỗi khi gọi API
+			log.Error(err, "error controller")
+			return
+		}
+		defer resp.Body.Close()
+		// Xử lý phản hồi nếu cần
+	})
+
+	// Bắt đầu lịch sau khi thêm công việc vào
+	scheduler.Start()
+
 	return &ApiRouter{
 		Engine: engine,
 	}

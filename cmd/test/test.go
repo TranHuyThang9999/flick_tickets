@@ -2,6 +2,7 @@ package main
 
 import (
 	"flick_tickets/common/log"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -25,7 +26,21 @@ func main() {
 
 	// }
 	log.LoadLogger()
+	// Thời điểm hiện tại
+	currentTime := time.Now().Unix()
 
+	// Thời điểm tạo của đơn hàng
+	orderCreatedAt := int64(1714144681) // Đây là thời gian tạo của đơn hàng trong dữ liệu của bạn
+
+	// Tính thời gian cách đây bao nhiêu giây
+	timeDifference := currentTime - orderCreatedAt
+
+	// Kiểm tra nếu thời gian cách đây lớn hơn 15 phút (15 * 60 giây)
+	if timeDifference > 15*60 {
+		fmt.Println("Đơn hàng này đã được tạo cách đây hơn 15 phút.")
+	} else {
+		fmt.Println("Đơn hàng này được tạo trong vòng 15 phút gần đây.")
+	}
 }
 
 func LoadFileHtml(c *gin.Context) {

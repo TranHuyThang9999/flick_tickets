@@ -80,6 +80,12 @@ const (
 
 	ORDER_REGISTER_TICKET_CODE = 34
 	ORDER_REGISTER_TICKET_MESS = "Hết vé"
+
+	ORDER_SEND_TICKET_CODE = 36
+	ORDER_SEND_TICKET_MESS = "error payment not"
+
+	ORDER_CHECK_CODE = 388
+	ORDER_CHECK_MESS = "error check status payment"
 )
 const (
 	ROLE_ADMIN     = 1
@@ -87,7 +93,8 @@ const (
 	ACCOUNT_ACTIVE = 5
 	ORDER_INIT     = 7
 	ORDER_SUCESS   = 9
-	ROLE_CUSTOMER  = 11
+	ORDER_CANCEL   = 11
+	ROLE_CUSTOMER  = 13
 )
 const (
 	NoSignatureErrorMessage         = "No signature."

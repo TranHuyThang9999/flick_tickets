@@ -52,7 +52,7 @@ func (c *ControllerPayMent) CreatePayment(ctx *gin.Context) {
 		BuyerAddress: req.BuyerAddress,
 		ShowTimeId:   req.ShowTimeId,
 		Seats:        req.Seats,
-		ExpiredAt:    utils.GenerateTimestampExpiredAt(15),
+		ExpiredAt:    utils.GenerateTimestampExpiredAt(1),
 	})
 
 	if err != nil {
@@ -63,10 +63,10 @@ func (c *ControllerPayMent) CreatePayment(ctx *gin.Context) {
 	ctx.JSON(200, resp)
 }
 
-func (c *ControllerPayMent) GetPaymentOrderById(ctx *gin.Context) {
+func (c *ControllerPayMent) GetPaymentOrderByIdFromPayOs(ctx *gin.Context) {
 
 	id := ctx.Query("id")
-	resp, err := c.payment.GetOrderById(id)
+	resp, err := c.payment.GetOrderByIdFromPayOs(ctx, id)
 	c.baseController.Response(ctx, resp, err)
 
 }
@@ -83,4 +83,16 @@ func (c *ControllerPayMent) ReturnUrlAfterPayment(ctx *gin.Context) {
 	// Trả về trang HTML
 	ctx.Data(http.StatusOK, "text/html; charset=utf-8", htmlBytes)
 
+}
+func (c *ControllerPayMent) ReturnUrlAftercanCelPayment(ctx *gin.Context) {
+	path := "api/public/payment/cancel_payment.html"
+	htmlBytes, err := os.ReadFile(path)
+	if err != nil {
+		// Xử lý lỗi nếu có
+		ctx.String(http.StatusInternalServerError, "Lỗi khi đọc tệp HTML")
+		return
+	}
+
+	// Trả về trang HTML
+	ctx.Data(http.StatusOK, "text/html; charset=utf-8", htmlBytes)
 }

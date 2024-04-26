@@ -10,6 +10,9 @@ import (
 	"flick_tickets/core/entities"
 	"flick_tickets/core/events/caching/cache"
 	"flick_tickets/core/mapper"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 )
 
@@ -177,7 +180,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		Price:          price,
 		AddressDetails: string(addressCinemaTypeJson),
 		UpdatedAt:      utils.GenerateTimestamp(),
-		CreatedAt:      ticket.CreatedAt,
+		CreatedAt:      utils.GenerateTimestamp(),
 	})
 	if err != nil {
 		tx.Rollback()
@@ -357,4 +360,278 @@ func (u *UseCaseOrder) UpsertOrderById(ctx context.Context, req *entities.OrderR
 			Message: enums.SUCCESS_MESS,
 		},
 	}, nil
+}
+func (u *UseCaseOrder) UpdateOrderWhenCancel(ctx context.Context, req *entities.OrderCancelBtyIdreq) (*entities.OrderCancelBtyIdresp, error) {
+
+	tx, err := u.trans.BeginTransaction(ctx)
+	if err != nil {
+		return &entities.OrderCancelBtyIdresp{
+			Result: entities.Result{
+				Code:    enums.TRANSACTION_INVALID_CODE,
+				Message: enums.TRANSACTION_INVALID_MESS,
+			},
+		}, err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+	}()
+
+	err = u.order.UpdateOrderWhenCancel(ctx, tx, req.OrderId, enums.ORDER_CANCEL)
+	if err != nil {
+		tx.Rollback()
+		return &entities.OrderCancelBtyIdresp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+
+	order, err := u.order.GetOrderById(ctx, req.OrderId)
+	if err != nil {
+		tx.Rollback()
+		return &entities.OrderCancelBtyIdresp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+
+	showtimeById, err := u.showTime.GetInformationShowTimeForTicketByTicketId(ctx, order.ShowTimeID)
+	if err != nil {
+		tx.Rollback()
+		return &entities.OrderCancelBtyIdresp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	// newListSeatsGetShowTime := make([]int, 0)
+	// newListSeatsGetPutOrder := make([]int, 0)
+	newListSeatsGetShowTime, err := mapper.ParseToIntSlice(showtimeById.SelectedSeat)
+	if err != nil {
+		return &entities.OrderCancelBtyIdresp{
+			Result: entities.Result{
+				Code:    enums.CONVERT_STRING_TO_ARRAY_CODE,
+				Message: enums.CONVERT_STRING_TO_ARRAY_MESS,
+			},
+		}, nil
+	}
+	newListSeatsGetPutOrder, err := mapper.ParseToIntSlice(order.Seats)
+	if err != nil {
+		return &entities.OrderCancelBtyIdresp{
+			Result: entities.Result{
+				Code:    enums.CONVERT_STRING_TO_ARRAY_CODE,
+				Message: enums.CONVERT_STRING_TO_ARRAY_MESS,
+			},
+		}, nil
+	}
+	//newListSeatsGetShowTime = append(newListSeatsGetShowTime, newListSeatsGetPutOrder...)
+	listremoveDuplicates := mapper.RemoveDuplicates(newListSeatsGetShowTime, newListSeatsGetPutOrder)
+	err = u.showTime.UpdateQuantitySeat(ctx, tx,
+		order.ShowTimeID,
+		showtimeById.Quantity+len(mapper.ConvertListToStringSlice(order.Seats)),
+		mapper.ConvertIntArrayToString(listremoveDuplicates),
+	)
+
+	if err != nil {
+		tx.Rollback()
+		return &entities.OrderCancelBtyIdresp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	tx.Commit()
+	return &entities.OrderCancelBtyIdresp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
+}
+func (u *UseCaseOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReqByForm) (*entities.OrderGetAll, error) {
+
+	resp, err := u.order.GetAllOrder(ctx, req)
+	if err != nil {
+		return &entities.OrderGetAll{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(resp) == 0 {
+		return &entities.OrderGetAll{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
+
+	return &entities.OrderGetAll{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Orders: resp,
+	}, nil
+}
+
+func (u *UseCaseOrder) GetOrderByIdFromPayOs(ctx context.Context, orderID string) (*entities.PayMentResponseCheckOrder, error) {
+	url := fmt.Sprintf("https://api-merchant.payos.vn/v2/payment-requests/%s", orderID)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Error(err, "error")
+		return nil, err
+	}
+	log.Info(orderID)
+	req.Header.Set("x-client-id", "c84c857d-160c-456a-91f2-384526d7a360")
+	req.Header.Set("x-api-key", "f74461b1-d7d3-4fca-b918-fcb39524ce8c")
+	req.Header.Set("Cookie", "connect.sid=s%3A-Sat8d9c-WFoxLgE3cJZTb9bi3oSwFC2.uiWQpbtmdJc8ARx1PevsohQW62U4QiaOgBPfX85%2F91s")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Error(err, "error")
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Cập nhật phần "Cookie" từ phản hồi API trước đó
+	newCookie := resp.Header.Get("Set-Cookie")
+	req.Header.Set("Cookie", newCookie)
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Error(err, "error")
+		return nil, err
+	}
+
+	var response entities.PayMentResponseCheckOrder
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Error(err, "error convert string to json")
+		return nil, fmt.Errorf(enums.ERROR_CONVERT_JSON_MESS+"%s", err)
+	}
+
+	if response.Code == "101" {
+		log.Info("Mã thanh toán không tồn tại")
+		a := []entities.Transaction{}
+		return &entities.PayMentResponseCheckOrder{
+			Code: "101",
+			Desc: "Mã thanh toán không tồn tại",
+			Data: entities.Data{
+				ID:                 orderID,
+				OrderCode:          0,
+				Amount:             0,
+				AmountPaid:         0,
+				AmountRemaining:    0,
+				Status:             "",
+				CreatedAt:          "",
+				Transactions:       a,
+				CanceledAt:         nil,
+				CancellationReason: nil,
+			},
+			Signature: "",
+		}, nil
+	}
+
+	if response.Data.Status == "EXPIRED" {
+		a := []entities.Transaction{}
+		log.Info("Đơn hàng đã quá hạn thời gian")
+		return &entities.PayMentResponseCheckOrder{
+			Code: "103",
+			Desc: "Đơn hàng đã quá hạn thời gian",
+			Data: entities.Data{
+				ID:                 "",
+				OrderCode:          mapper.ConvertStringToInt(orderID),
+				Amount:             0,
+				AmountPaid:         0,
+				AmountRemaining:    0,
+				Status:             "",
+				CreatedAt:          "",
+				Transactions:       a,
+				CanceledAt:         nil,
+				CancellationReason: nil,
+			},
+		}, nil
+	} else if response.Data.Status == "CANCELLED" {
+		a := []entities.Transaction{}
+		return &entities.PayMentResponseCheckOrder{
+			Code: "102",
+			Desc: "Đơn hàng đã hủy",
+			Data: entities.Data{
+				ID:                 "0",
+				OrderCode:          mapper.ConvertStringToInt(orderID),
+				Amount:             0,
+				AmountPaid:         0,
+				AmountRemaining:    0,
+				Status:             "",
+				CreatedAt:          "",
+				Transactions:       a,
+				CanceledAt:         nil,
+				CancellationReason: nil,
+			},
+			Signature: "",
+		}, nil
+	}
+
+	return &response, nil
+}
+
+func (u *UseCaseOrder) TriggerOrder(ctx context.Context) error {
+
+	var listOrderId = make([]int64, 0)
+
+	order, err := u.order.TriggerOrder(ctx)
+	if err != nil {
+		log.Error(err, "error check order")
+		return err
+	}
+	if len(order) == 0 {
+		log.Info("data emptly")
+		return nil
+	}
+	for _, v := range order {
+		listOrderId = append(listOrderId, v.ID)
+	}
+
+	for i := 0; i < len(listOrderId); i++ {
+		resp, err := u.GetOrderByIdFromPayOs(ctx, strconv.FormatInt(listOrderId[i], 10))
+		if err != nil {
+			log.Error(err, "error check list")
+			return fmt.Errorf("error check order %v", err)
+		}
+		if resp.Code == "103" { // qua han ko thanh toan
+			_, err := u.UpdateOrderWhenCancel(ctx, &entities.OrderCancelBtyIdreq{
+				OrderId: listOrderId[i],
+			})
+			if err != nil {
+				return fmt.Errorf("error check order %v", err)
+			}
+			return nil
+		} else if resp.Code == "101" || resp.Code == "102" {
+			return fmt.Errorf("error check order %v ", resp)
+		} else { //thanh toan thanh cong
+			_, err := u.SendticketAfterPayment(ctx, &entities.OrderSendTicketAfterPaymentReq{
+				OrderId: listOrderId[i],
+			})
+			log.Info("update ok")
+			if err != nil {
+				return fmt.Errorf("error check order %v", err)
+			}
+		}
+	}
+	// 101 ko ton tai 102 da huy
+	log.Infof("trigger ok")
+	return nil
 }

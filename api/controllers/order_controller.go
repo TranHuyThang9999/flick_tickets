@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
 	"flick_tickets/core/usecase"
 	"net/http"
@@ -52,9 +53,9 @@ func (order *ControllerOrder) OrdersTicket(ctx *gin.Context) {
 
 func (order *ControllerOrder) GetOrderById(ctx *gin.Context) {
 
-	idTicket := ctx.Query("id")
+	ticketId := ctx.Query("id")
 
-	resp, err := order.order.GetOrderById(ctx, idTicket)
+	resp, err := order.order.GetOrderById(ctx, ticketId)
 
 	order.baseController.Response(ctx, resp, err)
 
@@ -83,4 +84,36 @@ func (order *ControllerOrder) SubmitSendTicketByEmail(ctx *gin.Context) {
 	resp, err := order.order.SendticketAfterPayment(ctx, &req)
 
 	order.baseController.Response(ctx, resp, err)
+}
+func (order *ControllerOrder) UpdateOrderWhenCancel(ctx *gin.Context) {
+
+	var req entities.OrderCancelBtyIdreq
+
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := order.order.UpdateOrderWhenCancel(ctx, &req)
+
+	order.baseController.Response(ctx, resp, err)
+}
+func (order *ControllerOrder) GetAllOrder(ctx *gin.Context) {
+
+	var req domain.OrdersReqByForm
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := order.order.GetAllOrder(ctx, &req)
+
+	order.baseController.Response(ctx, resp, err)
+}
+func (order *ControllerOrder) TriggerOrder(ctx *gin.Context) {
+
+	err := order.order.TriggerOrder(ctx)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error server": err})
+		return
+	}
+	ctx.JSON(200, "trigger sucess")
 }

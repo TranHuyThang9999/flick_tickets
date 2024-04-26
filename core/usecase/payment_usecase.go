@@ -166,6 +166,7 @@ func (u *UseCasePayment) CreatePayment(ctx context.Context, paymentData entities
 				log.Error(err, "error payment")
 				return &entities.CheckoutResponseDataType{RespOrder: resp}, nil
 			}
+			//them check
 			return &paymentLinkData, nil
 		}
 
@@ -174,7 +175,7 @@ func (u *UseCasePayment) CreatePayment(ctx context.Context, paymentData entities
 	return nil, resources.NewPayOSError(paymentLinkRes.Code, paymentLinkRes.Desc)
 }
 
-func (u *UseCasePayment) GetOrderById(orderID string) (*entities.PayMentResponseCheckOrder, error) {
+func (u *UseCasePayment) GetOrderByIdFromPayOs(ctx context.Context, orderID string) (*entities.PayMentResponseCheckOrder, error) {
 	url := fmt.Sprintf("https://api-merchant.payos.vn/v2/payment-requests/%s", orderID)
 
 	req, err := http.NewRequest("GET", url, nil)

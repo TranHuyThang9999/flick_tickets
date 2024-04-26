@@ -133,3 +133,24 @@ func ConvertStringToInt(id string) int {
 	}
 	return resp
 }
+
+func RemoveDuplicates(slice1, slice2 []int) []int {
+	// Tạo một map để lưu trữ các phần tử trong slice2
+	elements := make(map[int]bool)
+	for _, val := range slice2 {
+		elements[val] = true
+	}
+
+	// Tạo một slice mới để lưu trữ các phần tử không trùng lặp
+	filteredSlice := []int{}
+
+	// Lặp qua từng phần tử trong slice1
+	for _, val := range slice1 {
+		// Kiểm tra xem phần tử có tồn tại trong map không
+		if !elements[val] {
+			filteredSlice = append(filteredSlice, val)
+		}
+	}
+
+	return filteredSlice
+}

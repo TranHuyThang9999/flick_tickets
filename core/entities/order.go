@@ -42,3 +42,13 @@ type OrderSendTicketAfterPaymentResp struct {
 	Result  Result `json:"result"`
 	Created int64  `json:"created"`
 }
+type OrderCancelBtyIdreq struct {
+	OrderId int64 `form:"order_id"`
+}
+type OrderCancelBtyIdresp struct {
+	Result Result `json:"result"`
+}
+type OrderGetAll struct {
+	Result Result           `json:"result"`
+	Orders []*domain.Orders `json:"orders"`
+}
