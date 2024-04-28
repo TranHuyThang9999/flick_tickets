@@ -14,7 +14,7 @@ export default function GetTicketByIdOnForm({ id }) {
     const [timestampListAdd, setTimestampListAdd] = useState([]);
     const [timestampsList, setTimestampsList] = useState([]);
     const [cinemaOptions, setCinemaOptions] = useState([]);
-    
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -169,24 +169,21 @@ export default function GetTicketByIdOnForm({ id }) {
         }
     }, [id]);
 
-    const optionValueRoom = Array.from(new Set(cinemaOptions.map((item) => item.cinema_name))).map((cinema_name) => ({
+
+
+    const defaultValueRoom = Array.from(new Set(cinemaOptions.map((item) => item.cinema_name))).map((cinema_name) => ({
         label: cinema_name,
         value: cinema_name,
-    }));
+    })).map(option => option.value);
 
-    const defaultValueRoom = optionValueRoom.map(option => option.value);
 
-    const optionValueShowTime = Array.from(new Set(cinemaOptions.map((item) => item.movie_time))).map((movie_time) => ({
+
+    const defaultValueShowTime = Array.from(new Set(cinemaOptions.map((item) => item.movie_time))).map((movie_time) => ({
         label: movie_time,
         value: movie_time,
-    }));
-
-    const defaultValueShowTime = optionValueShowTime.map(option => option.value);
+    })).map(option => option.value);
 
 
-    console.log(optionValueRoom);
-    console.log(optionsMovieType);
-   // defaultValue={['a10', 'c12']}
 
     return (
         <div>
