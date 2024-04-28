@@ -137,10 +137,7 @@ export default function GetTicketByIdOnForm({ id }) {
         },
     };
 
-    const optionsGetTimeSelect = timestampsList.map(timestamp => ({
-        value: timestamp,
-        label: moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss')
-    }));
+
     function convertToList(movieTypeStr) {
         // Chia chuỗi thành mảng bằng dấu phẩy và loại bỏ khoảng trắng
         let movieTypeList = movieTypeStr.split(',').map(type => type.trim());
@@ -176,12 +173,28 @@ export default function GetTicketByIdOnForm({ id }) {
         value: cinema_name,
     })).map(option => option.value);
 
+    function formatTimestamp(timestamp) {
+        const date = new Date(timestamp * 1000); // Nhân 1000 để chuyển đổi từ milliseconds sang seconds
 
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    }
 
     const defaultValueShowTime = Array.from(new Set(cinemaOptions.map((item) => item.movie_time))).map((movie_time) => ({
         label: movie_time,
         value: movie_time,
-    })).map(option => option.value);
+    })).map(option => formatTimestamp(option.value));
+
+    const optionsGetTimeSelect = timestampsList.map(timestamp => ({
+        value: timestamp,
+        // label: moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss')
+        label: formatTimestamp(timestamp) // Sử dụng hàm formatTimestamp thay vì moment.unix
+    }));
 
 
 
