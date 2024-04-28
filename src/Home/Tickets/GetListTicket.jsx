@@ -90,8 +90,7 @@ export default function GetListTicket() {
                 <Table dataSource={tickets}>
                   <Table.Column title="Id" dataIndex="id" key="id" />
                   <Table.Column title="Tên vé" dataIndex="name" key="name" />
-                  <Table.Column title="Số vé tối đa" dataIndex="max_ticket" key="max_ticket" />
-                  <Table.Column title="Số lượng" dataIndex="quantity" key="quantity" />
+        
                   <Table.Column title="Mô tả" dataIndex="description" key="description" />
 
                   <Table.Column title="Chi tiết" key="details"

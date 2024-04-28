@@ -15,8 +15,8 @@ import CinemasAdd from '../common/cinemas/CinemasAdd';
 import CreateAccountStaff from './CreateAccountStaff';
 import GetAllStaff from './GetAllStaff';
 import AdminUploadTickets from './AdminUploadTickets';
-import { icons } from 'antd/es/image/PreviewGroup';
 import GetAllTickets from './GetAllTickets';
+import MovieAdd from '../common/MovieTypes/MovieUpload';
 
 const { Header, Sider, Content } = Layout;
 
@@ -62,12 +62,18 @@ const items = [
     icon: <SolutionOutlined />,
     label:'Quản lý vé',
     children:<GetAllTickets/>
-  }
+  },
+  {
+    key:'8',
+    icon: <SolutionOutlined />,
+    label:'Thêm loại phim',
+    children:<MovieAdd/>
+  },
 ];
 
 const HomeAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [activeTab, setActiveTab] = useState('4');
+  const [activeTab, setActiveTab] = useState('7');
 
   const handleTabChange = (key) => {
     setActiveTab(key);

@@ -1,13 +1,17 @@
 import { Button, Drawer, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { showError, showWarning } from '../log/log';
-import SelectedSeat from '../cinemas/SelectedSeat';
+import SelectedSeatForAdmin from '../../dashboard/SelectedSeatForAdmin';
 
-export default function DetailedShowSchedule({ id, selectedSeatGetFormApi, numSquares }) {
+export default function DetailedShowSchedule({ id }) {
   const [showTimeTicket, setShowTimeTicket] = useState([]);
   const [open, setOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [selectPopChid, setSelectPopChid] = useState([]);
 
-  const showDrawer = (id) => {
+  const showDrawer = (record) => {
+    const { id } = record; // Extract the id from the record
+    setSelectedRecord(record); // Pass the entire record
     setOpen(true);
   };
 
@@ -50,7 +54,7 @@ export default function DetailedShowSchedule({ id, selectedSeatGetFormApi, numSq
 
     return `${year}-${month}-${day} ${hours}:${minutes}`;
   }
-  console.log("show time : ",showTimeTicket);
+
   const columns = [
     {
       title: 'Mã vé',
@@ -94,21 +98,11 @@ export default function DetailedShowSchedule({ id, selectedSeatGetFormApi, numSq
       key: 'address_details',
     },
     {
-      title: 'Chiều dài',
-      dataIndex: 'height_container',
-      key: 'height_container',
-    },
-    {
-      title: 'Chiều rộng',
-      dataIndex: 'width_container',
-      key: 'width_container',
-    },
-    {
       title: 'Mô tả phòng',
       render: (record) => (
         <div>
-          <Button type="primary" onClick={() => showDrawer(record.id)}>
-            Xem chi tiết
+          <Button type="primary" onClick={() => showDrawer(record)}>
+            Xem chi tiết phòng
           </Button>
           <Drawer
             title="Phòng"
@@ -119,12 +113,17 @@ export default function DetailedShowSchedule({ id, selectedSeatGetFormApi, numSq
               paddingBottom: 80,
             }}
           >
-            <SelectedSeat
-              SelectedSeatGetFormApi={selectedSeatGetFormApi}
-              heightContainerUseSaveData={record.height_container}
-              widthContainerUseSavedate={record.width_container}
-              numSquares={numSquares}
-            />
+            {selectedRecord && (
+              <div style={{ padding: '10px 16px' }}>
+                <SelectedSeatForAdmin
+                  SelectedSeatGetFormApi={selectedRecord.selected_seat}
+                  heightContainerUseSaveData={selectedRecord.height_container}
+                  widthContainerUseSavedate={selectedRecord.width_container}
+                  numSquares={selectedRecord.original_number}
+                  onCreate={setSelectPopChid}
+                />
+              </div>
+            )}
           </Drawer>
         </div>
       ),

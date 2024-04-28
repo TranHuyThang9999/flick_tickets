@@ -5,13 +5,14 @@ import Axios from 'axios';
 import CinemasGetAll from '../common/cinemas/CinemasGetAll';
 import "./index.css";
 import moment from "moment";
-import GetAllTickets from './GetAllTickets';
+import MovieGetAll from '../common/MovieTypes/MovieGetAll';
 
 export default function AdminUploadTickets() {
 
     const [cinemaName, setCinemaName] = useState('');
     const [timestampsList, setTimestampsList] = useState([]);
     const [timestampListAdd, setTimestampListAdd] = useState([]);
+    const [movieType, setMovieType] = useState([]);
 
     const [form] = Form.useForm();
     const [fileList, setFileList] = useState([]);
@@ -29,7 +30,6 @@ export default function AdminUploadTickets() {
         }
     };
 
-    console.log("time : ", timestampsList);
     //
     const options = [];
     const cinemas = CinemasGetAll();
@@ -40,8 +40,15 @@ export default function AdminUploadTickets() {
         })
 
     }
+    //  const optionsMovieType = [];
+    const movieTypes = MovieGetAll();
+    const optionsMovieType = movieTypes.map((movieType) => ({
+        label: movieType.movieTypeName,
+        value: movieType.movieTypeName,
+    }));
 
-    console.log("cinema 1:", cinemaName);
+
+    console.log("movie type", movieTypes);
 
     const handleFormSubmit = async (values) => {
         try {
@@ -65,6 +72,8 @@ export default function AdminUploadTickets() {
             formData.append('director', values.director);
             formData.append('actor', values.actor);
             formData.append('producer', values.producer);
+            formData.append('movie_type', movieType);
+
             fileList.forEach((file) => {
                 formData.append('file', file.originFileObj);
             });
@@ -117,170 +126,184 @@ export default function AdminUploadTickets() {
 
     return (
         <div>
-           
-                    <Form {...layout} form={form} className="form-container" onFinish={handleFormSubmit}>
-                        <Form.Item
-                            label="Nhập tên vé"
-                            className="form-row"
-                            name="name"
-                            rules={[{ required: true, message: 'Vui lòng nhập tên vé!' }]}
-                        >
-                            <Input />
-                        </Form.Item>
 
-                        <Form.Item
-                            label="Nhập giá vé"
-                            className="form-row"
-                            name="price"
-                            rules={[{ required: true, message: 'Vui lòng nhập giá vé!' }]}
-                        >
-                            <InputNumber />
-                        </Form.Item>
+            <Form {...layout} form={form} className="form-container" onFinish={handleFormSubmit}>
+                <Form.Item
+                    label="Nhập tên vé"
+                    className="form-row"
+                    name="name"
+                    rules={[{ required: true, message: 'Vui lòng nhập tên vé!' }]}
+                >
+                    <Input />
+                </Form.Item>
 
-                        <Form.Item
-                            label="Nhập số lượng vé trên 1 phòng"
-                            className="form-row"
-                            name="quantity"
-                            rules={[{ required: true, message: 'Vui lòng nhập số lượng vé!' }]}
-                        >
-                            <InputNumber />
-                        </Form.Item>
+                <Form.Item
+                    label="Nhập giá vé"
+                    className="form-row"
+                    name="price"
+                    rules={[{ required: true, message: 'Vui lòng nhập giá vé!' }]}
+                >
+                    <InputNumber />
+                </Form.Item>
 
-                        <Form.Item
-                            label="Nhập mô tả vé"
-                            className="form-row"
-                            name="description"
-                            rules={[{ required: true, message: 'Vui lòng nhập mô tả vé!' }]}
-                        >
-                            <Input />
-                        </Form.Item>
+                <Form.Item
+                    label="Nhập số lượng vé trên 1 phòng"
+                    className="form-row"
+                    name="quantity"
+                    rules={[{ required: true, message: 'Vui lòng nhập số lượng vé!' }]}
+                >
+                    <InputNumber />
+                </Form.Item>
 
-
-                        <Form.Item
-                            label="Nhập trạng thái"
-                            className="form-row"
-                            name="status"
-                        >
-                            <Select
-                                labelInValue
-
-                                style={{
-                                    width: 120,
-                                    height: 42,
-                                }}
-                                options={[
-                                    {
-                                        value: '13',
-                                        label: 'Mở bán',
-                                    },
-                                    {
-                                        value: '15',
-                                        label: 'Đóng bán',
-                                    },
-                                ]}
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Nhập giảm giá"
-                            className="form-row"
-                            name="sale"
-                        >
-                            <InputNumber />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Ngày phát hành"
-                            className="form-row"
-                            name="release_date"
-                        >
-                            <DatePicker showTime />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Lịch chiếu phim"
-                            className="form-row"
-                            name="movie_time"
-                        // rules={[{ required: true, message: 'Vui lòng nhập thời lượng phim!' }]}
-                        >
-                            <div className='showTime'>
-                                <DatePicker
-                                    showTime
-                                    onChange={handleDateChange}
-                                    picker="datetime"
-                                    size="small"
-                                />
-                                <Select
-                                    allowClear
-                                    mode="multiple"
-                                    placeholder="Please select"
-                                    options={optionsGetTimeSelect}
-                                    onChange={(value) => setTimestampListAdd(value)}
-                                />
-                            </div>
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Chọn phòng để chiếu phim"
-                            className="form-row"
-                            name="cinema_name"
-                        // rules={[{ required: true, message: 'Vui lòng nhập tên rạp!' }]}
-                        >
-                            <Select
-                                allowClear
-                                mode='multiple'
-                                options={options}
-                                onChange={(value) => setCinemaName(value)}
-
-                            />
-
-                        </Form.Item>
-
-                        <Form.Item label="Thời lượng phim" name="movie_duration" rules={[{ required: true }]}>
-                            <InputNumber />
-                        </Form.Item>
-
-                        <Form.Item label="Giới hạn độ tuổi" name="age_limit" rules={[{ required: true }]}>
-                            <InputNumber />
-                        </Form.Item>
-
-                        <Form.Item label="Đạo diễn" name="director" rules={[{ required: true }]}>
-                            <Input />
-                        </Form.Item>
-
-                        <Form.Item label="Diễn viên" name="actor" rules={[{ required: true }]}>
-                            <Input />
-                        </Form.Item>
-
-                        <Form.Item label="Nhà sản xuất" name="producer" rules={[{ required: true }]}>
-                            <Input />
-                        </Form.Item>
+                <Form.Item
+                    label="Nhập mô tả vé"
+                    className="form-row"
+                    name="description"
+                    rules={[{ required: true, message: 'Vui lòng nhập mô tả vé!' }]}
+                >
+                    <Input />
+                </Form.Item>
 
 
-                        <Form.Item
-                            label="Nhập ảnh mô tả vé"
-                            className="form-row"
-                            name="file"
-                            rules={[{ required: true, message: 'Vui lòng chọn ảnh mô tả vé!' }]}
-                        >
-                            <Upload
-                                fileList={fileList}
-                                listType="picture-card"
-                                accept="image/jpeg,image/png"
-                                onChange={onChange}
-                                beforeUpload={() => false} // Prevent auto-upload
-                            >
-                                {'+ Upload'}
-                            </Upload>
-                        </Form.Item>
+                <Form.Item
+                    label="Nhập trạng thái"
+                    className="form-row"
+                    name="status"
+                >
+                    <Select
+                        labelInValue
 
-                        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                            <Button type="primary" htmlType="submit">
-                                Submit
-                            </Button>
-                        </Form.Item>
-                    </Form>
-           
+                        style={{
+                            width: 120,
+                            height: 42,
+                        }}
+                        options={[
+                            {
+                                value: '15',
+                                label: 'Mở bán',
+                            },
+                            {
+                                value: '17',
+                                label: 'Đóng bán',
+                            },
+                        ]}
+                    />
+                </Form.Item>
+
+                <Form.Item
+                    label="Nhập giảm giá"
+                    className="form-row"
+                    name="sale"
+                >
+                    <InputNumber />
+                </Form.Item>
+
+                <Form.Item
+                    label="Ngày phát hành"
+                    className="form-row"
+                    name="release_date"
+                >
+                    <DatePicker showTime />
+                </Form.Item>
+
+                <Form.Item
+                    label="Lịch chiếu phim"
+                    className="form-row"
+                    name="movie_time"
+                // rules={[{ required: true, message: 'Vui lòng nhập thời lượng phim!' }]}
+                >
+                    <div className='showTime'>
+                        <DatePicker
+                            showTime
+                            onChange={handleDateChange}
+                            picker="datetime"
+                            size="small"
+                        />
+                        <Select
+                            allowClear
+                            mode="multiple"
+                            placeholder="Please select"
+                            options={optionsGetTimeSelect}
+                            onChange={(value) => setTimestampListAdd(value)}
+                        />
+                    </div>
+                </Form.Item>
+
+                <Form.Item
+                    label="Chọn phòng để chiếu phim"
+                    className="form-row"
+                    name="cinema_name"
+                // rules={[{ required: true, message: 'Vui lòng nhập tên rạp!' }]}
+                >
+                    <Select
+                        allowClear
+                        mode='multiple'
+                        options={options}
+                        onChange={(value) => setCinemaName(value)}
+
+                    />
+
+                </Form.Item>
+
+                <Form.Item
+                    label="Thuộc thể loại phim"
+                    className="form-row"
+                    name="movie_type"
+                >
+                    <Select
+                        allowClear
+                        mode="multiple"
+                        options={optionsMovieType} // Ensure correct variable is used here
+                        onChange={(value) => setMovieType(value)}
+                    />
+
+                </Form.Item>
+
+                <Form.Item label="Thời lượng phim" name="movie_duration" rules={[{ required: true }]}>
+                    <InputNumber />
+                </Form.Item>
+
+                <Form.Item label="Giới hạn độ tuổi" name="age_limit" rules={[{ required: true }]}>
+                    <InputNumber />
+                </Form.Item>
+
+                <Form.Item label="Đạo diễn" name="director" rules={[{ required: true }]}>
+                    <Input />
+                </Form.Item>
+
+                <Form.Item label="Diễn viên" name="actor" rules={[{ required: true }]}>
+                    <Input />
+                </Form.Item>
+
+                <Form.Item label="Nhà sản xuất" name="producer" rules={[{ required: true }]}>
+                    <Input />
+                </Form.Item>
+
+
+                <Form.Item
+                    label="Nhập ảnh mô tả vé"
+                    className="form-row"
+                    name="file"
+                    rules={[{ required: true, message: 'Vui lòng chọn ảnh mô tả vé!' }]}
+                >
+                    <Upload
+                        fileList={fileList}
+                        listType="picture-card"
+                        accept="image/jpeg,image/png"
+                        onChange={onChange}
+                        beforeUpload={() => false} // Prevent auto-upload
+                    >
+                        {'+ Upload'}
+                    </Upload>
+                </Form.Item>
+
+                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                    <Button type="primary" htmlType="submit">
+                        Submit
+                    </Button>
+                </Form.Item>
+            </Form>
+
 
 
         </div>

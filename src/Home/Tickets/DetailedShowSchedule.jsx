@@ -143,7 +143,7 @@ export default function DetailedShowSchedule({ id }) {
         items: items,
         ShowTimeId: selectedRecord.id,
         seats: selectPopChid.join(","),
-        cancelUrl: "http://localhost:3000/",
+        cancelUrl: "http://localhost:8080/manager/public/customer/payment/calcel",
         returnUrl: "http://localhost:8080/manager/public/customer/payment/return",
         buyerName: "John Doe",
         buyerEmail: email, // Sử dụng email đã nhập vào

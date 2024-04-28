@@ -27,7 +27,17 @@ export default function GetTicketById({ id }) {
     if (!ticket.id) {
         return <div>Đang tải...</div>;
     }
-    console.log("tikcet : ",ticket.selected_seat);
+    function formatTimestamp(timestamp) {
+        const date = new Date(timestamp * 1000); // Nhân 1000 để chuyển đổi từ milliseconds sang seconds
+      
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+      
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+      }
     return (
         <div>
 
@@ -35,8 +45,6 @@ export default function GetTicketById({ id }) {
                 <Table scroll={{ x: 190 }} dataSource={[ticket]} pagination={false}>
                     <Table.Column title="Tên" dataIndex="name" key="name" />
                     <Table.Column title="Giá" dataIndex="price" key="price" />
-                    <Table.Column title="Số vé tối đa" dataIndex="max_ticket" key="max_ticket" />
-                    <Table.Column title="Số lượng" dataIndex="quantity" key="quantity" />
                     <Table.Column title="Mô tả" dataIndex="description" key="description" />
                     <Table.Column title="Giảm giá" dataIndex="sale" key="sale" />
                     <Table.Column title="Ngày phát hành" dataIndex="release_date" key="release_date" />
@@ -47,22 +55,25 @@ export default function GetTicketById({ id }) {
                     <Table.Column title="Đạo diễn" dataIndex="director" key="director" />
                     <Table.Column title="Diễn viên" dataIndex="actor" key="actor" />
                     <Table.Column title="Nhà sản xuất" dataIndex="producer" key="producer" />
-                    {/* <Table.Column title="Ngày tạo" dataIndex="created_at" key="created_at" render={formatTimestamp} />
-              <Table.Column title="Ngày cập nhật" dataIndex="updated_at" key="updated_at" render={formatTimestamp} /> */}
+                    <Table.Column title="Ngày tạo" dataIndex="created_at" key="created_at" render={formatTimestamp} />
+
                 </Table>
 
             )
             }
-            <DetailedShowSchedule id={ticket.id} numSquares={ticket.quantity} selectedSeatGetFormApi={ticket.selected_seat} />
+            <DetailedShowSchedule
+                id={ticket.id}
+             />{/**/}
+
             <GetListFileByTicketId id={ticket.id} />
-            
+
             <Space direction='vertical' style={{ marginLeft: '20px' }}>
 
                 <Space>
                     {/* <UpdateSizeRoom ticket_id={ticket.id} /> */}
                 </Space>
 
-                <p>Mô tả phòng</p>
+                <p>Chi tiết mô tả phòng</p>
             </Space>
 
         </div>
