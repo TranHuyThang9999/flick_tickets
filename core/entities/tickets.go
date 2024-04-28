@@ -33,6 +33,7 @@ type TicketReqUpload struct {
 	Director      string                  `form:"director"`
 	Actor         string                  `form:"actor"`
 	Producer      string                  `form:"producer"`
+	MovieType     string                  `form:"movie_type"`
 }
 type TicketRespUpload struct {
 	Result    Result `json:"result"`
@@ -54,4 +55,7 @@ type TicketRespGetAll struct {
 	Result Result `json:"result"`
 	//Tickets []*Tickets `json:"tickets"`
 	ListTickets []*domain.Tickets `json:"list_tickets"`
+}
+type TicketRespDeleteById struct {
+	Result Result `json:"result"`
 }

@@ -84,8 +84,14 @@ const (
 	ORDER_SEND_TICKET_CODE = 36
 	ORDER_SEND_TICKET_MESS = "error payment not"
 
-	ORDER_CHECK_CODE = 388
+	ORDER_CHECK_CODE = 38
 	ORDER_CHECK_MESS = "error check status payment"
+
+	MOVIE_EXIST_CODE = 40
+	MOVIE_EXIST_MESS = "movie  exist"
+
+	TICKET_OPEN_SALE_CODE = 42
+	TICKET_OPEN_SALE_MESS = "ticket open sale"
 )
 const (
 	ROLE_ADMIN     = 1
@@ -95,6 +101,9 @@ const (
 	ORDER_SUCESS   = 9
 	ORDER_CANCEL   = 11
 	ROLE_CUSTOMER  = 13
+
+	TICKET_OPEN_SALE  = 15
+	TICKET_CLOSE_SALE = 17
 )
 const (
 	NoSignatureErrorMessage         = "No signature."

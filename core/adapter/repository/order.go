@@ -83,7 +83,7 @@ func (c *CollectionOrder) TriggerOrder(ctx context.Context) ([]*domain.Orders, e
 	currentTimeStamp := time.Now().Unix()
 
 	// Tính timestamp của thời điểm 15 phút trước đây
-	fifteenMinutesAgo := currentTimeStamp - (2 * 60)
+	fifteenMinutesAgo := currentTimeStamp - (15 * 60)
 
 	// Truy vấn các đơn hàng có status = 7 và created_at nhỏ hơn thời điểm 15 phút trước đó
 	result := c.collection.Where("status = ? AND created_at < ?", 7, fifteenMinutesAgo).Find(&orders)

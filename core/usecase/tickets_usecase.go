@@ -53,7 +53,6 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 			},
 		}, nil
 	}
-
 	ticketAdd := &domain.Tickets{
 		ID:            idTicket,
 		Name:          req.Name,
@@ -67,6 +66,7 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 		Director:      req.Director,
 		Actor:         req.Actor,
 		Producer:      req.Producer,
+		MovieType:     req.MovieType,
 		CreatedAt:     utils.GenerateTimestamp(),
 		UpdatedAt:     utils.GenerateTimestamp(),
 	}
@@ -439,3 +439,31 @@ func (c *UseCaseTicker) GetAllTickets(ctx context.Context, req *domain.Ticketreq
 // 		},
 // 	}, nil
 // }
+
+func (c *UseCaseTicker) DeleteTicketsById(ctx context.Context, ticketId string) (*entities.TicketRespDeleteById, error) {
+
+	ticketIdNumber := mapper.ConvertStringToInt(ticketId)
+	ticket, err := c.ticket.GetTicketById(ctx, int64(ticketIdNumber))
+	if err != nil {
+		return &entities.TicketRespDeleteById{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if ticket.Status == enums.TICKET_OPEN_SALE {
+		return &entities.TicketRespDeleteById{
+			Result: entities.Result{
+				Code:    enums.TICKET_OPEN_SALE_CODE,
+				Message: enums.TICKET_OPEN_SALE_MESS,
+			},
+		}, nil
+	}
+	return &entities.TicketRespDeleteById{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
+}

@@ -41,6 +41,7 @@ func loadUseCase() []fx.Option {
 		fx.Provide(usecase.NewUseCaseCinemas),
 		fx.Provide(services.NewServiceAddress),
 		fx.Provide(usecase.NewUseCasePayment),
+		fx.Provide(usecase.NewUseCaseMovie),
 	}
 }
 
@@ -66,6 +67,7 @@ func loadEngine() []fx.Option {
 		fx.Provide(controllers.NewControllerCinamas),
 		fx.Provide(controllers.NewControllerAddress),
 		fx.Provide(controllers.NewControllerParment),
+		fx.Provide(controllers.NewControllerMovie),
 	}
 }
 func loadAdapter() []fx.Option {
@@ -81,5 +83,6 @@ func loadAdapter() []fx.Option {
 		fx.Provide(repository.NewCollectionShowTime),
 		fx.Provide(repository.NewCollectionCinemas),
 		fx.Provide(infrastructure.NewCollectionAddress),
+		fx.Provide(repository.NewCollectionMovie),
 	}
 }

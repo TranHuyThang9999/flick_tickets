@@ -1,4 +1,4 @@
--- Active: 1712502908629@@127.0.0.1@5432@flick_tickets
+-- Active: 1714154952322@@127.0.0.1@5432@flick_tickets@public
 
 CREATE Table users (
     id BIGINT PRIMARY key,
@@ -101,11 +101,12 @@ CREATE TABLE movie_theaters (
   country VARCHAR(255)
 );
 
+
+create Table movie_types (
+    id BIGINT PRIMARY key,
+    movie_type_name VARCHAR(1024)
+)
+
 select DISTINCT name from cities;
 
 SELECT DISTINCT district from cities where name in('Thành phố Hà Nội','Tỉnh Hưng Yên');
-
-SELECT * 
-FROM orders
-WHERE status = 7 
-AND created_at >= EXTRACT(EPOCH FROM NOW()) - (15 * 60);

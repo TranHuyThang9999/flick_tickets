@@ -32,6 +32,7 @@ func NewApiRouter(
 	cinema *controllers.ControllerCinemas,
 	addresPublic *controllers.ControllerAddress,
 	payment *controllers.ControllerPayMent,
+	moive *controllers.ControllerMovie,
 ) *ApiRouter {
 	engine := gin.New()
 	gin.DisableConsoleColor()
@@ -60,6 +61,7 @@ func NewApiRouter(
 	r.GET("customers/ticket", ticket.GetAllTickets)
 	r.GET("/user/load", file_lc.GetListFileById)
 	r.POST("/user/verify/", aes.VerifyTickets)
+	r.DELETE("/user/delete/ticket/:id", ticket.DeleteTicketsById)
 
 	// r.PUT("/user/update/size/room", ticket.UpdateSizeRoom)
 	//	r.GET("/ws", managerClient.ServerWs) //auto pool
@@ -74,7 +76,7 @@ func NewApiRouter(
 	r.GET("/customer/look/order/ticket", order.GetOrderById)
 	r.PUT("/customer/update/order", order.UpsertOrderById)
 	r.PUT("/customer/order/send", order.SubmitSendTicketByEmail) //webhook
-	r.PUT("/customer/order/calcel", order.UpdateOrderWhenCancel)
+	r.PUT("/customer/order/calcel", order.UpdateOrderWhenCancel) // webhook
 	r.GET("/user/order/getlist", order.GetAllOrder)
 	r.GET("/user/trigger", order.TriggerOrder)
 
@@ -104,10 +106,13 @@ func NewApiRouter(
 	r.GET("/public/customer/payment/request", payment.GetPaymentOrderByIdFromPayOs)
 	r.GET("/public/customer/payment/return", payment.ReturnUrlAfterPayment)
 	r.GET("/public/customer/payment/calcel", payment.ReturnUrlAftercanCelPayment)
+	//moive
+	r.POST("/user/movie/add", moive.AddMoiveType)
+	r.GET("/user/movie/getlist", moive.GetAllMovieType)
 
-	// Thêm công việc vào lịch để chạy mỗi 3 phút
+	// Thêm công việc vào lịch để chạy mỗi 15 phút = 900s
 	scheduler := cron.New()
-	scheduler.AddFunc("*/900 * * * *", func() {
+	err := scheduler.AddFunc("*/15 * * * *", func() {
 		resp, err := http.Get("http://localhost:8080/manager/user/trigger")
 		if err != nil {
 			// Xử lý lỗi khi gọi API
@@ -117,7 +122,9 @@ func NewApiRouter(
 		defer resp.Body.Close()
 		// Xử lý phản hồi nếu cần
 	})
-
+	if err != nil {
+		log.Error(err, "error")
+	}
 	// Bắt đầu lịch sau khi thêm công việc vào
 	scheduler.Start()
 

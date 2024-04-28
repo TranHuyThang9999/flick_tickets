@@ -20,23 +20,26 @@ type Tickets struct {
 	Director      string  `json:"director"`
 	Actor         string  `json:"actor"`
 	Producer      string  `json:"producer"`
+	MovieType     string  `json:"movie_type"`
 	CreatedAt     int     `json:"created_at"`
 	UpdatedAt     int     `json:"updated_at"`
 }
 type TicketreqFindByForm struct {
-	ID            int64  `form:"id"`
-	Name          string `form:"name"`
-	Description   string `form:"description"`
-	Sale          int    `form:"sale"`
-	ReleaseDate   int    `form:"release_date"`
-	Status        int    `form:"status"`
-	MovieDuration int    `form:"movieDuration"`
-	AgeLimit      int    `form:"age_limit"`
-	Director      string `form:"director"`
-	Actor         string `form:"actor"`
-	Producer      string `form:"producer"`
-	CreatedAt     int    `form:"created_at"`
-	UpdatedAt     int    `form:"updated_at"`
+	ID            int64   `form:"id"`
+	Name          string  `form:"name"`
+	Price         float64 `form:"price"`
+	Description   string  `form:"description"`
+	Sale          int     `form:"sale"`
+	ReleaseDate   int     `form:"release_date"`
+	Status        int     `form:"status"`
+	MovieDuration int     `form:"movieDuration"`
+	AgeLimit      int     `form:"age_limit"`
+	Director      string  `form:"director"`
+	Actor         string  `form:"actor"`
+	Producer      string  `form:"producer"`
+	MovieType     string  `form:"movie_type"`
+	CreatedAt     int     `form:"created_at"`
+	UpdatedAt     int     `form:"updated_at"`
 }
 
 type TicketReqUpdateById struct {
@@ -54,6 +57,7 @@ type TicketReqUpdateById struct {
 	Director      string  `json:"director"`
 	Actor         string  `json:"actor"`
 	Producer      string  `json:"producer"`
+	MovieType     string  `json:"movie_type"`
 	CreatedAt     int     `json:"created_at"`
 	UpdatedAt     int     `json:"updated_at"`
 }

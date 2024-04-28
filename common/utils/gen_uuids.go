@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+	"unicode"
 )
 
 // GenerateUniqueKey tạo một key có độ dài bằng nhau từ Int64
@@ -29,17 +30,24 @@ func GeneratePassword() string {
 		key = key*10 + int64(seededRand.Intn(9)) + 1
 	}
 
-	ranStr := make([]byte, length)
+	ranStr := make([]rune, length)
 
-	// Tạo chuỗi ngẫu nhiên
+	// Tạo chuỗi ngẫu nhiên với chữ cái in hoa
 	for i := 0; i < length; i++ {
-		ranStr[i] = byte(65 + rand.Intn(25))
+		ranStr[i] = rune(65 + rand.Intn(25))
 	}
+
 	keyinit := fmt.Sprintf("%d%s", key, string(ranStr))
 	shuff := []rune(keyinit)
 	rand.Shuffle(len(shuff), func(i, j int) {
 		shuff[i], shuff[j] = shuff[j], shuff[i]
 	})
+
+	// Biến các ký tự thành chữ cái in hoa
+	for i := 0; i < len(shuff); i++ {
+		shuff[i] = unicode.ToUpper(shuff[i])
+	}
+
 	return string(shuff)
 }
 func GenerateOtp() int64 {

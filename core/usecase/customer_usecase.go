@@ -9,6 +9,7 @@ import (
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
 	"flick_tickets/core/mapper"
+	"fmt"
 	"time"
 )
 
@@ -365,7 +366,8 @@ func (e *UseCaseCustomer) CreateAccountAdminManagerForStaff(ctx context.Context,
 			},
 		}, nil
 	}
-	err = utils.SendPasswordToEmail(req.Email, "Dạp phim gửi bạn tài khoản đăng nhập", keyPassword)
+	account := fmt.Sprintf("user name : %s \n password : %s ", req.UserName, keyPassword)
+	err = utils.SendPasswordToEmail(req.Email, "Dạp phim gửi bạn tài khoản đăng nhập", account)
 	if err != nil {
 		return &entities.CustomersRespRegisterAdmin{
 			Result: entities.Result{

@@ -29,6 +29,7 @@ func (u *CollectionTickets) GetAllTickets(ctx context.Context, req *domain.Ticke
 	result := u.collection.Where(&domain.Tickets{
 		ID:            req.ID,
 		Name:          req.Name,
+		Price:         req.Price,
 		Description:   req.Description,
 		Sale:          req.Sale,
 		ReleaseDate:   req.ReleaseDate,
@@ -38,6 +39,7 @@ func (u *CollectionTickets) GetAllTickets(ctx context.Context, req *domain.Ticke
 		Director:      req.Director,
 		Actor:         req.Actor,
 		Producer:      req.Producer,
+		MovieType:     req.MovieType,
 		CreatedAt:     req.CreatedAt,
 		UpdatedAt:     req.UpdatedAt,
 	}).Find(&tickets)
