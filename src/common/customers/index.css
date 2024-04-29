@@ -1,0 +1,10 @@
+.form-container{
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    /* height: 550px; */
+    margin: 50px auto;
+    /* Cách top 50px */
+}

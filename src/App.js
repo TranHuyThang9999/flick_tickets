@@ -22,6 +22,12 @@ import CinemasAdd from "./common/cinemas/CinemasAdd";
 import MovieAdd from "./common/MovieTypes/MovieUpload";
 import GetAllTicketsForAdmin from "./dashboard/GetAllTickets";
 import GetTicketByIdOnForm from './dashboard/GetTicketByIdOnForm';
+import TestGetAllSelect from "./common/test/test";
+import FormLogin from "./dashboard/FormLogin";
+import CheckLogin from "./Routers/CheckLogin";
+import UseContextToken from "./Routers/UseContextToken";
+import FormRegisterCustomer from "./common/customers/FormRegisterCustomer";
+import UpdateProfile from "./common/customers/UpdateProfile";
 
 export default function App() {
   return (
@@ -48,7 +54,13 @@ export default function App() {
       {/* <CinemasAdd/> */}
       {/* <MovieAdd/> */}
       {/* <GetAllTicketsForAdmin/> */}
-      <GetTicketByIdOnForm id={3244826}/>
+      {/* <GetTicketByIdOnForm id={3244826}/> */}
+      {/* <TestGetAllSelect/> */}
+      {/* <FormLogin/> */}
+
+      <CheckLogin/>
+      {/* <FormRegisterCustomer/> */}
+      {/* <UpdateProfile/> */}
     </div>
   );
 }

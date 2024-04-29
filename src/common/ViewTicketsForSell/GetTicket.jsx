@@ -5,3 +5,4 @@ export default function GetTicket() {
     <div>GetTicket</div>
   )
 }
+//ko dung

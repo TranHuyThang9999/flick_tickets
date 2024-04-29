@@ -60,7 +60,7 @@ export default function AdminUploadTickets() {
             formData.append('price', values.price);
             formData.append('quantity', values.quantity);
             formData.append('description', values.description);
-            formData.append('showtime', values.showtime);
+            // formData.append('showtime', values.showtime);
             formData.append('status', values.status ? values.status.value : '');
             formData.append('sale', values.sale);
             formData.append('release_date', releaseDateTimestamp);

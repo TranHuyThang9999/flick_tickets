@@ -81,7 +81,6 @@ export default function GetTicketByIdOnForm({ id }) {
             formData.append('price', values.price);
             formData.append('quantity', values.quantity);
             formData.append('description', values.description);
-            formData.append('showtime', values.showtime);
             formData.append('status', values.status ? values.status.value : '');
             formData.append('sale', values.sale);
             formData.append('release_date', releaseDateTimestamp);
@@ -95,7 +94,7 @@ export default function GetTicketByIdOnForm({ id }) {
             formData.append('producer', values.producer);
             formData.append('movie_type', movieType);
 
-
+            console.log(timestampListAdd);
 
             // Send a POST request using Axios
             const response = await axios.post(
@@ -184,7 +183,7 @@ export default function GetTicketByIdOnForm({ id }) {
 
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
-
+    
     const defaultValueShowTime = Array.from(new Set(cinemaOptions.map((item) => item.movie_time))).map((movie_time) => ({
         label: movie_time,
         value: movie_time,
@@ -251,7 +250,8 @@ export default function GetTicketByIdOnForm({ id }) {
                         >
                             <Select
                                 labelInValue
-                                defaultValue={{ value: ticket.status }} style={{
+                                defaultValue={ticket.status}
+                                style={{
                                     width: 120,
                                     height: 42,
                                 }}
