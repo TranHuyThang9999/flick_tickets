@@ -48,15 +48,14 @@ func NewApiRouter(
 	})
 
 	//admin
-	r.POST("/user/register", user.AddUser)
-	r.POST("/user/login", auth.LoginUser)
+	//r.POST("/user/register", user.AddUser)
 
 	adminGroup := r.Group("/")
 	// adminGroup.Use(middlewares.Authenticate())
 	// {
 	adminGroup.POST("/user/upload/ticket", ticket.AddTicket)
 	//	}
-
+	r.GET("/customer/:token", auth.CheckToken)
 	r.GET("/user/ticket", ticket.GetTicketById)
 	r.GET("customers/ticket", ticket.GetAllTickets)
 	r.GET("/user/load", file_lc.GetListFileById)
@@ -83,12 +82,18 @@ func NewApiRouter(
 	//customer
 	r.POST("/customer/send/:email", customer.SendOtptoEmail)
 	r.POST("/customer/verify/", customer.CheckOtpByEmail)
-	r.POST("/customer/manager/register", customer.RegisterCustomersManager)
-	r.POST("/customer/manager/login", customer.LoginCustomerManager)
-	r.POST("/customer/staff/register", customer.CreateAccountAdminManagerForStaff)
-	r.POST("/customer/staff/login", customer.LoginCustomerStaff)
+	r.POST("/customer/manager/register", customer.RegisterCustomersManager) //account admin
+	r.POST("/customer/manager/login", customer.Login)
+	r.POST("/customer/staff/register", customer.CreateAccountAdminManagerForStaff) // account staff
 	r.GET("customer/staff/getall", customer.GetAllStaff)
 	r.DELETE("/user/staff/delete", customer.DeleteStaffByName)
+	r.GET("/supper_admin/create", customer.CreateAccountAdmin)
+	r.POST("/customer/check", customer.CheckAccountAndSendOtp)
+	r.PUT("/customer/reset", customer.VerifyOtpByEmailAndResetPassword)
+	//
+	r.POST("/customer/user/register", customer.RegisterAccountCustomer)
+	r.PUT("/customer/user/update", customer.UpdateProfileCustomerByUserName)
+	r.GET("/customer/user/profile", customer.FindCustomersByUsename)
 	//show time
 	r.POST("/use/add/time", showTime.AddShowTime)
 	r.DELETE("/use/delete/time", showTime.DeleteShowTime)

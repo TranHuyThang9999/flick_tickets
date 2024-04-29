@@ -87,3 +87,18 @@ func (c *CollectionShowTime) UpdateQuantitySeat(ctx context.Context, tx *gorm.DB
 	}
 	return nil
 }
+func (c *CollectionShowTime) UpdatePriceShowTimeByTicketId(ctx context.Context, tx *gorm.DB, ticketId int64, price float64) error {
+	result := tx.Model(&domain.ShowTime{}).Where("", ticketId).UpdateColumn("price", price)
+	return result.Error
+}
+func (c *CollectionShowTime) DeleteByTicketIdAndNameCinema(ctx context.Context, tx *gorm.DB, ticketId int64, nameCinema []string) error {
+	// Xóa các bản ghi trong bảng CollectionShowTime dựa trên ticketId và nameCinema
+	if err := tx.Table("CollectionShowTime").
+		Where("ticket_id = ?", ticketId).
+		Where("jname_cinema IN (?)", nameCinema).
+		Delete(nil).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

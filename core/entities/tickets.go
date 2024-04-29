@@ -59,3 +59,6 @@ type TicketRespGetAll struct {
 type TicketRespDeleteById struct {
 	Result Result `json:"result"`
 }
+type TicketRespUpdateById struct {
+	Result Result `json:"result"`
+}

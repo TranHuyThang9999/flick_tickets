@@ -11,6 +11,8 @@ import (
 	"flick_tickets/core/mapper"
 	"fmt"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type UseCaseCustomer struct {
@@ -196,18 +198,11 @@ func (e *UseCaseCustomer) RegisterManager(ctx context.Context, req *entities.Cus
 			},
 		}, nil
 	}
-	respFile, err := utils.SetByCurlImage(ctx, req.File)
-	if respFile.Result.Code != 0 || err != nil {
-		return &entities.CustomersReqRegisterResp{
-			Result: respFile.Result,
-		}, nil
-	}
 
 	err = e.cus.RegisterCustomers(ctx, tx, &domain.Customers{
 		ID:          id,
 		UserName:    req.UserName,
 		Password:    utils.GeneratePassword(),
-		AvatarUrl:   respFile.URL,
 		Address:     req.Address, //[]string
 		Age:         req.Age,
 		Email:       req.Email,
@@ -226,6 +221,19 @@ func (e *UseCaseCustomer) RegisterManager(ctx context.Context, req *entities.Cus
 			},
 		}, nil
 	}
+
+	keyPassword := utils.GeneratePassword()
+	account := fmt.Sprintf("user name : %s \n password : %s ", req.UserName, keyPassword)
+	err = utils.SendPasswordToEmail(req.Email, "Dạp phim gửi bạn tài khoản đăng nhập", account)
+	if err != nil {
+		tx.Rollback()
+		return &entities.CustomersReqRegisterResp{
+			Result: entities.Result{
+				Code:    enums.SEND_EMAIL_ERR_CODE,
+				Message: enums.SEND_EMAIL_ERR_MESS,
+			},
+		}, err
+	}
 	tx.Commit()
 	return &entities.CustomersReqRegisterResp{
 		Result: entities.Result{
@@ -235,13 +243,15 @@ func (e *UseCaseCustomer) RegisterManager(ctx context.Context, req *entities.Cus
 		Id: id,
 	}, nil
 }
-func (e *UseCaseCustomer) LoginCustomerManager(ctx context.Context, req *entities.CustomerReqLogin) (*entities.CustomerRespLogin, error) {
+func (e *UseCaseCustomer) Login(ctx context.Context, req *entities.CustomerReqLogin) (*entities.CustomerRespLogin, error) {
 
 	// keyAes := e.config.KeyAES128
 
 	listCustomers, err := e.cus.FindCustomers(ctx, &domain.CustomersFindByForm{
 		UserName: req.UserName,
+		Password: req.Password,
 	})
+
 	if err != nil {
 		return &entities.CustomerRespLogin{
 			Result: entities.Result{
@@ -259,40 +269,82 @@ func (e *UseCaseCustomer) LoginCustomerManager(ctx context.Context, req *entitie
 		}, nil
 	}
 
-	if req.Password != listCustomers[0].Password {
+	if listCustomers[0].Role == enums.ROLE_ADMIN {
+
+		respToken, err := e.jwt.generateToken(listCustomers[0].ID, enums.ROLE_ADMIN, req.UserName)
+		if err != nil {
+			return &entities.CustomerRespLogin{
+				Result: entities.Result{
+					Code:    enums.CREATE_TOKEN,
+					Message: enums.CREATE_TOKEN_MESS,
+				},
+			}, nil
+		}
+
 		return &entities.CustomerRespLogin{
 			Result: entities.Result{
-				Code:    enums.LOGIN_ERR_CODE,
-				Message: enums.LOGIN_ERR_MESS,
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
 			},
+			JwtToken: respToken,
 		}, nil
-	}
-	if !listCustomers[0].IsActive {
+	} else if listCustomers[0].Role == enums.ROLE_STAFF {
+		if !listCustomers[0].IsActive {
+			return &entities.CustomerRespLogin{
+				Result: entities.Result{
+					Code:    enums.ACCOUNT_STAFF_LOCK_CODE,
+					Message: enums.ACCOUNT_STAFF_LOCK_MESS,
+				},
+			}, nil
+		}
+		respToken, err := e.jwt.generateToken(listCustomers[0].ID, enums.ROLE_STAFF, req.UserName)
+		if err != nil {
+			return &entities.CustomerRespLogin{
+				Result: entities.Result{
+					Code:    enums.CREATE_TOKEN,
+					Message: enums.CREATE_TOKEN_MESS,
+				},
+			}, nil
+		}
+
 		return &entities.CustomerRespLogin{
 			Result: entities.Result{
-				Code:    enums.ACCOUNT_STAFF_LOCK_CODE,
-				Message: enums.ACCOUNT_STAFF_LOCK_MESS,
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
 			},
+			JwtToken: respToken,
 		}, nil
-	}
-	respToken, err := e.jwt.generateToken(enums.ROLE_STAFF, req.UserName)
-	if err != nil {
+	} else {
+		if !listCustomers[0].IsActive {
+			return &entities.CustomerRespLogin{
+				Result: entities.Result{
+					Code:    enums.ACCOUNT_STAFF_LOCK_CODE,
+					Message: enums.ACCOUNT_STAFF_LOCK_MESS,
+				},
+			}, nil
+		}
+		respToken, err := e.jwt.generateToken(listCustomers[0].ID, enums.ROLE_CUSTOMER, req.UserName)
+		if err != nil {
+			return &entities.CustomerRespLogin{
+				Result: entities.Result{
+					Code:    enums.CREATE_TOKEN,
+					Message: enums.CREATE_TOKEN_MESS,
+				},
+			}, nil
+		}
+
 		return &entities.CustomerRespLogin{
 			Result: entities.Result{
-				Code:    enums.CREATE_TOKEN,
-				Message: enums.CREATE_TOKEN_MESS,
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
 			},
+			JwtToken: respToken,
 		}, nil
 	}
 
-	return &entities.CustomerRespLogin{
-		Result: entities.Result{
-			Code:    enums.SUCCESS_CODE,
-			Message: enums.SUCCESS_MESS,
-		},
-		JwtToken: respToken,
-	}, nil
 }
+
+// tao tk cho nhan vien
 func (e *UseCaseCustomer) CreateAccountAdminManagerForStaff(ctx context.Context, req *entities.CustomersReqRegisterAdminForStaff) (*entities.CustomersRespRegisterAdmin, error) {
 
 	id := utils.GenerateUniqueKey()
@@ -384,63 +436,6 @@ func (e *UseCaseCustomer) CreateAccountAdminManagerForStaff(ctx context.Context,
 		Id: id,
 	}, nil
 }
-func (e *UseCaseCustomer) LoginCustomerForStaff(ctx context.Context, req *entities.CustomerReqLogin) (*entities.CustomerRespLogin, error) {
-
-	listCustomers, err := e.cus.FindCustomers(ctx, &domain.CustomersFindByForm{
-		UserName: req.UserName,
-	})
-	if err != nil {
-		return &entities.CustomerRespLogin{
-			Result: entities.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
-			},
-		}, nil
-	}
-	if len(listCustomers) == 0 {
-		return &entities.CustomerRespLogin{
-			Result: entities.Result{
-				Code:    enums.DATA_EMPTY_ERR_CODE,
-				Message: enums.DATA_EMPTY_ERR_MESS,
-			},
-		}, nil
-	}
-
-	if req.Password != listCustomers[0].Password {
-		return &entities.CustomerRespLogin{
-			Result: entities.Result{
-				Code:    enums.LOGIN_ERR_CODE,
-				Message: enums.LOGIN_ERR_MESS,
-			},
-		}, nil
-	}
-	if !listCustomers[0].IsActive {
-		return &entities.CustomerRespLogin{
-			Result: entities.Result{
-				Code:    enums.ACCOUNT_STAFF_LOCK_CODE,
-				Message: enums.ACCOUNT_STAFF_LOCK_MESS,
-			},
-		}, nil
-	}
-	respToken, err := e.jwt.generateToken(enums.ROLE_STAFF, req.UserName)
-	if err != nil {
-		return &entities.CustomerRespLogin{
-			Result: entities.Result{
-				Code:    enums.CREATE_TOKEN,
-				Message: enums.CREATE_TOKEN_MESS,
-			},
-		}, nil
-	}
-
-	return &entities.CustomerRespLogin{
-		Result: entities.Result{
-			Code:    enums.SUCCESS_CODE,
-			Message: enums.SUCCESS_MESS,
-		},
-		JwtToken: respToken,
-	}, nil
-
-}
 
 // func (e *UseCaseCustomer) UpdateStaff(ctx context.Context)
 func (e *UseCaseCustomer) GetAllStaff(ctx context.Context) (*entities.CustomersFindByFormResp, error) {
@@ -489,5 +484,283 @@ func (e *UseCaseCustomer) DeleteStaffByName(ctx context.Context, name string) (*
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
+	}, nil
+}
+func (e *UseCaseCustomer) CheckAccountAndSendOtp(ctx context.Context, req *entities.CheckAccountAndSendOtpReq) (*entities.CheckAccountAndSendOtpResp, error) {
+	otp := utils.GenerateOtp()
+
+	tx, err := e.trans.BeginTransaction(ctx)
+	if err != nil {
+		return &entities.CheckAccountAndSendOtpResp{
+			Result: entities.Result{
+				Code:    enums.TRANSACTION_INVALID_CODE,
+				Message: enums.TRANSACTION_INVALID_MESS,
+			},
+		}, nil
+	}
+	listAccount, err := e.cus.FindCustomers(ctx, &domain.CustomersFindByForm{
+		UserName: req.UserName,
+		Email:    req.Email,
+	})
+
+	if err != nil {
+		return &entities.CheckAccountAndSendOtpResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(listAccount) == 0 {
+		return &entities.CheckAccountAndSendOtpResp{
+			Result: entities.Result{
+				Code:    enums.ADMIN_NOT_EXIST_CODE,
+				Message: enums.ADMIN_NOT_EXIST_MESS,
+			},
+		}, nil
+	}
+	log.Infof("user : ", otp)
+	err = e.cus.UpdateProfile(ctx, tx, &domain.Customers{
+		ID:       listAccount[0].ID,
+		UserName: req.UserName,
+		OTP:      otp,
+	})
+	if err != nil {
+		tx.Rollback()
+		return &entities.CheckAccountAndSendOtpResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	err = utils.SendOtpToEmail(req.Email, "Gửi bạn mã OTP để lấy lại password", otp)
+	if err != nil {
+		tx.Rollback()
+		return &entities.CheckAccountAndSendOtpResp{
+			Result: entities.Result{
+				Code:    enums.SEND_EMAIL_ERR_CODE,
+				Message: enums.SEND_EMAIL_ERR_MESS,
+			},
+		}, nil
+	}
+	tx.Commit()
+	return &entities.CheckAccountAndSendOtpResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
+}
+func (e *UseCaseCustomer) VerifyOtpByEmailAndResetPassword(ctx context.Context,
+	req *entities.VerifyOtpByEmailReq) (*entities.VerifyOtpByEmailResp, error) {
+
+	listAccount, err := e.cus.FindCustomers(ctx, &domain.CustomersFindByForm{
+		Email: req.Email,
+		OTP:   req.OTP,
+	})
+	if err != nil {
+		return &entities.VerifyOtpByEmailResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(listAccount) == 0 {
+		return &entities.VerifyOtpByEmailResp{
+			Result: entities.Result{
+				Code:    enums.OTP_ERR_VERIFY_CODE,
+				Message: enums.OTP_ERR_VERIFY_MESS,
+			},
+		}, nil
+	}
+	err = e.cus.UpdateProfile(ctx, &gorm.DB{}, &domain.Customers{
+		UserName: req.UserName,
+		Email:    req.Email,
+		Password: req.PasswordNew,
+	})
+	if err != nil {
+		return &entities.VerifyOtpByEmailResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+
+	return &entities.VerifyOtpByEmailResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
+}
+
+func (c *UseCaseCustomer) RegisterAccountCustomer(ctx context.Context,
+	req *entities.RegisterAccountCustomerReq) (*entities.RegisterAccountCustomerResp, error) {
+
+	userId := utils.GenerateUniqueKey()
+
+	tx, err := c.trans.BeginTransaction(ctx)
+	if err != nil {
+		return &entities.RegisterAccountCustomerResp{
+			Result: entities.Result{
+				Code:    enums.TRANSACTION_INVALID_CODE,
+				Message: enums.TRANSACTION_INVALID_MESS,
+			},
+		}, nil
+	}
+	informationUser, err := c.cus.FindCustomers(ctx, &domain.CustomersFindByForm{
+		UserName: req.UserName,
+		Role:     enums.ROLE_CUSTOMER,
+	})
+	if err != nil {
+		return &entities.RegisterAccountCustomerResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(informationUser) > 0 {
+		return &entities.RegisterAccountCustomerResp{
+			Result: entities.Result{
+				Code:    enums.USER_EXITS_CODE,
+				Message: enums.USER_EXITS_CODE_MESS,
+			},
+		}, nil
+	}
+	resp, err := utils.SetByCurlImage(ctx, req.File)
+	if err != nil {
+		return &entities.RegisterAccountCustomerResp{
+			Result: resp.Result,
+		}, nil
+	}
+	err = c.cus.RegisterCustomers(ctx, tx, &domain.Customers{
+		ID:          userId,
+		UserName:    req.UserName,
+		Password:    req.Password,
+		AvatarUrl:   resp.URL,
+		Address:     req.Address,
+		Age:         req.Age,
+		Email:       req.Email,
+		PhoneNumber: req.PhoneNumber,
+		OTP:         0,
+		IsActive:    true,
+		ExpiredTime: 0,
+		Role:        enums.ROLE_CUSTOMER,
+		CreatedAt:   utils.GenerateTimestamp(),
+		UpdatedAt:   utils.GenerateTimestamp(),
+	})
+	if err != nil {
+		tx.Rollback()
+		return &entities.RegisterAccountCustomerResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	tx.Commit()
+	return &entities.RegisterAccountCustomerResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
+}
+func (c *UseCaseCustomer) UpdateProfileCustomerByUserName(ctx context.Context,
+	req *entities.UpdateProfileCustomerByUserNameReq,
+) (*entities.UpdateProfileCustomerByUserNameResp, error) {
+
+	tx, err := c.trans.BeginTransaction(ctx)
+	if err != nil {
+		return &entities.UpdateProfileCustomerByUserNameResp{
+			Result: entities.Result{
+				Code:    enums.TRANSACTION_INVALID_CODE,
+				Message: enums.TRANSACTION_INVALID_MESS,
+			},
+		}, nil
+	}
+	informationUser, err := c.cus.FindCustomers(ctx, &domain.CustomersFindByForm{
+		UserName: req.UserName,
+		Role:     enums.ROLE_CUSTOMER,
+	})
+	log.Infof("data : ", informationUser)
+	if err != nil {
+		return &entities.UpdateProfileCustomerByUserNameResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(informationUser) == 0 {
+		return &entities.UpdateProfileCustomerByUserNameResp{
+			Result: entities.Result{
+				Code:    enums.USER_NOT_EXIST_CODE,
+				Message: enums.USER_NOT_EXIST_MESS,
+			},
+		}, nil
+	}
+	// Kiểm tra xem có hình ảnh được gửi đi không và cập nhật URL của ảnh đại diện
+	var url string
+	if req.File == nil {
+		url = informationUser[0].AvatarUrl
+	} else {
+		resp, err := utils.SetByCurlImage(ctx, req.File)
+		if err != nil {
+			log.Error(err, "error image")
+			return &entities.UpdateProfileCustomerByUserNameResp{
+				Result: resp.Result,
+			}, err // Trả về lỗi nếu có lỗi xử lý hình ảnh
+		}
+		url = resp.URL
+	}
+
+	err = c.cus.UpdateProfile(ctx, tx, &domain.Customers{
+		ID:          informationUser[0].ID,
+		UserName:    req.UserName,
+		AvatarUrl:   url,
+		Address:     req.Address,
+		Age:         req.Age,
+		Email:       req.Address,
+		PhoneNumber: req.PhoneNumber,
+		UpdatedAt:   utils.GenerateTimestamp(),
+	})
+	if err != nil {
+		tx.Rollback()
+		return &entities.UpdateProfileCustomerByUserNameResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	tx.Commit()
+	return &entities.UpdateProfileCustomerByUserNameResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
+}
+func (c *UseCaseCustomer) GetCustomerByUseName(ctx context.Context, req *entities.GetCustomerByUseNameReq) (*entities.GetCustomerByUseNameResp, error) {
+	resp, err := c.cus.FindCustomersByUsename(ctx, req.UserName)
+	if err != nil {
+		return &entities.GetCustomerByUseNameResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.GetCustomerByUseNameResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Customer: resp,
 	}, nil
 }

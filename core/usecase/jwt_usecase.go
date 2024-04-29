@@ -1,11 +1,8 @@
 package usecase
 
 import (
-	"context"
 	"errors"
-	"flick_tickets/common/enums"
 	"flick_tickets/common/log"
-	"flick_tickets/common/utils"
 	"flick_tickets/configs"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
@@ -64,11 +61,12 @@ func (u *UseCaseJwt) Decrypt(tokenString string) (*entities.UserJwtClaim, error)
 	}
 	return claims, nil
 }
-func (u *UseCaseJwt) generateToken(id int64, userName string) (*entities.JwtToken, error) {
+func (u *UseCaseJwt) generateToken(id int64, role int, userName string) (*entities.JwtToken, error) {
 	userClaim := func(expire time.Duration) *entities.UserJwtClaim {
 		return &entities.UserJwtClaim{
 			Id:       id,
 			UserName: userName,
+			Role:     role,
 			StandardClaims: &jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(expire).Unix(),
 			},
@@ -91,56 +89,5 @@ func (u *UseCaseJwt) generateToken(id int64, userName string) (*entities.JwtToke
 		AtExpires:    int64(u.expAccessToken / time.Second),
 		RefreshToken: refreshToken,
 		RtExpires:    int64(u.expRefreshToken / time.Second),
-	}, nil
-}
-func (u *UseCaseJwt) LoginUser(ctx context.Context, user_name string, password string) (*entities.ResponseLogin, error) {
-	log.Infof("req : ", user_name, password)
-	users, err := u.userRepositoryPort.GetAllUserStaffs(ctx, &domain.UsersReqByForm{
-		UserName: user_name,
-	})
-	if err != nil {
-		return &entities.ResponseLogin{
-			Result: entities.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
-			},
-		}, nil
-	}
-	log.Infof("user : ", len(users))
-	if users == nil {
-		return &entities.ResponseLogin{
-			Result: entities.Result{
-				Code:    enums.USER_NOT_EXIST_CODE,
-				Message: enums.USER_NOT_EXIST_MESS,
-			},
-		}, nil
-	}
-
-	err = utils.ComparePassword(users[0].Password, password)
-	if err != nil {
-		return &entities.ResponseLogin{
-			Result: entities.Result{
-				Code:    enums.USER_NOT_EXIST_CODE,
-				Message: enums.USER_NOT_EXIST_MESS,
-			},
-		}, nil
-	}
-	log.Error(err, "error passwors")
-	token, err := u.generateToken(users[0].Id, users[0].UserName)
-	if err != nil {
-		return &entities.ResponseLogin{
-			Result: entities.Result{
-				Code:    enums.CREATE_TOKEN,
-				Message: enums.CREATE_TOKEN_MESS,
-			},
-		}, nil
-	}
-
-	return &entities.ResponseLogin{
-		Result: entities.Result{
-			Code:    enums.SUCCESS_CODE,
-			Message: enums.SUCCESS_MESS,
-		},
-		JwtToken: token,
 	}, nil
 }

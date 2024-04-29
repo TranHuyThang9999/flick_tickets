@@ -1,9 +1,7 @@
 package controllers
 
 import (
-	"flick_tickets/core/entities"
 	"flick_tickets/core/usecase"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,20 +20,8 @@ func NewControllerAuth(
 		jwtUseCase:     jwtUseCase,
 	}
 }
-func (b *ControllerAuth) LoginUser(ctx *gin.Context) {
-
-	var req entities.LoginReq
-
-	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Yêu cầu không hợp lệ"})
-		return
-	}
-	if err := b.validateRequest(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	resp, err := b.jwtUseCase.LoginUser(ctx, req.UserName, req.Password)
-
-	b.baseController.Response(ctx, resp, err)
-
+func (c *ControllerAuth) CheckToken(ctx *gin.Context) {
+	token := ctx.Param("token")
+	resp, err := c.jwtUseCase.Decrypt(token)
+	c.baseController.Response(ctx, resp, err)
 }

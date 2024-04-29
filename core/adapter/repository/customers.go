@@ -78,3 +78,11 @@ func (c *CollectionCustomers) DeleteStaffByName(ctx context.Context, name string
 	result := c.collection.Where("user_name = ?", name).Delete(&domain.Customers{})
 	return result.Error
 }
+func (c *CollectionCustomers) FindCustomersByUsename(ctx context.Context, user_name string) (*domain.CustomerFindByUseName, error) {
+	var customer *domain.CustomerFindByUseName
+	result := c.collection.Model(&domain.Customers{}).Where("user_name=? ", user_name).First(&customer)
+	if result.RowsAffected == 0 {
+		return nil, nil
+	}
+	return customer, result.Error
+}

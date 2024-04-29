@@ -36,6 +36,17 @@ type CustomersFindByForm struct {
 	UpdatedAt   int    `form:"updated_at"`
 	Role        int    `form:"role"`
 }
+type CustomerFindByUseName struct {
+	ID          int64  `json:"id"`
+	UserName    string `json:"user_name"`
+	AvatarUrl   string `json:"avatar_url"`
+	Address     string `json:"address"`
+	Age         int    `json:"age"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
+	CreatedAt   int    `json:"created_at"`
+	UpdatedAt   int    `json:"updated_at"`
+}
 type RepositoryCustomers interface {
 	FindCustomers(ctx context.Context, req *CustomersFindByForm) ([]*Customers, error)
 	RegisterCustomers(ctx context.Context, tx *gorm.DB, req *Customers) error
@@ -44,4 +55,5 @@ type RepositoryCustomers interface {
 	GetCustomersByEmailUseCheckOtp(ctx context.Context, email string, otp int64) (*Customers, error)
 	GetCustomerByEmail(ctx context.Context, email string) (*Customers, error)
 	DeleteStaffByName(ctx context.Context, name string) error
+	FindCustomersByUsename(ctx context.Context, name string) (*CustomerFindByUseName, error)
 }

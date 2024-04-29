@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"encoding/json"
 	"flick_tickets/common/enums"
 	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
@@ -169,6 +168,8 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 		}
 	}
 
+	// if len(reqListShowTime)==0 break;
+
 	err = c.showTime.AddListShowTime(ctx, tx, reqListShowTime)
 	if err != nil {
 		tx.Rollback()
@@ -232,82 +233,24 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 }
 
 func (c *UseCaseTicker) GetTicketById(ctx context.Context, id string) (*entities.TicketRespgetById, error) {
-
-	// Kiểm tra xem vé có tồn tại trong bộ nhớ cache không
-	exists, err := c.menory.KeyExists(ctx, id)
+	// Chuyển đổi id từ chuỗi sang số nguyên
+	idNumber, err := strconv.Atoi(id)
 	if err != nil {
 		return &entities.TicketRespgetById{
 			Result: entities.Result{
-				Code:    enums.CACHE_ERR_CODE,
-				Message: enums.CACHE_ERR_MESS,
+				Code:    enums.CONVERT_TO_NUMBER_CODE,
+				Message: enums.CONVERT_TO_NUMBER_MESS,
 			},
 		}, nil
 	}
 
-	if !exists {
-		// Chuyển đổi id từ chuỗi sang số nguyên
-		idNumber, err := strconv.Atoi(id)
-		if err != nil {
-			return &entities.TicketRespgetById{
-				Result: entities.Result{
-					Code:    enums.CONVERT_TO_NUMBER_CODE,
-					Message: enums.CONVERT_TO_NUMBER_MESS,
-				},
-			}, nil
-		}
-
-		// Lấy vé từ cơ sở dữ liệu
-		ticket, err := c.ticket.GetTicketById(ctx, int64(idNumber))
-		if err != nil {
-			return &entities.TicketRespgetById{
-				Result: entities.Result{
-					Code:    enums.DB_ERR_CODE,
-					Message: enums.DB_ERR_MESS,
-				},
-			}, nil
-		}
-
-		// Lưu vé vào cache
-		err = c.menory.SetObjectById(ctx, id, ticket)
-		if err != nil {
-			return &entities.TicketRespgetById{
-				Result: entities.Result{
-					Code:    enums.CACHE_ERR_CODE,
-					Message: enums.CACHE_ERR_MESS,
-				},
-			}, nil
-		}
-
-		// Trả về thông tin vé và kết quả thành công
-		return &entities.TicketRespgetById{
-			Result: entities.Result{
-				Code:    enums.SUCCESS_CODE,
-				Message: enums.SUCCESS_MESS,
-			},
-			Ticket:    ticket,
-			CreatedAt: utils.GenerateTimestamp(),
-		}, nil
-	}
-
-	// Vé đã tồn tại trong cache, lấy thông tin vé từ cache trực tiếp
-	dataString, err := c.menory.GetObjectById(ctx, id)
+	// Lấy vé từ cơ sở dữ liệu
+	ticket, err := c.ticket.GetTicketById(ctx, int64(idNumber))
 	if err != nil {
 		return &entities.TicketRespgetById{
 			Result: entities.Result{
-				Code:    enums.CACHE_ERR_CODE,
-				Message: enums.CACHE_ERR_MESS,
-			},
-		}, nil
-	}
-
-	// Chuyển đổi dữ liệu từ chuỗi JSON sang kiểu domain.Tickets
-	var ticketUseCache *domain.Tickets
-	err = json.Unmarshal([]byte(dataString), &ticketUseCache)
-	if err != nil {
-		return &entities.TicketRespgetById{
-			Result: entities.Result{
-				Code:    enums.ERROR_CONVERT_JSON_CODE,
-				Message: enums.ERROR_CONVERT_JSON_MESS,
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
 			},
 		}, nil
 	}
@@ -318,7 +261,7 @@ func (c *UseCaseTicker) GetTicketById(ctx context.Context, id string) (*entities
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
-		Ticket:    ticketUseCache,
+		Ticket:    ticket,
 		CreatedAt: utils.GenerateTimestamp(),
 	}, nil
 }
@@ -461,6 +404,37 @@ func (c *UseCaseTicker) DeleteTicketsById(ctx context.Context, ticketId string) 
 		}, nil
 	}
 	return &entities.TicketRespDeleteById{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
+}
+func (c *UseCaseTicker) UpdateTicket(ctx context.Context, req *domain.TicketReqUpdateById) (*entities.TicketRespUpdateById, error) {
+
+	tx, err := c.trans.BeginTransaction(ctx)
+
+	if err != nil {
+		return &entities.TicketRespUpdateById{
+			Result: entities.Result{
+				Code:    enums.TRANSACTION_INVALID_CODE,
+				Message: enums.TRANSACTION_INVALID_MESS,
+			},
+		}, nil
+	}
+
+	err = c.ticket.UpdateTicketById(ctx, tx, req)
+	if err != nil {
+		return &entities.TicketRespUpdateById{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+
+	tx.Commit()
+	return &entities.TicketRespUpdateById{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,

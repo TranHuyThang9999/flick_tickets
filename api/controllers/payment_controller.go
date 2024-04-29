@@ -72,7 +72,7 @@ func (c *ControllerPayMent) GetPaymentOrderByIdFromPayOs(ctx *gin.Context) {
 }
 
 func (c *ControllerPayMent) ReturnUrlAfterPayment(ctx *gin.Context) {
-	path := "api/public/payment/create_payment.html"
+	path := "api/public/webhook/payment/create_payment.html"
 	htmlBytes, err := os.ReadFile(path)
 	if err != nil {
 		// Xử lý lỗi nếu có
@@ -85,7 +85,7 @@ func (c *ControllerPayMent) ReturnUrlAfterPayment(ctx *gin.Context) {
 
 }
 func (c *ControllerPayMent) ReturnUrlAftercanCelPayment(ctx *gin.Context) {
-	path := "api/public/payment/cancel_payment.html"
+	path := "api/public/webhook/payment/cancel_payment.html"
 	htmlBytes, err := os.ReadFile(path)
 	if err != nil {
 		// Xử lý lỗi nếu có

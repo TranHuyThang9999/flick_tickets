@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"flick_tickets/core/domain"
 	"mime/multipart"
 )
 
@@ -32,12 +33,12 @@ type CustomersReqByForm struct {
 }
 
 type CustomersReqRegister struct {
-	UserName    string                `form:"user_name"`
-	File        *multipart.FileHeader `form:"file"`
-	Address     string                `form:"address"`
-	Age         int                   `form:"age"`
-	Email       string                `form:"email"`
-	PhoneNumber string                `form:"phone_number"`
+	UserName string `form:"user_name"`
+	// File        *multipart.FileHeader `form:"file"`
+	Address     string `form:"address"`
+	Age         int    `form:"age"`
+	Email       string `form:"email"`
+	PhoneNumber string `form:"phone_number"`
 	// IsActive    bool                  `form:"is_active"`
 	// ExpiredTime int                   `form:"expired_time"`
 	// Role int `form:"role"`
@@ -98,4 +99,51 @@ type CustomersFindByFormResp struct {
 }
 type CustomerDeleteResp struct {
 	Result Result `json:"result"`
+}
+type CheckAccountAndSendOtpReq struct {
+	UserName string `form:"user_name"`
+	Email    string `form:"email"`
+}
+type CheckAccountAndSendOtpResp struct {
+	Result Result `json:"result"`
+}
+type VerifyOtpByEmailReq struct {
+	UserName    string `form:"user_name"`
+	Email       string `form:"email"`
+	OTP         int64  `form:"otp"`
+	PasswordNew string `form:"password_new"`
+}
+type VerifyOtpByEmailResp struct {
+	Result Result `json:"result"`
+}
+type RegisterAccountCustomerReq struct {
+	UserName    string                `form:"user_name"`
+	Password    string                `form:"password"`
+	File        *multipart.FileHeader `form:"file"`
+	Address     string                `form:"address"`
+	Age         int                   `form:"age"`
+	Email       string                `form:"email"`
+	PhoneNumber string                `form:"phone_number"`
+	ExpiredTime int                   `form:"expired_time"`
+}
+type RegisterAccountCustomerResp struct {
+	Result Result `json:"result"`
+}
+type UpdateProfileCustomerByUserNameReq struct {
+	UserName    string                `form:"user_name"`
+	File        *multipart.FileHeader `form:"file"`
+	Address     string                `form:"address"`
+	Age         int                   `form:"age"`
+	Email       string                `form:"email"`
+	PhoneNumber string                `form:"phone_number"`
+}
+type UpdateProfileCustomerByUserNameResp struct {
+	Result Result `json:"result"`
+}
+type GetCustomerByUseNameReq struct {
+	UserName string `form:"user_name"`
+}
+type GetCustomerByUseNameResp struct {
+	Result   Result                        `json:"result"`
+	Customer *domain.CustomerFindByUseName `json:"customer"`
 }

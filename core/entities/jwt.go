@@ -13,7 +13,7 @@ type UserJwtClaim struct {
 	*jwt.StandardClaims
 	Id       int64  `json:"id"`
 	UserName string `json:"user_name"`
-	Role     string `json:"role"`
+	Role     int    `json:"role"`
 }
 type ResponseLogin struct {
 	Result   Result    `json:"result"`

@@ -70,6 +70,7 @@ func (u *CollectionTickets) GetTicketById(ctx context.Context, id int64) (*domai
 		}
 		// Xử lý lỗi khác nếu có
 		return nil, result.Error
+
 	}
 	return ticket, nil
 }
@@ -81,3 +82,4 @@ func (u *CollectionTickets) GetTicketById(ctx context.Context, id int64) (*domai
 // 	}
 // 	return nil
 // }
+//func (u *CollectionTickets)GetListTicket()
