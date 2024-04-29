@@ -78,12 +78,14 @@ export default function FormLogin() {
 
     // Nếu đăng nhập thành công và là role 3, chuyển sang component GetListTicket
     if (isLoggedIn && isLoginRole3) {
+        window.location.reload(); // Reload the page
         return <HomeAdmin />;
 
     }
     
     // Nếu đăng nhập thành công và không phải role 3, chuyển sang component HomeAdmin
     if (isLoggedIn) {
+        window.location.reload(); // Reload the page
         return <PageForUser/>;
     }
 

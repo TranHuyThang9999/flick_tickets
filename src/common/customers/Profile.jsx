@@ -33,6 +33,7 @@ export default function Profile() {
 
         fetchData();
     }, []);
+    
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
