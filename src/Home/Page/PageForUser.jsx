@@ -3,14 +3,15 @@ import React, { useEffect, useState } from 'react';
 import './home.css';
 import FormLogin from '../../dashboard/FormLogin';
 import axios from 'axios';
-
+import Profile from '../../common/customers/Profile';
+import { BrowserRouter as Router, Link } from 'react-router-dom';
 const { Header, Footer, Content } = Layout;
 
 export default function PageForUser() {
   const [user, setUser] = useState(null);
   const username = localStorage.getItem('user_name');
   const [loginVisible, setLoginVisible] = useState(false);
-
+  const [isVisitProfile, setIsVisitProfile] = useState(false)
   const showLoginModal = () => {
     setLoginVisible(true);
   };
@@ -42,54 +43,64 @@ export default function PageForUser() {
       return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Popover content={user.user_name} trigger="hover">
-            <Avatar src={user.avatar_url} />
+            <Avatar onClick={visitProfile} src={user.avatar_url} />
           </Popover>
           <div style={{ marginLeft: '10px' }}>{user.name}</div>
         </div>
       );
     } else {
       return <div onClick={showLoginModal}>
-        <Button style={{background:'beige'}}>
-        Đăng nhập
+        <Button style={{ background: 'beige' }}>
+          Đăng nhập
         </Button>
-        
+
       </div>;
     }
   };
 
-  return (
-    <div>
-      <Layout className=''>
-        <Header className='header'>
-          {renderUser()}
-          <div style={{ display: 'flex' }}>
-            <div>Blog</div>
-          </div>
-        </Header>
-        <Content
-          style={{
-            padding: '0 48px',
-            backgroundColor: 'red'
-          }}
+  // Hàm xử lý khi người dùng nhấp vào avatar
+  const visitProfile = () => {
+    setIsVisitProfile(true); // Thiết lập trạng thái để điều hướng đến trang Profile
+  };
+
+  if (isVisitProfile) {
+    return <Profile />
+  } else {
+    return (
+      <div>
+        <Layout className=''>
+          <Header className='header'>
+            {renderUser()}
+            <div style={{ display: 'flex' }}>
+              <div>Blog</div>
+            </div>
+          </Header>
+          <Content
+            style={{
+              padding: '0 48px',
+              backgroundColor: 'red'
+            }}
+          >
+            qwacd
+          </Content>
+          <Footer
+            style={{
+              textAlign: 'center',
+            }}
+          >
+            cds
+          </Footer>
+        </Layout>
+        <Modal
+          title="Đăng nhập"
+          visible={loginVisible}
+          onCancel={handleLoginCancel}
+          footer={null}
         >
-          qwacd
-        </Content>
-        <Footer
-          style={{
-            textAlign: 'center',
-          }}
-        >
-          cds
-        </Footer>
-      </Layout>
-      <Modal
-        title="Đăng nhập"
-        visible={loginVisible}
-        onCancel={handleLoginCancel}
-        footer={null}
-      >
-        <FormLogin />
-      </Modal>
-    </div>
-  )
+          <FormLogin />
+        </Modal>
+      </div>
+    )
+  }
+
 }

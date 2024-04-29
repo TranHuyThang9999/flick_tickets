@@ -1,14 +1,15 @@
-import { Avatar, Button, Drawer, Image } from 'antd';
+import { Avatar, Button, Drawer, Image, Space } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import './index.css';
 import UpdateProfile from './UpdateProfile';
+import PageForUser from '../../Home/Page/PageForUser';
 
 export default function Profile() {
     const [user, setUser] = useState(null);
     const username = localStorage.getItem('user_name');
     const [drawerVisible, setDrawerVisible] = useState(false);
-
+    const [isGoback,setIsGoback]= useState(false);
     const showDrawer = () => {
         setDrawerVisible(true);
     };
@@ -33,14 +34,19 @@ export default function Profile() {
 
         fetchData();
     }, []);
-    
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         localStorage.removeItem('user_name');
         window.location.reload(); // Reload the page
     };
-
+    const handleGoback = ()=>{
+        setIsGoback(true);
+    }
+    if(isGoback){
+        return <PageForUser/>
+    }
     return (
         <div style={{ background: '' }}>
             {user && (
@@ -50,7 +56,14 @@ export default function Profile() {
                         <div style={{ paddingLeft: '10px' }}> {user.user_name}</div>
                     </div>
                     <div>
-                    <Button onClick={handleLogout}>Đăng xuất</Button>
+                        <Space>
+                            <Space.Compact>
+                                <Button onClick={handleLogout}>Đăng xuất</Button>
+                            </Space.Compact>
+                            <Space.Compact>
+                                <Button onClick={handleGoback}>Quay về trang chủ</Button>
+                            </Space.Compact>
+                        </Space>
                     </div>
                 </div>
             )}
