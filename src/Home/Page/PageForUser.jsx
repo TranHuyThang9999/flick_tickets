@@ -1,41 +1,30 @@
-import { Layout, Flex, Tabs } from 'antd';
-import React from 'react';
+import { Layout, Modal } from 'antd';
+import React, { useEffect, useState } from 'react';
 import './home.css';
+import FormLogin from '../../dashboard/FormLogin';
 
-const { Header, Footer, Sider, Content } = Layout;
-const items = [
-  {
-    key: '1',
-    label: 'Tab 1',
-    children: 'Content of Tab Pane 1',
-  },
-  {
-    key: '2',
-    label: 'Tab 2',
-    children: 'Content of Tab Pane 2',
-  },
-  {
-    key: '3',
-    label: 'Tab 3',
-    children: 'Content of Tab Pane 3',
-  },
-];
+const { Header, Footer, Content } = Layout;
 
 export default function PageForUser() {
+  const [loginVisible, setLoginVisible] = useState(false);
+
+  const showLoginModal = () => {
+    setLoginVisible(true);
+  };
+
+  const handleLoginCancel = () => {
+    setLoginVisible(false);
+  };
 
   return (
-    <div >
+    <div>
       <Layout className=''>
-        <Header
-          style={{
-            backgroundColor: 'beige',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          header
-          <Tabs defaultActiveKey='1' items={items} />
-
+        <Header className='header'>
+          <div onClick={showLoginModal}>Đăng nhập</div>
+          <div style={{ display: 'flex' }}>
+            <div>Tạo tài khoản</div>
+            <div>Blog</div>
+          </div>
         </Header>
         <Content
           style={{
@@ -53,6 +42,14 @@ export default function PageForUser() {
           cds
         </Footer>
       </Layout>
+      <Modal
+        title="Đăng nhập"
+        visible={loginVisible}
+        onCancel={handleLoginCancel}
+        footer={null}
+      >
+        <FormLogin />
+      </Modal>
     </div>
   )
 }

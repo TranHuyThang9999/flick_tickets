@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { LockOutlined, UserOutlined, LoginOutlined } from '@ant-design/icons';
 import './index.css';
 
-import GetListTicket from '../Home/Tickets/GetListTicket';
 import HomeAdmin from '../dashboard/HomeaAdmin';
+import PageForUser from '../Home/Page/PageForUser';
 
 export default function FormLogin() {
     const [form] = Form.useForm();
@@ -84,7 +84,7 @@ export default function FormLogin() {
     
     // Nếu đăng nhập thành công và không phải role 3, chuyển sang component HomeAdmin
     if (isLoggedIn) {
-        return <GetListTicket />;
+        return <PageForUser/>;
     }
 
     // Nếu đang loading, hiển thị thông báo loading

@@ -10,3 +10,14 @@ body {
     overflow: hidden;
     background: linear-gradient(90deg, rgba(2, 0, .6, 1)0%, rgba(9, 9, 121, 1)35%, rgba(0, 212, 255, 1) 100%);
 }
+.header {
+    display: flex;
+    justify-content: space-between; /* Align items to the start and end of the container */
+    align-items: center; /* Center items vertically */
+    background-color: beige;
+  }
+  
+  .header div {
+    margin: 0 10px; /* Add margin to the div elements for spacing */
+  }
+  

@@ -28,6 +28,7 @@ import CheckLogin from "./Routers/CheckLogin";
 import UseContextToken from "./Routers/UseContextToken";
 import FormRegisterCustomer from "./common/customers/FormRegisterCustomer";
 import UpdateProfile from "./common/customers/UpdateProfile";
+import Profile from "./common/customers/Profile";
 
 export default function App() {
   return (
@@ -58,9 +59,11 @@ export default function App() {
       {/* <TestGetAllSelect/> */}
       {/* <FormLogin/> */}
 
-      <CheckLogin/>
+      {/* <CheckLogin/> */}
       {/* <FormRegisterCustomer/> */}
       {/* <UpdateProfile/> */}
+      {/* <Profile/> */}
+      <PageForUser/>
     </div>
   );
 }

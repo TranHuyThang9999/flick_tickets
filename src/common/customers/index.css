@@ -8,3 +8,11 @@
     margin: 50px auto;
     /* Cách top 50px */
 }
+body {
+    background-color: beige;
+}
+.header{
+    padding: 10px 10px;
+    display: flex;
+    justify-content: space-between;
+}

@@ -1,11 +1,29 @@
 import { Button, Form, Input, Upload } from 'antd';
-import React, { useState } from 'react'
-import { showError, showSuccess, showWarning } from '../log/log';
+import React, { useEffect, useState } from 'react'
+import { showError, showSuccess } from '../log/log';
 import axios from 'axios';
 
 export default function UpdateProfile() {
     const [form] = Form.useForm();
     const [imageFile, setImageFile] = useState(null);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get("http://localhost:8080/manager/customer/user/profile", {
+                    params: {
+                        user_name: localStorage.getItem('user_name')
+                    }
+                });
+                setUser(response.data.customer);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const handleFormSubmit = async (values) => {
         try {
@@ -28,7 +46,7 @@ export default function UpdateProfile() {
             );
 
             if (response.data.result.code === 0) {
-                showSuccess('Cập nhật  tài khoản thành công');
+                showSuccess('Cập nhật tài khoản thành công');
             } else {
                 showError('Lỗi server, vui lòng thử lại');
             }
@@ -47,13 +65,16 @@ export default function UpdateProfile() {
         },
     };
 
+    if (!user) {
+        return null; // or loading indicator
+    }
+
     return (
         <div>
             <Form {...layout} form={form} className="form-container" onFinish={handleFormSubmit}>
 
-
-
                 <Form.Item
+                    initialValue={user.address}
                     label="Địa chỉ"
                     name="address"
                 >
@@ -61,6 +82,7 @@ export default function UpdateProfile() {
                 </Form.Item>
 
                 <Form.Item
+                    initialValue={user.age}
                     label="Tuổi"
                     name="age"
                 >
@@ -68,6 +90,7 @@ export default function UpdateProfile() {
                 </Form.Item>
 
                 <Form.Item
+                    initialValue={user.email}
                     label="Email"
                     name="email"
                     rules={[
@@ -81,6 +104,7 @@ export default function UpdateProfile() {
                 </Form.Item>
 
                 <Form.Item
+                    initialValue={user.phone_number}
                     label="Số điện thoại"
                     name="phone_number"
                 >
