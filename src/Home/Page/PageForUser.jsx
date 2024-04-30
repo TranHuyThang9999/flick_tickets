@@ -4,7 +4,7 @@ import './home.css';
 import FormLogin from '../../dashboard/FormLogin';
 import axios from 'axios';
 import Profile from '../../common/customers/Profile';
-import { BrowserRouter as Router, Link } from 'react-router-dom';
+import GetListTicket from '../Tickets/GetListTicket';
 const { Header, Footer, Content } = Layout;
 
 export default function PageForUser() {
@@ -73,6 +73,7 @@ export default function PageForUser() {
             {renderUser()}
             <div style={{ display: 'flex' }}>
               <div>Blog</div>
+              <div>Giỏ hàng</div>
             </div>
           </Header>
           <Content
@@ -81,7 +82,8 @@ export default function PageForUser() {
               backgroundColor: 'red'
             }}
           >
-            qwacd
+            dvs
+            <GetListTicket/>
           </Content>
           <Footer
             style={{

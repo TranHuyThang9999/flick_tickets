@@ -1,73 +1,190 @@
-import { Button, DatePicker, Form, Select } from 'antd';
-import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import './SlideshowGallery.css';
+import { Avatar, Button, Col, Menu, Row } from 'antd';
+import {
+  BellFilled, ShopFilled, TwitterCircleFilled,
+  InteractionFilled, WeiboCircleOutlined,
+  AppstoreOutlined, HomeFilled, RightOutlined
+} from '@ant-design/icons';
+import Profile from '../customers/Profile';
+import axios from 'axios';
+import FormLogin from '../../dashboard/FormLogin';
+import CinemasGetAll from '../cinemas/CinemasGetAll';
 
-export default function TestGetAllSelect() {
-  const [timestampsList, setTimestampsList] = useState([]);
-  const [timestampListAdd, setTimestampListAdd] = useState([]); //timestampListAdd add value
-  const options = [];
+export default function TestLayout() {
+
+  const [islogin, setIslogin] = useState(false);
+  const [personalPage, setPersonalPage] = useState(false);
+  const username = localStorage.getItem('user_name');
+  const [user, setUser] = useState(null);
+  const [tickets, setTickets] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/manager/customer/user/profile", {
+          params: {
+            user_name: username
+          }
+        });
+        setUser(response.data.customer);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
 
-
-  const handleChange = (value) => {
-    console.log(`Selected: ${value}`);
-  };
-  //date
-  const handleDateChange = (date, dateString) => {
-    if (date && moment(date).isValid()) {
-      setTimestampsList((prevTimestampsList) => [
-        ...prevTimestampsList,
-        moment(dateString).unix(),
-      ]);
+  const handlerCheckNextComponent = () => {
+    if (localStorage.getItem('user_name') === null) {
+      window.location.reload();
+      alert.console();
+    } else {
+      setPersonalPage(true);
     }
-  };
-  const optionsGetTimeSelect = timestampsList.map(timestamp => ({
-    value: timestamp,
-    label: moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss')
-  }));
 
-  // Hàm xử lý khi nhấn nút "Clear"
-  const handleClear = () => {
-    setTimestampsList([]); // Xóa toàn bộ danh sách thời gian đã chọn
-  };
+  }
+  const conhandlerLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('user_name');
+    window.location.reload();
+  }
 
+  const handlerNextLogin = () => {
+    setIslogin(true);
+  }
+
+
+  const listRoomCinema = CinemasGetAll();
+
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const feedDataTicket = async () => {
+      try {
+        const respone = await axios.get('http://localhost:8080/manager/customers/ticket')
+        if (respone.data.result.code === 0) {
+          setTickets(respone.data.list_tickets);
+          console.log(respone.data.list_tickets);
+          return;
+        } else if (respone.data.result.code === 20) {
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    }
+    feedDataTicket();
+  }, []);
+
+  if (personalPage) {
+    return (
+      <Profile />
+    );
+  }
+  if (islogin) {
+    return (
+      <FormLogin />
+    )
+  }
 
   return (
     <div>
-      <Form>
-        <Form.Item>
-          <Select
-            mode='multiple'
-            allowClear
-            style={{ width: '100%' }}
-            defaultValue={['a10', 'c12']}
-            onChange={handleChange}
-            options={options}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Lịch chiếu phim"
-          className="form-row"
-          name="movie_time"
-        >
-          <div className='showTime'>
-            <DatePicker
-              showTime
-              onChange={handleDateChange}
-              picker="datetime"
-              size="small"
-            />
-            <Select
-              allowClear
-              mode="multiple"
-              placeholder="Please select"
-              options={optionsGetTimeSelect}
-              onChange={(value) => setTimestampListAdd(value)}
-            />
-            <Button onChange={handleClear}>Clear time</Button>
+      <div className='layout-header'>
+        <div className='layout-header-start'>
+          {user && (
+            <Avatar src={user.avatar_url} onClick={handlerCheckNextComponent} />
+          )}
+          <div>
+            {!username && (
+              <Button onClick={handlerNextLogin}>
+                Đăng nhập <InteractionFilled />
+              </Button>
+            )}
           </div>
-        </Form.Item>
-      </Form>
+        </div>
+        <div className='layout-header-center'>
+          <div className='layout-header-center-menu-choice-two'>
+            <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
+              <Menu.SubMenu key="SubMenu" icon={<WeiboCircleOutlined />} title={<span>Lịch chiếu</span>}>
+                <Menu.Item key="one" icon={<AppstoreOutlined />}>
+                  Đang chiếu
+                </Menu.Item>
+                <Menu.Item key="two" icon={<AppstoreOutlined />}>
+                  Sắp chiếu
+                </Menu.Item>
+              </Menu.SubMenu>
+            </Menu>
+          </div>
+          <div>
+            <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
+              <Menu.SubMenu key="SubMenu" title={<span> Rạp chiếu</span>}>
+                {listRoomCinema.map((cinema) => (
+                  <Menu.Item key={cinema.id} icon={<AppstoreOutlined />}>
+                    {cinema.cinema_name}
+                  </Menu.Item>
+                ))}
+              </Menu.SubMenu>
+            </Menu>
+          </div>
+          <div className='layout-header-center-menu-choice-end'>
+            <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
+              <Menu.SubMenu key="SubMenu" title={<span> Phim chiếu</span>}>
+                {tickets.map((ticket) => (
+                  <Menu.Item key={ticket.id} icon={<AppstoreOutlined />}>
+                    {ticket.name}
+                  </Menu.Item>
+                ))}
+              </Menu.SubMenu>
+            </Menu>
+          </div>
+        </div>
+        <div className='layout-header-end'>
+
+          <div>Thông báo <BellFilled /></div>
+
+          <div>
+            <Button> Giỏ hàng <ShopFilled /></Button>
+          </div>
+
+          <div>
+            <Button>Cộng đồng <TwitterCircleFilled /></Button>
+          </div>
+
+          <div>
+            {username && (
+              <Button onClick={conhandlerLogout}>
+                Đăng xuất <InteractionFilled />
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className='layout-content'>
+        <div className='layout-content-header'><HomeFilled /><RightOutlined /> Cinema</div>
+        <Row className='layout-content-body'>
+          <Col className='layout-content-descript'>
+            <ul>
+              <li>Phim đang chiếu 2024</li>
+              <li>Lịch phim đang chiếu luôn cập nhật sớm nhất</li>
+              <li>Suất phim đang chiếu đầy đủ các rạp</li>
+              <li>Đặt lịch phim đang chiếu siêu nhanh</li>
+              <li>Đặt vé lịch phim đang chiếu yêu thích mọi nơi</li>
+            </ul>
+
+          </Col>
+          <Col className='layout-content-image'>
+            <img width='600px' height='400px' src='http://localhost:1234/manager/shader/huythang/daidien.png' alt="Avatar" />
+          </Col>
+        </Row>
+      </div>
+      <div className='layout-footer'>
+        footer
+      </div>
     </div>
-  );
+  )
 }
