@@ -1,24 +1,23 @@
-import { Layout, Modal, Avatar, Popover, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import './home.css';
-import FormLogin from '../../dashboard/FormLogin';
+import { Avatar, Button, Col, Menu, Row } from 'antd';
+import {
+  BellFilled, ShopFilled, TwitterCircleFilled,
+  InteractionFilled, WeiboCircleOutlined,
+  AppstoreOutlined, HomeFilled, RightOutlined
+} from '@ant-design/icons';
 import axios from 'axios';
+import FormLogin from '../../dashboard/FormLogin';
+import CinemasGetAll from '../../common/cinemas/CinemasGetAll';
 import Profile from '../../common/customers/Profile';
-import GetListTicket from '../Tickets/GetListTicket';
-const { Header, Footer, Content } = Layout;
 
 export default function PageForUser() {
-  const [user, setUser] = useState(null);
-  const username = localStorage.getItem('user_name');
-  const [loginVisible, setLoginVisible] = useState(false);
-  const [isVisitProfile, setIsVisitProfile] = useState(false)
-  const showLoginModal = () => {
-    setLoginVisible(true);
-  };
 
-  const handleLoginCancel = () => {
-    setLoginVisible(false);
-  };
+  const [islogin, setIslogin] = useState(false);
+  const [personalPage, setPersonalPage] = useState(false);
+  const username = localStorage.getItem('user_name');
+  const [user, setUser] = useState(null);
+  const [tickets, setTickets] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,72 +36,155 @@ export default function PageForUser() {
     fetchData();
   }, []);
 
-  // Hàm renderUser khi user đã được tải thành công từ API
-  const renderUser = () => {
-    if (user) {
-      return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Popover content={user.user_name} trigger="hover">
-            <Avatar onClick={visitProfile} src={user.avatar_url} />
-          </Popover>
-          <div style={{ marginLeft: '10px' }}>{user.name}</div>
-        </div>
-      );
+
+  const handlerCheckNextComponent = () => {
+    if (localStorage.getItem('user_name') === null) {
+      window.location.reload();
+      alert.console();
     } else {
-      return <div onClick={showLoginModal}>
-        <Button style={{ background: 'beige' }}>
-          Đăng nhập
-        </Button>
-
-      </div>;
+      setPersonalPage(true);
     }
-  };
 
-  // Hàm xử lý khi người dùng nhấp vào avatar
-  const visitProfile = () => {
-    setIsVisitProfile(true); // Thiết lập trạng thái để điều hướng đến trang Profile
-  };
+  }
+  const conhandlerLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('user_name');
+    window.location.reload();
+  }
 
-  if (isVisitProfile) {
-    return <Profile />
-  } else {
+  const handlerNextLogin = () => {
+    setIslogin(true);
+  }
+
+
+  const listRoomCinema = CinemasGetAll();
+
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const feedDataTicket = async () => {
+      try {
+        const respone = await axios.get('http://localhost:8080/manager/customers/ticket')
+        if (respone.data.result.code === 0) {
+          setTickets(respone.data.list_tickets);
+          console.log(respone.data.list_tickets);
+          return;
+        } else if (respone.data.result.code === 20) {
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    }
+    feedDataTicket();
+  }, []);
+
+  if (personalPage) {
     return (
-      <div>
-        <Layout className=''>
-          <Header className='header'>
-            {renderUser()}
-            <div style={{ display: 'flex' }}>
-              <div>Blog</div>
-              <div>Giỏ hàng</div>
-            </div>
-          </Header>
-          <Content
-            style={{
-              padding: '0 48px',
-              backgroundColor: 'red'
-            }}
-          >
-            dvs
-            <GetListTicket/>
-          </Content>
-          <Footer
-            style={{
-              textAlign: 'center',
-            }}
-          >
-            cds
-          </Footer>
-        </Layout>
-        <Modal
-          title="Đăng nhập"
-          visible={loginVisible}
-          onCancel={handleLoginCancel}
-          footer={null}
-        >
-          <FormLogin />
-        </Modal>
-      </div>
+      <Profile />
+    );
+  }
+  if (islogin) {
+    return (
+      <FormLogin />
     )
   }
 
+  return (
+    <div>
+      <div className='layout-header'>
+        <div className='layout-header-start'>
+          {user && (
+            <Avatar src={user.avatar_url} onClick={handlerCheckNextComponent} />
+          )}
+          <div>
+            {!username && (
+              <Button onClick={handlerNextLogin}>
+                Đăng nhập <InteractionFilled />
+              </Button>
+            )}
+          </div>
+        </div>
+        <div className='layout-header-center'>
+          <div className='layout-header-center-menu-choice-two'>
+            <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
+              <Menu.SubMenu key="SubMenu" icon={<WeiboCircleOutlined />} title={<span>Lịch chiếu</span>}>
+                <Menu.Item key="one" icon={<AppstoreOutlined />}>
+                  Đang chiếu
+                </Menu.Item>
+                <Menu.Item key="two" icon={<AppstoreOutlined />}>
+                  Sắp chiếu
+                </Menu.Item>
+              </Menu.SubMenu>
+            </Menu>
+          </div>
+          <div>
+            <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
+              <Menu.SubMenu key="SubMenu" title={<span> Rạp chiếu</span>}>
+                {listRoomCinema.map((cinema) => (
+                  <Menu.Item key={cinema.id} icon={<AppstoreOutlined />}>
+                    {cinema.cinema_name}
+                  </Menu.Item>
+                ))}
+              </Menu.SubMenu>
+            </Menu>
+          </div>
+          <div className='layout-header-center-menu-choice-end'>
+            <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
+              <Menu.SubMenu key="SubMenu" title={<span> Phim chiếu</span>}>
+                {tickets.map((ticket) => (
+                  <Menu.Item key={ticket.id} icon={<AppstoreOutlined />}>
+                    {ticket.name}
+                  </Menu.Item>
+                ))}
+              </Menu.SubMenu>
+            </Menu>
+          </div>
+        </div>
+        <div className='layout-header-end'>
+
+          <div>Thông báo <BellFilled /></div>
+
+          <div>
+            <Button> Giỏ hàng <ShopFilled /></Button>
+          </div>
+
+          <div>
+            <Button>Cộng đồng <TwitterCircleFilled /></Button>
+          </div>
+
+          <div>
+            {username && (
+              <Button onClick={conhandlerLogout}>
+                Đăng xuất <InteractionFilled />
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className='layout-content'>
+        <div className='layout-content-header'><HomeFilled /><RightOutlined /> Cinema</div>
+        <Row className='layout-content-body'>
+          <Col className='layout-content-descript'>
+            <ul>
+              <li>Phim đang chiếu 2024</li>
+              <li>Lịch phim đang chiếu luôn cập nhật sớm nhất</li>
+              <li>Suất phim đang chiếu đầy đủ các rạp</li>
+              <li>Đặt lịch phim đang chiếu siêu nhanh</li>
+              <li>Đặt vé lịch phim đang chiếu yêu thích mọi nơi</li>
+            </ul>
+
+          </Col>
+          <Col className='layout-content-image'>
+            <img width='600px' height='400px' src='http://localhost:1234/manager/shader/huythang/daidien.png' alt="Avatar" />
+          </Col>
+        </Row>
+      </div>
+      <div className='layout-footer'>
+        footer
+      </div>
+    </div>
+  )
 }

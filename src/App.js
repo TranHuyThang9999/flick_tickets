@@ -7,7 +7,6 @@ import SelectedSeat from "./common/cinemas/SelectedSeat";
 import AppSquare from "./common/test/test";
 import DisplaySelectedSeat from "./dashboard/DisplaySelectedSeat";
 import GetListFileByTicketId from "./dashboard/GetListFileByTicketId";
-import PageForUser from "./Home/Page/PageForUser";
 import GetTicketById from "./Home/Tickets/DetailTicketById";
 import ListFileByTicketId from "./Home/Tickets/ListFileByTicketId";
 import GetListTicket from "./Home/Tickets/GetListTicket";
@@ -30,6 +29,7 @@ import FormRegisterCustomer from "./common/customers/FormRegisterCustomer";
 import UpdateProfile from "./common/customers/UpdateProfile";
 import Profile from "./common/customers/Profile";
 import TestLayout from "./common/test/test";
+import PageForUser from "./Home/Page/PageForUser";
 
 export default function App() {
   return (
@@ -65,7 +65,8 @@ export default function App() {
       {/* <UpdateProfile/> */}
       {/* <Profile/> */}
       {/* <PageForUser/> */}
-      <TestLayout/>
+      {/* <TestLayout/> */}
+      <PageForUser/>
     </div>
   );
 }
