@@ -1,190 +1,118 @@
-import React, { useEffect, useState } from 'react';
-import './SlideshowGallery.css';
-import { Avatar, Button, Col, Menu, Row } from 'antd';
-import {
-  BellFilled, ShopFilled, TwitterCircleFilled,
-  InteractionFilled, WeiboCircleOutlined,
-  AppstoreOutlined, HomeFilled, RightOutlined
-} from '@ant-design/icons';
-import Profile from '../customers/Profile';
+import { Button, Col, Row } from 'antd';
 import axios from 'axios';
-import FormLogin from '../../dashboard/FormLogin';
-import CinemasGetAll from '../cinemas/CinemasGetAll';
+import React, { useEffect, useState } from 'react';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
+import CarouselCustomize from '../CustomizeCarousel/CarouselCustomize';
+import {
+  SelectOutlined
+} from '@ant-design/icons';
+import './index.css';
+import GetTicketById from '../../Home/Tickets/DetailTicketById';
 
-export default function TestLayout() {
-
-  const [islogin, setIslogin] = useState(false);
-  const [personalPage, setPersonalPage] = useState(false);
-  const username = localStorage.getItem('user_name');
-  const [user, setUser] = useState(null);
+export default function TestDisplayTicket() {
   const [tickets, setTickets] = useState([]);
+  const [listFile, setListFile] = useState([]);
+  const [isDetail, setIsDetail] = useState(false);
+  const [selectedTicketId, setSelectedTicketId] = useState(null); // Thêm state để lưu trữ ticket_id được chọn
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTickets = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/manager/customer/user/profile", {
-          params: {
-            user_name: username
-          }
-        });
-        setUser(response.data.customer);
+        const response = await axios.get('http://localhost:8080/manager/customers/ticket');
+        if (response.data.result.code === 0) {
+          setTickets(response.data.list_tickets);
+          fetchFiles(response.data.list_tickets);
+        } else if (response.data.result.code === 20) {
+          // Handle error or do something else
+        }
       } catch (error) {
         console.log(error);
       }
     };
-
-    fetchData();
+    fetchTickets();
   }, []);
 
-
-  const handlerCheckNextComponent = () => {
-    if (localStorage.getItem('user_name') === null) {
-      window.location.reload();
-      alert.console();
-    } else {
-      setPersonalPage(true);
-    }
-
-  }
-  const conhandlerLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('user_name');
-    window.location.reload();
-  }
-
-  const handlerNextLogin = () => {
-    setIslogin(true);
-  }
-
-
-  const listRoomCinema = CinemasGetAll();
-
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    const feedDataTicket = async () => {
-      try {
-        const respone = await axios.get('http://localhost:8080/manager/customers/ticket')
-        if (respone.data.result.code === 0) {
-          setTickets(respone.data.list_tickets);
-          console.log(respone.data.list_tickets);
-          return;
-        } else if (respone.data.result.code === 20) {
-          return;
-        }
-      } catch (error) {
-        console.log(error);
-        return;
+  const fetchFiles = async (tickets) => {
+    const filesList = [];
+    for (const ticket of tickets) {
+      const result = await fetchDataFile(ticket.id);
+      if (result.success) {
+        filesList.push({ ticketId: ticket.id, files: result.files });
       }
     }
-    feedDataTicket();
-  }, []);
+    setListFile(filesList);
+  };
 
-  if (personalPage) {
-    return (
-      <Profile />
-    );
+  const responsiveConfig = {
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 4,
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 464 },
+      items: 2,
+    },
+    mobile: {
+      breakpoint: { max: 464, min: 0 },
+      items: 1,
+    },
+  };
+
+  const handlerDetail = (ticketId) => { // Truyền ticket_id vào hàm handlerDetail
+    setSelectedTicketId(ticketId); // Lưu trữ ticket_id được chọn
+    setIsDetail(true);
   }
-  if (islogin) {
+
+  if (isDetail) {
     return (
-      <FormLogin />
+      <GetTicketById id={selectedTicketId} /> // Truyền ticket_id cho component DetailTicketById
     )
   }
 
   return (
-    <div>
-      <div className='layout-header'>
-        <div className='layout-header-start'>
-          {user && (
-            <Avatar src={user.avatar_url} onClick={handlerCheckNextComponent} />
-          )}
-          <div>
-            {!username && (
-              <Button onClick={handlerNextLogin}>
-                Đăng nhập <InteractionFilled />
-              </Button>
-            )}
-          </div>
-        </div>
-        <div className='layout-header-center'>
-          <div className='layout-header-center-menu-choice-two'>
-            <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
-              <Menu.SubMenu key="SubMenu" icon={<WeiboCircleOutlined />} title={<span>Lịch chiếu</span>}>
-                <Menu.Item key="one" icon={<AppstoreOutlined />}>
-                  Đang chiếu
-                </Menu.Item>
-                <Menu.Item key="two" icon={<AppstoreOutlined />}>
-                  Sắp chiếu
-                </Menu.Item>
-              </Menu.SubMenu>
-            </Menu>
-          </div>
-          <div>
-            <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
-              <Menu.SubMenu key="SubMenu" title={<span> Rạp chiếu</span>}>
-                {listRoomCinema.map((cinema) => (
-                  <Menu.Item key={cinema.id} icon={<AppstoreOutlined />}>
-                    {cinema.cinema_name}
-                  </Menu.Item>
-                ))}
-              </Menu.SubMenu>
-            </Menu>
-          </div>
-          <div className='layout-header-center-menu-choice-end'>
-            <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
-              <Menu.SubMenu key="SubMenu" title={<span> Phim chiếu</span>}>
-                {tickets.map((ticket) => (
-                  <Menu.Item key={ticket.id} icon={<AppstoreOutlined />}>
-                    {ticket.name}
-                  </Menu.Item>
-                ))}
-              </Menu.SubMenu>
-            </Menu>
-          </div>
-        </div>
-        <div className='layout-header-end'>
-
-          <div>Thông báo <BellFilled /></div>
-
-          <div>
-            <Button> Giỏ hàng <ShopFilled /></Button>
-          </div>
-
-          <div>
-            <Button>Cộng đồng <TwitterCircleFilled /></Button>
-          </div>
-
-          <div>
-            {username && (
-              <Button onClick={conhandlerLogout}>
-                Đăng xuất <InteractionFilled />
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-      <div className='layout-content'>
-        <div className='layout-content-header'><HomeFilled /><RightOutlined /> Cinema</div>
-        <Row className='layout-content-body'>
-          <Col className='layout-content-descript'>
-            <ul>
-              <li>Phim đang chiếu 2024</li>
-              <li>Lịch phim đang chiếu luôn cập nhật sớm nhất</li>
-              <li>Suất phim đang chiếu đầy đủ các rạp</li>
-              <li>Đặt lịch phim đang chiếu siêu nhanh</li>
-              <li>Đặt vé lịch phim đang chiếu yêu thích mọi nơi</li>
-            </ul>
-
-          </Col>
-          <Col className='layout-content-image'>
-            <img width='600px' height='400px' src='http://localhost:1234/manager/shader/huythang/daidien.png' alt="Avatar" />
-          </Col>
-        </Row>
-      </div>
-      <div className='layout-footer'>
-        footer
+    <div className='list-body'>
+      <div className='list-display-carousel'>
+        {tickets.length > 0 && (
+          <Carousel responsive={responsiveConfig}>
+            {tickets.map((ticket) => (
+              <div style={{ paddingLeft: '50px' }} key={ticket.id}>
+                <Row>
+                  <Col>
+                    <CarouselCustomize images={listFile.find((item) => item.ticketId === ticket.id)?.files || []} />
+                  </Col>
+                </Row>
+                <Row style={{ paddingTop: '10px', width: '270px', justifyContent: 'center' }}>
+                  <Col span={12} offset={6}>
+                    <p>{ticket.price}</p>
+                    <p>{ticket.description}</p>
+                    <p>{ticket.name}</p>
+                    <Button onClick={() => handlerDetail(ticket.id)}><SelectOutlined /> Chi tiết vé</Button> {/* Pass ticket_id to handlerDetail */}
+                  </Col>
+                </Row>
+              </div>
+            ))}
+          </Carousel>
+        )}
       </div>
     </div>
-  )
+
+  );
 }
+
+const fetchDataFile = async (ticketId) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/manager/user/load?id=${ticketId}`);
+    const data = response.data;
+    if (data.result.code === 0) {
+      return { success: true, files: data.files };
+    } else if (data.result.code === 20) {
+      return { success: false, error: 'Không tìm thấy bản ghi nào' };
+    } else if (data.result.code === 4) {
+      return { success: false, error: 'Lỗi server vui lòng thử lại' };
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    return { success: false, error: 'Lỗi server vui lòng thử lại' };
+  }
+};

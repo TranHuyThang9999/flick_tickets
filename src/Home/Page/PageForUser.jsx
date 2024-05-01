@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './home.css';
 import { Avatar, Button, Col, Menu, Row } from 'antd';
 import {
-  BellFilled, ShopFilled, TwitterCircleFilled,
+  BellFilled, ShoppingCartOutlined, TwitterCircleFilled,
   InteractionFilled, WeiboCircleOutlined,
   AppstoreOutlined, HomeFilled, RightOutlined
 } from '@ant-design/icons';
@@ -10,6 +10,7 @@ import axios from 'axios';
 import FormLogin from '../../dashboard/FormLogin';
 import CinemasGetAll from '../../common/cinemas/CinemasGetAll';
 import Profile from '../../common/customers/Profile';
+import TestDisplayTicket from '../../common/test/test';
 
 export default function PageForUser() {
 
@@ -148,7 +149,7 @@ export default function PageForUser() {
           <div>Thông báo <BellFilled /></div>
 
           <div>
-            <Button> Giỏ hàng <ShopFilled /></Button>
+            <Button> Giỏ hàng <ShoppingCartOutlined /></Button>
           </div>
 
           <div>
@@ -183,7 +184,7 @@ export default function PageForUser() {
         </Row>
       </div>
       <div className='layout-footer'>
-        footer
+        <TestDisplayTicket />
       </div>
     </div>
   )
