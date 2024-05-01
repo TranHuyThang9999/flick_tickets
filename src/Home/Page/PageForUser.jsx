@@ -20,7 +20,8 @@ export default function PageForUser() {
   const [user, setUser] = useState(null);
   const [tickets, setTickets] = useState([]);
   const [statusTicketSale, setStatusTicketSale] = useState(0);
-  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
+  const [nameCinema, setNameCinema] = useState('');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -49,15 +50,15 @@ export default function PageForUser() {
   }
 
   const handleShowingTickets = () => {
-    setSelectedMenuItem('showing');
     setStatusTicketSale(15);
   };
-  
+
   const handleUpcomingTickets = () => {
-    setSelectedMenuItem('upcoming');
     setStatusTicketSale(17);
   };
-
+  const handlerNameCinema = (name) => {
+    setNameCinema(name);
+  }
   const conhandlerLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -146,7 +147,7 @@ export default function PageForUser() {
             <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
               <Menu.SubMenu key="SubMenu" title={<span> Phim chiếu</span>}>
                 {tickets.map((ticket) => (
-                  <Menu.Item key={ticket.id} icon={<AppstoreOutlined />}>
+                  <Menu.Item key={ticket.id} icon={<AppstoreOutlined />} onClick={() => handlerNameCinema(ticket.name)}>
                     {ticket.name}
                   </Menu.Item>
                 ))}
@@ -194,7 +195,7 @@ export default function PageForUser() {
         </Row>
       </div>
       <div className='layout-footer'>
-        <GetTicketOncarousel status={statusTicketSale}/>
+        <GetTicketOncarousel status={statusTicketSale} name={nameCinema} />
       </div>
     </div>
   )

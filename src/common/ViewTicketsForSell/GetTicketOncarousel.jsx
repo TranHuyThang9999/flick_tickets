@@ -9,7 +9,7 @@ import { SelectOutlined } from '@ant-design/icons';
 import './index.css';
 import GetTicketById from '../../Home/Tickets/DetailTicketById';
 
-export default function GetTicketOncarousel({ status }) {
+export default function GetTicketOncarousel({ status ,name}) {
   const [tickets, setTickets] = useState([]);
   const [listFile, setListFile] = useState([]);
   const [isDetail, setIsDetail] = useState(false);
@@ -21,6 +21,7 @@ export default function GetTicketOncarousel({ status }) {
         const response = await axios.get('http://localhost:8080/manager/customers/ticket', {
           params: {
             status: status,
+            name:name
           },
         });
         if (response.data.result.code === 0) {
@@ -34,7 +35,7 @@ export default function GetTicketOncarousel({ status }) {
       }
     };
     fetchTickets();
-  }, [status]); // Add status to dependency array
+  }, [name, status]); // Add status to dependency array
 
   const fetchFiles = async (tickets) => {
     const filesList = [];
