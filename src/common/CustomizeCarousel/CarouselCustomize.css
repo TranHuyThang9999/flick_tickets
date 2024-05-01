@@ -1,0 +1,72 @@
+.carousel-container {
+  height: 350px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  background-color: #f7f7f7; /* Màu nền */
+  border-radius: 16px;
+  border: 1px solid #ddd; /* Viền */
+  overflow: hidden; /* Ẩn phần nội dung vượt ra ngoài */
+}
+
+.carousel-image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Ẩn phần ảnh vượt ra ngoài */
+}
+
+.carousel-buttons-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px; /* Đẩy các button lên trên */
+}
+
+.carousel-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #4caf50; /* Màu nền button */
+  padding: 8px 20px; /* Kích thước button */
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Hiệu ứng khi hover */
+}
+
+.carousel-button:hover {
+  background-color: #45a049; /* Màu nền button khi hover */
+}
+
+.carousel-button:disabled {
+  background-color: #ccc; /* Màu nền button khi bị vô hiệu hóa */
+  cursor: not-allowed;
+}
+
+.carousel-button-shadow {
+  height: 26px;
+  margin-left: 90px;
+  margin-right: 90px;
+}
+.carousel-buttons-container {
+  position: absolute; /* Sử dụng position absolute */
+  top: 50%; /* Đặt top là 50% */
+  left: 0px; /* Đặt left là 0 để căn giữa theo chiều ngang */
+  right: 0; /* Đặt right là 0 để căn giữa theo chiều ngang */
+  transform: translateY(-50%); /* Dịch chuyển ngược lại 50% của chiều cao của chính nó */
+}
+
+.carousel-button-shadow {
+  background-color: #ccc; /* Màu nền button */
+  padding: 8px 20px; /* Kích thước button */
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease; /* Hiệu ứng khi hover */
+}
+
+.carousel-button-shadow:hover {
+  background-color: #45a049; /* Màu nền button khi hover */
+}

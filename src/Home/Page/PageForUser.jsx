@@ -10,7 +10,7 @@ import axios from 'axios';
 import FormLogin from '../../dashboard/FormLogin';
 import CinemasGetAll from '../../common/cinemas/CinemasGetAll';
 import Profile from '../../common/customers/Profile';
-import TestDisplayTicket from '../../common/test/test';
+import GetTicketOncarousel from '../../common/ViewTicketsForSell/GetTicketOncarousel';
 
 export default function PageForUser() {
 
@@ -19,7 +19,8 @@ export default function PageForUser() {
   const username = localStorage.getItem('user_name');
   const [user, setUser] = useState(null);
   const [tickets, setTickets] = useState([]);
-
+  const [statusTicketSale, setStatusTicketSale] = useState(0);
+  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,7 +36,7 @@ export default function PageForUser() {
     };
 
     fetchData();
-  }, []);
+  }, [username]);
 
 
   const handlerCheckNextComponent = () => {
@@ -45,8 +46,18 @@ export default function PageForUser() {
     } else {
       setPersonalPage(true);
     }
-
   }
+
+  const handleShowingTickets = () => {
+    setSelectedMenuItem('showing');
+    setStatusTicketSale(15);
+  };
+  
+  const handleUpcomingTickets = () => {
+    setSelectedMenuItem('upcoming');
+    setStatusTicketSale(17);
+  };
+
   const conhandlerLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -61,8 +72,6 @@ export default function PageForUser() {
 
   const listRoomCinema = CinemasGetAll();
 
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const feedDataTicket = async () => {
       try {
@@ -80,7 +89,7 @@ export default function PageForUser() {
       }
     }
     feedDataTicket();
-  }, []);
+  }, [statusTicketSale]); // Thêm statusTicketSale vào dependency array
 
   if (personalPage) {
     return (
@@ -112,10 +121,11 @@ export default function PageForUser() {
           <div className='layout-header-center-menu-choice-two'>
             <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
               <Menu.SubMenu key="SubMenu" icon={<WeiboCircleOutlined />} title={<span>Lịch chiếu</span>}>
-                <Menu.Item key="one" icon={<AppstoreOutlined />}>
+                <Menu.Item key="one" icon={<AppstoreOutlined />} onClick={handleShowingTickets}>
                   Đang chiếu
                 </Menu.Item>
-                <Menu.Item key="two" icon={<AppstoreOutlined />}>
+
+                <Menu.Item key="two" icon={<AppstoreOutlined />} onClick={handleUpcomingTickets}>
                   Sắp chiếu
                 </Menu.Item>
               </Menu.SubMenu>
@@ -184,7 +194,7 @@ export default function PageForUser() {
         </Row>
       </div>
       <div className='layout-footer'>
-        <TestDisplayTicket />
+        <GetTicketOncarousel status={statusTicketSale}/>
       </div>
     </div>
   )

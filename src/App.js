@@ -27,9 +27,7 @@ import UseContextToken from "./Routers/UseContextToken";
 import FormRegisterCustomer from "./common/customers/FormRegisterCustomer";
 import UpdateProfile from "./common/customers/UpdateProfile";
 import Profile from "./common/customers/Profile";
-import TestLayout from "./common/test/test";
 import PageForUser from "./Home/Page/PageForUser";
-import TestDisPlayTicket from "./common/test/test";
 
 export default function App() {
   return (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Image } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import './CarouselCustomize.css';
 
 export default function CarouselCustomize({ images }) {
   const [index, setIndex] = useState(0);
@@ -26,28 +27,22 @@ export default function CarouselCustomize({ images }) {
   const currentImage = images.length > 0 ? images[index] : null;
 
   return (
-    <div style={{ height: '350px', border: 'solid 1px', width: '300px', display: 'flex', flexDirection: 'column', backgroundColor: 'beige' }}>
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div className="carousel-container">
+      <div className="carousel-image-container">
         {currentImage && (
           <div style={{ maxWidth: '100%', maxHeight: '100%' }}>
             <Image
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain',borderRadius:'10px'}}
               src={currentImage.url}
             />
           </div>
         )}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-        <button
-          style={{ backgroundColor: 'beige', marginRight: '5px', padding: '1px 20px', border: 'none', color: 'white' }}
-          onClick={handlePreviousClick}
-        >
+      <div className="carousel-buttons-container">
+        <button className="carousel-button-shadow" onClick={handlePreviousClick}>
           <ArrowLeftOutlined style={{ color: 'darkblue', fontSize: '15px' }} />
         </button>
-        <button
-          style={{ backgroundColor: 'beige', marginLeft: '5px', padding: '1px 20px', border: 'none', color: 'white' }}
-          onClick={handleNextClick}
-        >
+        <button  className="carousel-button-shadow" onClick={handleNextClick}>
           <ArrowRightOutlined style={{ color: 'darkblue', fontSize: '15px' }} />
         </button>
       </div>
