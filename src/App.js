@@ -28,6 +28,7 @@ import FormRegisterCustomer from "./common/customers/FormRegisterCustomer";
 import UpdateProfile from "./common/customers/UpdateProfile";
 import Profile from "./common/customers/Profile";
 import PageForUser from "./Home/Page/PageForUser";
+import GetListCart from "./cart/GetListCart";
 
 export default function App() {
   return (
@@ -64,9 +65,10 @@ export default function App() {
       {/* <Profile/> */}
       {/* <PageForUser/> */}
       {/* <TestLayout/> */}
-      <PageForUser/>
+      {/* <PageForUser/> */}
       {/* <GetTicketById id={1485296}/> */}
       {/* <TestDisPlayTicket/> */}
+      <GetListCart/>
     </div>
   );
 }
