@@ -25,21 +25,22 @@ type Tickets struct {
 	UpdatedAt     int     `json:"updated_at"`
 }
 type TicketreqFindByForm struct {
-	ID            int64   `form:"id"`
-	Name          string  `form:"name"`
-	Price         float64 `form:"price"`
-	Description   string  `form:"description"`
-	Sale          int     `form:"sale"`
-	ReleaseDate   int     `form:"release_date"`
-	Status        int     `form:"status"`
-	MovieDuration int     `form:"movieDuration"`
-	AgeLimit      int     `form:"age_limit"`
-	Director      string  `form:"director"`
-	Actor         string  `form:"actor"`
-	Producer      string  `form:"producer"`
-	MovieType     string  `form:"movie_type"`
-	CreatedAt     int     `form:"created_at"`
-	UpdatedAt     int     `form:"updated_at"`
+	ID               int64   `form:"id"`
+	Name             string  `form:"name"`
+	Price            float64 `form:"price"`
+	Description      string  `form:"description"`
+	Sale             int     `form:"sale"`
+	ReleaseDate      int     `form:"release_date"`
+	Status           int     `form:"status"`
+	MovieDuration    int     `form:"movieDuration"`
+	AgeLimit         int     `form:"age_limit"`
+	Director         string  `form:"director"`
+	Actor            string  `form:"actor"`
+	Producer         string  `form:"producer"`
+	MovieType        string  `form:"movie_type"`
+	CreatedAt        int     `form:"created_at"`
+	UpdatedAt        int     `form:"updated_at"`
+	MovieTheaterName string  `form:"movie_theater_name"`
 }
 
 type TicketReqUpdateById struct {
@@ -70,4 +71,5 @@ type RepositoryTickets interface {
 	GetTicketById(ctx context.Context, id int64) (*Tickets, error)
 	// UpdateTicketSelectedSeat(ctx context.Context, tx *gorm.DB, id int64, selected_seat string) error
 	GetListTicketWithSatus(ctx context.Context, staus_sale int) ([]*Tickets, error)
+	GetlistTicketByListTicketId(ctx context.Context, listTicketId []int64) ([]*Tickets, error)
 }

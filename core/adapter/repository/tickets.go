@@ -82,7 +82,7 @@ func (u *CollectionTickets) GetTicketById(ctx context.Context, id int64) (*domai
 //		}
 //		return nil
 //	}
-func (u *CollectionTickets) GetListTicketWithSatus(ctx context.Context, staus_sale int) ([]*domain.Tickets, error) {
+func (u *CollectionTickets) GetListTicketWithSatus(ctx context.Context, staus_sale int) ([]*domain.Tickets, error) { // ko dung
 	var ticket []*domain.Tickets
 	result := u.collection.Where("status = ?", staus_sale).Find(&ticket)
 	if result.Error != nil {
@@ -95,4 +95,9 @@ func (u *CollectionTickets) GetListTicketWithSatus(ctx context.Context, staus_sa
 
 	}
 	return ticket, nil
+}
+func (u *CollectionTickets) GetlistTicketByListTicketId(ctx context.Context, listTicketId []int64) ([]*domain.Tickets, error) {
+	var tickets []*domain.Tickets
+	result := u.collection.Where("id in (?)", listTicketId).Find(&tickets)
+	return tickets, result.Error
 }

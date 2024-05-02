@@ -335,32 +335,66 @@ func (c *UseCaseTicker) GetAllTickets(ctx context.Context, req *domain.Ticketreq
 	// 	},
 	// 	Tickets: listTicketResp,
 	// }, nil
+	//
+	if req.MovieTheaterName == "" {
+		listTicket, err := c.ticket.GetAllTickets(ctx, req) //get all
+		if err != nil {
+			return &entities.TicketRespGetAll{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, err
+		}
+		if len(listTicket) == 0 {
+			return &entities.TicketRespGetAll{
+				Result: entities.Result{
+					Code:    enums.DATA_EMPTY_ERR_CODE,
+					Message: enums.DATA_EMPTY_ERR_MESS,
+				},
+			}, nil
+		}
 
-	listTicket, err := c.ticket.GetAllTickets(ctx, req) //get all
-	if err != nil {
 		return &entities.TicketRespGetAll{
 			Result: entities.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
 			},
-		}, err
-	}
-	if len(listTicket) == 0 {
+			ListTickets: listTicket,
+		}, nil
+	} else {
+		var listTicketId = make([]int64, 0)
+		listShowTime, err := c.showTime.GetShowTimeByNameCinema(ctx, req.MovieTheaterName)
+		if err != nil {
+			return &entities.TicketRespGetAll{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, err
+		}
+		for i := 0; i < len(listShowTime); i++ {
+			listTicketId = append(listTicketId, listShowTime[i].TicketID)
+		}
+		ticket, err := c.ticket.GetlistTicketByListTicketId(ctx, listTicketId)
+		if err != nil {
+			return &entities.TicketRespGetAll{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, err
+		}
+		log.Infof("list ", listTicketId)
 		return &entities.TicketRespGetAll{
 			Result: entities.Result{
-				Code:    enums.DATA_EMPTY_ERR_CODE,
-				Message: enums.DATA_EMPTY_ERR_MESS,
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
 			},
+			ListTickets: ticket,
 		}, nil
 	}
 
-	return &entities.TicketRespGetAll{
-		Result: entities.Result{
-			Code:    enums.SUCCESS_CODE,
-			Message: enums.SUCCESS_MESS,
-		},
-		ListTickets: listTicket,
-	}, nil
 }
 
 // func (c *UseCaseTicker) UpdateSizeRoom(ctx context.Context, req *entities.TicketReqUpdateSizeRoom) (*entities.TicketRespUpdateSizeRoom, error) {
@@ -443,7 +477,7 @@ func (c *UseCaseTicker) UpdateTicket(ctx context.Context, req *domain.TicketReqU
 	}, nil
 }
 
-func (c *UseCaseTicker) GetAllTicketsAttachSale(ctx context.Context, status string) (*entities.TicketGetAllByStatusResp, error) {
+func (c *UseCaseTicker) GetAllTicketsAttachSale(ctx context.Context, status string) (*entities.TicketGetAllByStatusResp, error) { // ko dung
 
 	listTicket, err := c.ticket.GetListTicketWithSatus(ctx, mapper.ConvertStringToInt(status))
 	if err != nil {

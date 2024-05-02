@@ -102,3 +102,8 @@ func (c *CollectionShowTime) DeleteByTicketIdAndNameCinema(ctx context.Context, 
 
 	return nil
 }
+func (c *CollectionShowTime) GetShowTimeByNameCinema(ctx context.Context, cinema_name string) ([]*domain.ShowTime, error) {
+	var listCinema = make([]*domain.ShowTime, 0)
+	result := c.collection.Where("cinema_name = ?", cinema_name).Find(&listCinema)
+	return listCinema, result.Error
+}
