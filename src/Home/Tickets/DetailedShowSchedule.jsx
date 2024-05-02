@@ -121,13 +121,13 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
     },
   ];
   console.log(selectedRecord);
-  console.log("pop : ",selectPopChid);
+  console.log("pop : ", selectPopChid);
 
   const pagination = {
     pageSize: 4,
     position: ['bottomLeft'],
   };
-  
+
   const item = selectPopChid
   const items = item.map((item) => ({
     name: "Vị trí ghế : " + item,
@@ -207,13 +207,17 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
         <Button type="primary" onClick={() => setShowModal(true)} disabled={selectPopChid.length === 0 || loadingPayment}> {/* Sử dụng điều kiện để vô hiệu hóa nút khi selectPopChid rỗng hoặc loadingPayment đang true */}
           {loadingPayment ? 'Đang xử lý...' : 'Mua'}
         </Button>
-       
-        <Addcart
-          show_time_id={selectedRecord ? selectedRecord.id : null}
-          seats_position={item}
-          price={selectedRecord ? selectedRecord.price* item.length : 0}
-        />
 
+
+        {selectPopChid.length > 0 && (
+          < Addcart
+            show_time_id={selectedRecord ? selectedRecord.id : null}
+            seats_position={item}
+            price={selectedRecord ? selectedRecord.price * item.length : 0}
+          />
+        )}
+
+  
 
       </Drawer>
       {/* Modal */}
