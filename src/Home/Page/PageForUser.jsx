@@ -50,13 +50,16 @@ export default function PageForUser() {
   }
 
   const handleShowingTickets = () => {
+    setNameCinema("");
     setStatusTicketSale(15);
   };
 
   const handleUpcomingTickets = () => {
+    setNameCinema("");
     setStatusTicketSale(17);
   };
   const handlerNameCinema = (name) => {
+    setStatusTicketSale(0);
     setNameCinema(name);
   }
   const handlerGobackHome = ()=>{
