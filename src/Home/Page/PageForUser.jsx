@@ -21,6 +21,7 @@ export default function PageForUser() {
   const [tickets, setTickets] = useState([]);
   const [statusTicketSale, setStatusTicketSale] = useState(0);
   const [nameCinema, setNameCinema] = useState('');
+  const[movieTheaterName,setMovieTheaterName] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,6 +63,12 @@ export default function PageForUser() {
     setStatusTicketSale(0);
     setNameCinema(name);
   }
+  const handlerMovieTheaterName = (movieTheaterName)=>{
+    setStatusTicketSale(0);
+    setNameCinema("");
+    setMovieTheaterName(movieTheaterName);
+  }
+
   const handlerGobackHome = ()=>{
     window.location.reload();
   }
@@ -146,7 +153,7 @@ export default function PageForUser() {
             <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
               <Menu.SubMenu key="SubMenu" title={<span> Rạp chiếu</span>}>
                 {listRoomCinema.map((cinema) => (
-                  <Menu.Item key={cinema.id} icon={<AppstoreOutlined />}>
+                  <Menu.Item key={cinema.id} icon={<AppstoreOutlined />} onClick={()=>handlerMovieTheaterName(cinema.cinema_name)}>
                     {cinema.cinema_name}
                   </Menu.Item>
                 ))}
@@ -205,7 +212,7 @@ export default function PageForUser() {
         </Row>
       </div>
       <div className='layout-footer'>
-        <GetTicketOncarousel status={statusTicketSale} name={nameCinema} />
+        <GetTicketOncarousel status={statusTicketSale} name={nameCinema}  movie_theater_name={movieTheaterName}/>
       </div>
     </div>
   )
