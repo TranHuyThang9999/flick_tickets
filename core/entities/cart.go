@@ -25,6 +25,9 @@ type Carts struct {
 	District       string  `json:"district"`
 	Commune        string  `json:"commune"`
 	AddressDetails string  `json:"address_details"`
+	MovieName      string  `json:"movie_name"`
+	MovieDuration  int     `json:"movie_duration"`
+	AgeLimit       int     `json:"age_limit"`
 }
 type CartsUpdateReq struct {
 	Id            int64  `form:"id"`

@@ -14,13 +14,20 @@ type UseCaseCart struct {
 	cart      domain.RepositoryCarts
 	show_time domain.RepositoryShowTime
 	cinema    domain.RepositoryCinemas
+	ticket    domain.RepositoryTickets
 }
 
-func NewUseCaseCart(cart domain.RepositoryCarts, show_time domain.RepositoryShowTime, cinema domain.RepositoryCinemas) *UseCaseCart {
+func NewUseCaseCart(
+	cart domain.RepositoryCarts,
+	show_time domain.RepositoryShowTime,
+	cinema domain.RepositoryCinemas,
+	ticket domain.RepositoryTickets,
+) *UseCaseCart {
 	return &UseCaseCart{
 		cart:      cart,
 		show_time: show_time,
 		cinema:    cinema,
+		ticket:    ticket,
 	}
 }
 
@@ -51,10 +58,9 @@ func (u *UseCaseCart) AddCart(ctx context.Context, req *entities.CartsAddReq) (*
 	}, nil
 }
 
-func (u *UseCaseCart) FindCartByForm(ctx context.Context, req *domain.CartFindByFormReq) (*entities.CartFindByFormResp, error) { //requied user_name
+func (u *UseCaseCart) FindCartByForm(ctx context.Context, req *domain.CartFindByFormReq) (*entities.CartFindByFormResp, error) {
 
 	var listShowTimeId = make([]int64, 0)
-	var listCinemaName = make([]string, 0)
 	var listCartResp = make([]*entities.Carts, 0)
 
 	// Tìm kiếm giỏ hàng dựa trên yêu cầu
@@ -77,8 +83,13 @@ func (u *UseCaseCart) FindCartByForm(ctx context.Context, req *domain.CartFindBy
 		}, nil
 	}
 
-	for i := 0; i < len(listCart); i++ {
-		listShowTimeId = append(listShowTimeId, listCart[i].ShowTimeId)
+	// Tạo map để lưu trữ thông tin rạp chiếu phim dựa trên tên rạp
+	cinemaMap := make(map[int64]*domain.Cinemas)
+	ticketMap := make(map[int64]*domain.Tickets)
+	movieTimeMap := make(map[int64]int64)
+
+	for _, cart := range listCart {
+		listShowTimeId = append(listShowTimeId, cart.ShowTimeId)
 	}
 	listShowTime, err := u.show_time.GetListShowTimeByListId(ctx, listShowTimeId)
 	if err != nil {
@@ -90,12 +101,27 @@ func (u *UseCaseCart) FindCartByForm(ctx context.Context, req *domain.CartFindBy
 			},
 		}, nil
 	}
-	for i := 0; i < len(listShowTime); i++ {
-		listCinemaName = append(listCinemaName, listShowTime[i].CinemaName)
-	}
-	for i, cart := range listCart {
-		cinema, err := u.cinema.GetAllCinemaByName(ctx, listCinemaName[i])
+
+	for _, showTime := range listShowTime {
+		// Kiểm tra xem thông tin rạp đã được lưu trữ trong map chưa
+		if _, ok := cinemaMap[showTime.ID]; !ok {
+			cinema, err := u.cinema.GetAllCinemaByName(ctx, showTime.CinemaName)
+			if err != nil {
+				log.Errorf(err, "Error getting cinema information: %v")
+				return &entities.CartFindByFormResp{
+					Result: entities.Result{
+						Code:    enums.DB_ERR_CODE,
+						Message: enums.DB_ERR_MESS,
+					},
+				}, nil
+			}
+
+			// Lưu thông tin rạp vào map
+			cinemaMap[showTime.ID] = cinema
+		}
+		ticket, err := u.ticket.GetTicketById(ctx, showTime.TicketID)
 		if err != nil {
+			log.Errorf(err, "Error getting cinema information: %v")
 			return &entities.CartFindByFormResp{
 				Result: entities.Result{
 					Code:    enums.DB_ERR_CODE,
@@ -103,21 +129,30 @@ func (u *UseCaseCart) FindCartByForm(ctx context.Context, req *domain.CartFindBy
 				},
 			}, nil
 		}
+		ticketMap[showTime.ID] = ticket
+		movieTimeMap[showTime.ID] = int64(showTime.MovieTime)
+	}
 
+	for _, cart := range listCart {
+		cinema := cinemaMap[cart.ShowTimeId] // Lấy thông tin rạp từ map
+		ticket := ticketMap[cart.ShowTimeId] //
+		listMovieTime := movieTimeMap[cart.ShowTimeId]
 		cart := &entities.Carts{
 			Id:             cart.Id,
 			ShowTimeId:     cart.ShowTimeId,
 			SeatsPosition:  cart.SeatsPosition,
 			Price:          cart.Price,
-			MovieTime:      0, // Không có thông tin thời gian phim, bạn có thể cập nhật sau
+			MovieTime:      int(listMovieTime),
 			CinemaName:     cinema.CinemaName,
 			Description:    cinema.Description,
 			Conscious:      cinema.Conscious,
-			District:       cinema.Description, // Lưu ý: có vẻ như có lỗi ở đây
+			District:       cinema.Description,
 			Commune:        cinema.Commune,
 			AddressDetails: cinema.AddressDetails,
+			MovieName:      ticket.Name,
+			MovieDuration:  ticket.MovieDuration,
+			AgeLimit:       ticket.AgeLimit,
 		}
-
 		listCartResp = append(listCartResp, cart)
 	}
 
