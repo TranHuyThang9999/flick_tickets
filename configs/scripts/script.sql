@@ -78,18 +78,30 @@ CREATE Table transactions (
 );
 CREATE TABLE show_times(
     id bigint NOT NULL,
-    ticket_id bigint,
-    movie_time int,
+    movie_time integer,
     cinema_name varchar(255),
     created_at integer,
     updated_at integer,
+    selected_seat varchar(1024),
+    quantity integer,
+    ticket_id bigint,
+    original_number integer,
+    price double precision,
     PRIMARY KEY(id)
 );
 --tức là 1 vé sẽ được chiếu ở nhiều phòng, 1 phòng sẽ có nhiều h chiếu'
 
-CREATE Table cinemas(
-    id BIGINT PRIMARY KEY,
-    cinema_name VARCHAR(255)
+CREATE TABLE cinemas(
+    id bigint NOT NULL,
+    cinema_name varchar(255),
+    description varchar(255),
+    conscious varchar(255),
+    district varchar(255),
+    commune varchar(255),
+    address_details varchar(255),
+    width_container integer,
+    height_container integer,
+    PRIMARY KEY(id)
 );
 
 CREATE TABLE movie_theaters (
@@ -109,4 +121,16 @@ create Table movie_types (
 
 select DISTINCT name from cities;
 
-SELECT DISTINCT district from cities where name in('Thành phố Hà Nội','Tỉnh Hưng Yên');
+SELECT show_times.*, file_storages.*
+FROM show_times
+INNER JOIN cinemas ON cinemas.cinema_name = show_times.cinema_name
+INNER JOIN tickets ON tickets.id = show_times.ticket_id
+INNER JOIN file_storages ON file_storages.ticket_id = tickets.id
+WHERE cinemas.cinema_name = 'Phong 03';
+
+SELECT show_times.*, file_storages.url
+FROM show_times
+INNER JOIN cinemas ON cinemas.cinema_name = show_times.cinema_name
+INNER JOIN tickets ON tickets.id = show_times.ticket_id
+INNER JOIN file_storages ON file_storages.ticket_id = tickets.id
+WHERE cinemas.cinema_name = 'Phong 03';

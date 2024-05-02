@@ -353,6 +353,7 @@ func (c *UseCaseTicker) GetAllTickets(ctx context.Context, req *domain.Ticketreq
 			},
 		}, nil
 	}
+
 	return &entities.TicketRespGetAll{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
@@ -439,5 +440,25 @@ func (c *UseCaseTicker) UpdateTicket(ctx context.Context, req *domain.TicketReqU
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
+	}, nil
+}
+
+func (c *UseCaseTicker) GetAllTicketsAttachSale(ctx context.Context, status string) (*entities.TicketGetAllByStatusResp, error) {
+
+	listTicket, err := c.ticket.GetListTicketWithSatus(ctx, mapper.ConvertStringToInt(status))
+	if err != nil {
+		return &entities.TicketGetAllByStatusResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.TicketGetAllByStatusResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		ListTickets: listTicket,
 	}, nil
 }

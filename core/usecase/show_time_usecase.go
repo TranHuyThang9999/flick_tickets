@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"flick_tickets/common/enums"
+	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
@@ -98,7 +99,7 @@ func (s *UseCaseShowTime) DeleteShowTime(ctx context.Context, req *entities.Show
 	}, nil
 }
 func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) (*entities.ShowTimeByTicketIdresp, error) {
-	number := mapper.ConvertStringToInt(id)
+	number := mapper.ConvertStringToInt(id) //ticket id
 
 	// Lấy danh sách thời gian chiếu từ cơ sở dữ liệu
 	listShowTime, err := s.st.GetShowTimeByTicketId(ctx, int64(number))
@@ -111,7 +112,7 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			},
 		}, err
 	}
-
+	log.Infof("data : ", len(listShowTime))
 	// Kiểm tra xem danh sách thời gian chiếu có rỗng không
 	if len(listShowTime) == 0 {
 		return &entities.ShowTimeByTicketIdresp{
@@ -132,7 +133,7 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			},
 		}, err
 	}
-
+	log.Infof("cinema ", listCinema)
 	// Kiểm tra xem danh sách rạp chiếu có rỗng không
 	if len(listCinema) == 0 {
 		return &entities.ShowTimeByTicketIdresp{
@@ -181,7 +182,7 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			Price:           showTime.Price,
 		})
 	}
-
+	log.Infof("listRespDetail", listRespDetail)
 	// Sắp xếp danh sách thời gian chiếu theo thời gian của phim
 	sort.Slice(listRespDetail, func(i, j int) bool {
 		return int(listRespDetail[i].ID) > int(listRespDetail[j].ID)

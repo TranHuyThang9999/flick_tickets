@@ -62,3 +62,9 @@ type TicketRespDeleteById struct {
 type TicketRespUpdateById struct {
 	Result Result `json:"result"`
 }
+
+type TicketGetAllByStatusResp struct {
+	Result Result `json:"result"`
+	//Tickets []*Tickets `json:"tickets"`
+	ListTickets []*domain.Tickets `json:"list_tickets"`
+}

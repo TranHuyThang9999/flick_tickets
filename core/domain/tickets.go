@@ -69,4 +69,5 @@ type RepositoryTickets interface {
 	UpdateTicketQuantity(ctx context.Context, tx *gorm.DB, id int64, quantity int) error
 	GetTicketById(ctx context.Context, id int64) (*Tickets, error)
 	// UpdateTicketSelectedSeat(ctx context.Context, tx *gorm.DB, id int64, selected_seat string) error
+	GetListTicketWithSatus(ctx context.Context, staus_sale int) ([]*Tickets, error)
 }

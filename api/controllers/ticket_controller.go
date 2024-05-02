@@ -82,3 +82,10 @@ func (c *ControllerTicket) DeleteTicketsById(ctx *gin.Context) {
 	resp, err := c.ticket.DeleteTicketsById(ctx, id)
 	c.baseController.Response(ctx, resp, err)
 }
+func (c *ControllerTicket) GetAllTicketsAttachSale(ctx *gin.Context) {
+
+	status := ctx.Query("status")
+	resp, err := c.ticket.GetAllTicketsAttachSale(ctx, status)
+	c.baseController.Response(ctx, resp, err)
+
+}

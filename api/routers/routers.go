@@ -61,7 +61,7 @@ func NewApiRouter(
 	r.GET("/user/load", file_lc.GetListFileById)
 	r.POST("/user/verify/", aes.VerifyTickets)
 	r.DELETE("/user/delete/ticket/:id", ticket.DeleteTicketsById)
-
+	r.GET("/customer/ticket/action", ticket.GetAllTicketsAttachSale)
 	// r.PUT("/user/update/size/room", ticket.UpdateSizeRoom)
 	//	r.GET("/ws", managerClient.ServerWs) //auto pool
 	//cinema
