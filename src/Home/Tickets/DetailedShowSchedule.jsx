@@ -4,8 +4,9 @@ import { showWarning, showError } from '../../common/log/log';
 import SelectedSeat from '../../common/cinemas/SelectedSeat';
 import axios from 'axios';
 import Cookies from 'js-cookie'; // Import thư viện js-cookie
+import Addcart from '../../cart/Addcart';
 
-export default function DetailedShowSchedule({ id,statusSaleForTicket }) {
+export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
   const [showTimeTicket, setShowTimeTicket] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -30,7 +31,7 @@ export default function DetailedShowSchedule({ id,statusSaleForTicket }) {
   const fetchData = async () => {
     setFetchingData(true);
     try {
-      const response = await axios.get(`http://localhost:8080/manager/user/getlist/time?id=${id}`);// lay ve theo id
+      const response = await axios.get(`http://localhost:8080/manager/user/getlist/time?id=${id}`);// lay ve theo ticket id
       const data = response.data; // Truy cập dữ liệu từ response.data
       setShowTimeTicket(data.showtimes);
       if (data.result.code === 20) {
@@ -120,11 +121,13 @@ export default function DetailedShowSchedule({ id,statusSaleForTicket }) {
     },
   ];
   console.log(selectedRecord);
+  console.log("pop : ",selectPopChid);
+
   const pagination = {
     pageSize: 4,
     position: ['bottomLeft'],
   };
-
+  
   const item = selectPopChid
   const items = item.map((item) => ({
     name: "Vị trí ghế : " + item,
@@ -204,6 +207,14 @@ export default function DetailedShowSchedule({ id,statusSaleForTicket }) {
         <Button type="primary" onClick={() => setShowModal(true)} disabled={selectPopChid.length === 0 || loadingPayment}> {/* Sử dụng điều kiện để vô hiệu hóa nút khi selectPopChid rỗng hoặc loadingPayment đang true */}
           {loadingPayment ? 'Đang xử lý...' : 'Mua'}
         </Button>
+       
+        <Addcart
+          show_time_id={selectedRecord ? selectedRecord.id : null}
+          seats_position={item}
+          price={selectedRecord ? selectedRecord.price* item.length : 0}
+        />
+
+
       </Drawer>
       {/* Modal */}
       <Modal
