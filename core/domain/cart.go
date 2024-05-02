@@ -17,8 +17,8 @@ type CartFindByFormReq struct {
 	ShowTimeId    int64   `form:"show_time_id"`
 	SeatsPosition string  `form:"seats_position"`
 	Price         float64 `form:"price"`
-	CreatedAt     int     `form:"created_at"`
-	UpdatedAt     int     `form:"updated_at"`
+	// CreatedAt     int     `form:"created_at"`
+	// UpdatedAt     int     `form:"updated_at"`
 }
 type RepositoryCarts interface {
 	AddCarts(ctx context.Context, req *Carts) error

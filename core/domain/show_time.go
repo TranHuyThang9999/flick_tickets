@@ -40,4 +40,5 @@ type RepositoryShowTime interface {
 	GetInformationShowTimeForTicketByTicketId(ctx context.Context, id int64) (*ShowTime, error)
 	UpdateQuantitySeat(ctx context.Context, tx *gorm.DB, showTimeId int64, quantity int, selected_seat string) error
 	GetShowTimeByNameCinema(ctx context.Context, cinema_name string) ([]*ShowTime, error)
+	GetListShowTimeByListId(ctx context.Context, ids []int64) ([]*ShowTime, error)
 }

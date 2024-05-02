@@ -40,8 +40,8 @@ func (c *Collectioncart) FindCartByForm(ctx context.Context, req *domain.CartFin
 		ShowTimeId:    req.ShowTimeId,
 		SeatsPosition: req.SeatsPosition,
 		Price:         req.Price,
-		CreatedAt:     req.CreatedAt,
-		UpdatedAt:     req.UpdatedAt,
+		// CreatedAt:     req.CreatedAt,
+		// UpdatedAt:     req.UpdatedAt,
 	}).Find(&listItem)
 	return listItem, result.Error
 }

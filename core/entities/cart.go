@@ -1,7 +1,5 @@
 package entities
 
-import "flick_tickets/core/domain"
-
 type CartsAddReq struct {
 	UserName      string  `form:"user_name"`
 	ShowTimeId    int64   `form:"show_time_id"`
@@ -12,8 +10,21 @@ type CartsAddResp struct {
 	Result Result `json:"result"`
 }
 type CartFindByFormResp struct {
-	Result Result          `json:"result"`
-	Carts  []*domain.Carts `json:"carts"`
+	Result Result   `json:"result"`
+	Carts  []*Carts `json:"carts"`
+}
+type Carts struct {
+	Id             int64   `json:"id"`
+	ShowTimeId     int64   `json:"show_time_id"`
+	SeatsPosition  string  `json:"seats_position"`
+	Price          float64 `json:"price"`
+	MovieTime      int     `json:"movie_time"`
+	CinemaName     string  `json:"cinema_name"`
+	Description    string  `json:"description"`
+	Conscious      string  `json:"conscious"`
+	District       string  `json:"district"`
+	Commune        string  `json:"commune"`
+	AddressDetails string  `json:"address_details"`
 }
 type CartsUpdateReq struct {
 	Id            int64  `form:"id"`

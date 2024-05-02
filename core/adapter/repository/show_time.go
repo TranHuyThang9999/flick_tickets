@@ -107,3 +107,8 @@ func (c *CollectionShowTime) GetShowTimeByNameCinema(ctx context.Context, cinema
 	result := c.collection.Where("cinema_name = ?", cinema_name).Find(&listCinema)
 	return listCinema, result.Error
 }
+func (c *CollectionShowTime) GetListShowTimeByListId(ctx context.Context, ids []int64) ([]*domain.ShowTime, error) {
+	var listCinema = make([]*domain.ShowTime, 0)
+	result := c.collection.Where("id in(?)", ids).Find(&listCinema)
+	return listCinema, result.Error
+}
