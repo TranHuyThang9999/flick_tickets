@@ -121,16 +121,12 @@ create Table movie_types (
 
 select DISTINCT name from cities;
 
-SELECT show_times.*, file_storages.*
-FROM show_times
-INNER JOIN cinemas ON cinemas.cinema_name = show_times.cinema_name
-INNER JOIN tickets ON tickets.id = show_times.ticket_id
-INNER JOIN file_storages ON file_storages.ticket_id = tickets.id
-WHERE cinemas.cinema_name = 'Phong 03';
-
-SELECT show_times.*, file_storages.url
-FROM show_times
-INNER JOIN cinemas ON cinemas.cinema_name = show_times.cinema_name
-INNER JOIN tickets ON tickets.id = show_times.ticket_id
-INNER JOIN file_storages ON file_storages.ticket_id = tickets.id
-WHERE cinemas.cinema_name = 'Phong 03';
+CREATE TABLE carts(
+    id BIGINT PRIMARY key,
+    user_name VARCHAR(255),
+    show_time_id BIGINT,
+    seats_position VARCHAR(1024),
+    price FLOAT,
+    created_at int,
+    updated_at int
+);

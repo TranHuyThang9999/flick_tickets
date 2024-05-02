@@ -33,6 +33,7 @@ func NewApiRouter(
 	addresPublic *controllers.ControllerAddress,
 	payment *controllers.ControllerPayMent,
 	moive *controllers.ControllerMovie,
+	cart *controllers.ControllerCarts,
 ) *ApiRouter {
 	engine := gin.New()
 	gin.DisableConsoleColor()
@@ -114,10 +115,14 @@ func NewApiRouter(
 	//moive
 	r.POST("/user/movie/add", moive.AddMoiveType)
 	r.GET("/user/movie/getlist", moive.GetAllMovieType)
-
+	//cart
+	r.POST("/cart/add", cart.AddCart)
+	r.GET("/cart/getlist", cart.FindByFormcart)
+	r.PUT("/cart/update", cart.UpdateCartById)
+	r.DELETE("/cart/delete/:id", cart.DeleteCartById)
 	// Thêm công việc vào lịch để chạy mỗi 15 phút = 900s
 	scheduler := cron.New()
-	err := scheduler.AddFunc("*/15 * * * *", func() {
+	err := scheduler.AddFunc("*/900 * * * *", func() {
 		resp, err := http.Get("http://localhost:8080/manager/user/trigger")
 		if err != nil {
 			// Xử lý lỗi khi gọi API
