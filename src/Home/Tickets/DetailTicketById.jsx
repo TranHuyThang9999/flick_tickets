@@ -108,7 +108,7 @@ export default function GetTicketById({ id }) {
                     </ul>
                 </Col>
                 <Col flex='auto'>
-                    <DetailedShowSchedule id={ticket.id} />
+                    <DetailedShowSchedule id={ticket.id} statusSaleForTicket={ticket.status} />
                 </Col>
             </Row>
 

@@ -5,7 +5,7 @@ import SelectedSeat from '../../common/cinemas/SelectedSeat';
 import axios from 'axios';
 import Cookies from 'js-cookie'; // Import thư viện js-cookie
 
-export default function DetailedShowSchedule({ id }) {
+export default function DetailedShowSchedule({ id,statusSaleForTicket }) {
   const [showTimeTicket, setShowTimeTicket] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -30,7 +30,7 @@ export default function DetailedShowSchedule({ id }) {
   const fetchData = async () => {
     setFetchingData(true);
     try {
-      const response = await axios.get(`http://localhost:8080/manager/user/getlist/time?id=${id}`);
+      const response = await axios.get(`http://localhost:8080/manager/user/getlist/time?id=${id}`);// lay ve theo id
       const data = response.data; // Truy cập dữ liệu từ response.data
       setShowTimeTicket(data.showtimes);
       if (data.result.code === 20) {
@@ -196,6 +196,7 @@ export default function DetailedShowSchedule({ id }) {
               widthContainerUseSavedate={selectedRecord.width_container}
               numSquares={selectedRecord.original_number}
               onCreate={setSelectPopChid}
+              statusSale={statusSaleForTicket}
             />
           </div>
         )}

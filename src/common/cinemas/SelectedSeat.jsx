@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Space } from 'antd';
+import { HourglassFilled } from '@ant-design/icons';
 
 function Square({ size = 30, index, onClick, disabled, selected, inSelectedSeatGetFormApi }) {
   const style = {
@@ -45,6 +46,7 @@ export default function SelectedSeat({
   heightContainerUseSaveData,
   numSquares,
   onCreate, // Hàm callback để truyền danh sách ghế đã chọn
+  statusSale,
 }) {
   const [containerWidth, setContainerWidth] = useState(widthContainerUseSavedate || 400);
   const [containerHeight, setContainerHeight] = useState(heightContainerUseSaveData || 400);
@@ -63,7 +65,7 @@ export default function SelectedSeat({
     if (disabledSquares[index - 1]) {
       return; // Nếu ô đã bị disable thì không xử lý click
     }
-  
+
     setSelectedSeats((prevSelectedSeats) => {
       const selectedIndex = prevSelectedSeats.indexOf(index);
       if (selectedIndex !== -1) {
@@ -75,11 +77,15 @@ export default function SelectedSeat({
       }
     });
   };
-  
+
   useEffect(() => {
     onCreate(selectedSeats.map(index => `${index}`)); // Truyền danh sách vị trí ghế đã chọn thay vì disabledSquares
   }, [selectedSeats, onCreate]);
-
+  if (statusSale === 17) {
+    return (
+      <div>Vé chưa mở bán , vui lòng chờ <HourglassFilled style={{color:'dodgerblue'}} /></div>
+    )
+  }
   return (
     <div className="form-selected-seat">
       <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
