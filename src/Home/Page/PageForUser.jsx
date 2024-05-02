@@ -59,6 +59,9 @@ export default function PageForUser() {
   const handlerNameCinema = (name) => {
     setNameCinema(name);
   }
+  const handlerGobackHome = ()=>{
+    window.location.reload();
+  }
   const conhandlerLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -120,7 +123,11 @@ export default function PageForUser() {
         </div>
         <div className='layout-header-center'>
           <div className='layout-header-center-menu-choice-two'>
+            <div></div>
             <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
+              <Menu.Item>
+                <Avatar shape="square" size="large"  src='http://localhost:1234/manager/shader/huythang/638518679.jpeg' onClick={handlerGobackHome}/>
+              </Menu.Item>
               <Menu.SubMenu key="SubMenu" icon={<WeiboCircleOutlined />} title={<span>Lịch chiếu</span>}>
                 <Menu.Item key="one" icon={<AppstoreOutlined />} onClick={handleShowingTickets}>
                   Đang chiếu

@@ -4,7 +4,10 @@ import React, { useEffect, useState } from 'react';
 import './index.css';
 import UpdateProfile from './UpdateProfile';
 import PageForUser from '../../Home/Page/PageForUser';
-
+import {
+     ShoppingCartOutlined,HomeFilled,
+    InteractionFilled,
+  } from '@ant-design/icons';
 export default function Profile() {
     const [user, setUser] = useState(null);
     const username = localStorage.getItem('user_name');
@@ -53,15 +56,18 @@ export default function Profile() {
                 <div className='header'>
                     <div style={{ display: 'flex' }}>
                         <Avatar src={user.avatar_url} />
-                        <div style={{ paddingLeft: '10px' }}> {user.user_name}</div>
+                        <div style={{ paddingLeft: '10px',paddingTop:'10px' }}> {user.user_name}</div>
                     </div>
                     <div>
                         <Space>
                             <Space.Compact>
-                                <Button onClick={handleLogout}>Đăng xuất</Button>
+                                <Button  onClick={handleLogout}><InteractionFilled/> Đăng xuất</Button>
                             </Space.Compact>
                             <Space.Compact>
-                                <Button onClick={handleGoback}>Quay về trang chủ</Button>
+                                <Button onClick={handleGoback}><HomeFilled /> Quay về trang chủ</Button>
+                            </Space.Compact>
+                            <Space.Compact>
+                                <Button><ShoppingCartOutlined/> Giỏ hàng</Button>
                             </Space.Compact>
                         </Space>
                     </div>

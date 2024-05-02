@@ -58,8 +58,6 @@ export default function GetTicketById({ id }) {
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
 
-
-
     return (
         <div className="card-ticket-detail">
             <Row className="backgroud-card">
