@@ -54,6 +54,27 @@ const PayOSBaseUrl = "https://api-merchant.payos.vn/"
 
 func (u *UseCasePayment) CreatePayment(ctx context.Context, paymentData entities.CheckoutRequestType) (*entities.CheckoutResponseDataType, error) {
 
+	resp, err := u.order.RegisterTicket(ctx, &entities.OrdersReq{
+		Id:         paymentData.OrderCode,
+		ShowTimeId: paymentData.ShowTimeId,
+		Email:      *paymentData.BuyerEmail,
+		Seats:      paymentData.Seats,
+	})
+	if err != nil {
+		log.Error(err, "error payment")
+		return &entities.CheckoutResponseDataType{RespOrder: resp}, nil
+	}
+	if resp.Result.Code == enums.SHOW_TIME_ORDER_CODE {
+		log.Infof("order regietrd")
+		return &entities.CheckoutResponseDataType{
+			RespOrder: enums.SHOW_TIME_ORDER_CODE,
+		}, nil
+	}
+	if resp.Result.Code != 0 {
+		log.Error(err, "error payment")
+		return &entities.CheckoutResponseDataType{RespOrder: resp}, nil
+	}
+
 	if paymentData.OrderCode == 0 || paymentData.Amount == 0 || paymentData.Description == "" || paymentData.CancelUrl == "" || paymentData.ReturnUrl == "" {
 		requiredPaymentData := entities.CheckoutRequestType{
 			OrderCode:   paymentData.OrderCode,
@@ -152,26 +173,6 @@ func (u *UseCasePayment) CreatePayment(ctx context.Context, paymentData entities
 				return nil, resources.NewPayOSError(enums.InternalServerErrorErrorCode, enums.InternalServerErrorErrorMessage)
 			}
 			log.Infof("next url", paymentLinkData.CheckoutUrl)
-			resp, err := u.order.RegisterTicket(ctx, &entities.OrdersReq{
-				Id:         paymentData.OrderCode,
-				ShowTimeId: paymentData.ShowTimeId,
-				Email:      *paymentData.BuyerEmail,
-				Seats:      paymentData.Seats,
-			})
-			if err != nil {
-				log.Error(err, "error payment")
-				return &entities.CheckoutResponseDataType{RespOrder: resp}, nil
-			}
-			if resp.Result.Code == enums.SHOW_TIME_ORDER_CODE {
-				log.Infof("order regietrd")
-				return &entities.CheckoutResponseDataType{
-					RespOrder: enums.SHOW_TIME_ORDER_CODE,
-				}, nil
-			}
-			if resp.Result.Code != 0 {
-				log.Error(err, "error payment")
-				return &entities.CheckoutResponseDataType{RespOrder: resp}, nil
-			}
 
 			//them check
 			return &paymentLinkData, nil
