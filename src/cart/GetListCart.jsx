@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table } from 'antd';
+import { Button, Space, Table } from 'antd';
 import { showError, showWarning } from '../common/log/log';
 import moment from 'moment';
+import { ToolFilled, RedditCircleFilled } from '@ant-design/icons'; // Import các biểu tượng từ Ant Design
 import DeleteCartbyId from './DeleteCartbyId';
 import Cookies from 'js-cookie';
 
@@ -10,8 +11,28 @@ export default function GetListCart() {
     const [listCarts, setListCarts] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
     const [loadingPayment, setLoadingPayment] = useState(false);
+    const [user, setUser] = useState(null);
 
     const user_name = localStorage.getItem('user_name');
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get("http://localhost:8080/manager/customer/user/profile", {
+                    params: {
+                        user_name: user_name
+                    }
+                });
+                setUser(response.data.customer);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -53,7 +74,7 @@ export default function GetListCart() {
             const seats = cart.seats_position.split(','); // Tách chuỗi ghế ngồi thành một mảng các ghế ngồi
             const items = seats.map(seat => ({ // Duyệt qua từng ghế ngồi trong mảng và tạo đối tượng item tương ứng
                 name: "Vị trí ghế : " + seat,
-                quantity:  seats.length, // Số lượng ghế ngồi mỗi ghế là 1
+                quantity: seats.length, // Số lượng ghế ngồi mỗi ghế là 1
                 price: cart.price // Giá của mỗi ghế là giống nhau
             }));
 
@@ -66,8 +87,8 @@ export default function GetListCart() {
                 cancelUrl: "http://localhost:8080/manager/public/customer/payment/calcel",
                 returnUrl: "http://localhost:8080/manager/public/customer/payment/return",
                 buyerName: "John Doe",
-                buyerEmail: "thuynguyen151387@gmail.com",
-                buyerPhone: "00009", // Sử dụng số điện thoại đã nhập vào
+                buyerEmail: user.email,
+                buyerPhone: user.phone_number, // Sử dụng số điện thoại đã nhập vào
                 // Thêm các thông tin khác cần thiết cho request thanh toán
             };
 
@@ -98,7 +119,14 @@ export default function GetListCart() {
         }
         setLoadingPayment(false);
     };
-
+    if (user_name === null) {
+        return (
+            <div>
+                Vui lòng đăng nhập
+                <RedditCircleFilled style={{color:'dodgerblue',fontSize:'30px'}} />
+            </div>
+        )
+    }
     return (
         <Table
             columns={[
@@ -110,14 +138,17 @@ export default function GetListCart() {
                     render: (timestamp) => moment(timestamp).format('YYYY-MM-DD HH:mm:ss')
                 },
                 {
-                    title: 'Action',
+                    title: <ToolFilled />,
                     key: 'action',
                     render: (text, record) => (
                         <>
-                            <DeleteCartbyId cartId={record.id} onDelete={() => handleDelete(record.id)} />
-                            <button onClick={() => handleBuyNow(record)} disabled={loadingPayment}>
-                                {loadingPayment ? 'Đang thanh toán...' : 'Mua Ngay'}
-                            </button>
+                            <Space>
+                                <DeleteCartbyId cartId={record.id} onDelete={() => handleDelete(record.id)} />
+                                <Button onClick={() => handleBuyNow(record)} disabled={loadingPayment}>
+                                    {loadingPayment ? 'Đang thanh toán...' : 'Mua Ngay'}
+                                </Button>
+                            </Space>
+
                         </>
                     ),
                 },

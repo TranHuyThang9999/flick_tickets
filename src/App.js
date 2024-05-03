@@ -66,10 +66,10 @@ export default function App() {
       {/* <Profile/> */}
       {/* <PageForUser/> */}
       {/* <TestLayout/> */}
-      {/* <PageForUser/> */}
       {/* <GetTicketById id={1485296}/> */}
       {/* <TestDisPlayTicket/> */}
-      <GetListCart/>
+      {/* <GetListCart/> */}
+      <PageForUser/>
     </div>
   );
 }

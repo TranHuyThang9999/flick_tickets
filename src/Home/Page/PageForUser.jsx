@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './home.css';
-import { Avatar, Button, Col, Menu, Row } from 'antd';
+import { Avatar, Button, Col, Drawer, Menu, Row } from 'antd';
 import {
   BellFilled, ShoppingCartOutlined, TwitterCircleFilled,
   InteractionFilled, WeiboCircleOutlined,
@@ -11,6 +11,7 @@ import FormLogin from '../../dashboard/FormLogin';
 import CinemasGetAll from '../../common/cinemas/CinemasGetAll';
 import Profile from '../../common/customers/Profile';
 import GetTicketOncarousel from '../../common/ViewTicketsForSell/GetTicketOncarousel';
+import GetListCart from '../../cart/GetListCart';
 
 export default function PageForUser() {
 
@@ -21,7 +22,8 @@ export default function PageForUser() {
   const [tickets, setTickets] = useState([]);
   const [statusTicketSale, setStatusTicketSale] = useState(0);
   const [nameCinema, setNameCinema] = useState('');
-  const[movieTheaterName,setMovieTheaterName] = useState('');
+  const [movieTheaterName, setMovieTheaterName] = useState('');
+  const [openCart, setOpencart] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,13 +65,13 @@ export default function PageForUser() {
     setStatusTicketSale(0);
     setNameCinema(name);
   }
-  const handlerMovieTheaterName = (movieTheaterName)=>{
+  const handlerMovieTheaterName = (movieTheaterName) => {
     setStatusTicketSale(0);
     setNameCinema("");
     setMovieTheaterName(movieTheaterName);
   }
 
-  const handlerGobackHome = ()=>{
+  const handlerGobackHome = () => {
     window.location.reload();
   }
   const conhandlerLogout = () => {
@@ -83,6 +85,12 @@ export default function PageForUser() {
     setIslogin(true);
   }
 
+  const showDrawer = () => {
+    setOpencart(true);
+  };
+  const onClose = () => {
+    setOpencart(false);
+  };
 
   const listRoomCinema = CinemasGetAll();
 
@@ -136,7 +144,7 @@ export default function PageForUser() {
             <div></div>
             <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
               <Menu.Item>
-                <Avatar shape="square" size="large"  src='http://localhost:1234/manager/shader/huythang/638518679.jpeg' onClick={handlerGobackHome}/>
+                <Avatar shape="square" size="large" src='http://localhost:1234/manager/shader/huythang/638518679.jpeg' onClick={handlerGobackHome} />
               </Menu.Item>
               <Menu.SubMenu key="SubMenu" icon={<WeiboCircleOutlined />} title={<span>Lịch chiếu</span>}>
                 <Menu.Item key="one" icon={<AppstoreOutlined />} onClick={handleShowingTickets}>
@@ -153,7 +161,7 @@ export default function PageForUser() {
             <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
               <Menu.SubMenu key="SubMenu" title={<span> Rạp chiếu</span>}>
                 {listRoomCinema.map((cinema) => (
-                  <Menu.Item key={cinema.id} icon={<AppstoreOutlined />} onClick={()=>handlerMovieTheaterName(cinema.cinema_name)}>
+                  <Menu.Item key={cinema.id} icon={<AppstoreOutlined />} onClick={() => handlerMovieTheaterName(cinema.cinema_name)}>
                     {cinema.cinema_name}
                   </Menu.Item>
                 ))}
@@ -177,7 +185,20 @@ export default function PageForUser() {
           <div>Thông báo <BellFilled /></div>
 
           <div>
-            <Button> Giỏ hàng <ShoppingCartOutlined /> </Button>
+            <Button onClick={showDrawer}> Giỏ hàng <ShoppingCartOutlined /> </Button>
+            <Drawer
+              title="Create a new account"
+              width={720}
+              onClose={onClose}
+              open={openCart}
+              styles={{
+                body: {
+                  paddingBottom: 80,
+                },
+              }}
+            >
+              <GetListCart />
+            </Drawer>
           </div>
 
           <div>
@@ -207,12 +228,12 @@ export default function PageForUser() {
 
           </Col>
           <Col className='layout-content-image'>
-            <img width='600px'  Height='400px' src='http://localhost:1234/manager/shader/huythang/daidien.png' alt="Avatar" />
+            <img width='600px' Height='400px' src='http://localhost:1234/manager/shader/huythang/daidien.png' alt="Avatar" />
           </Col>
         </Row>
       </div>
       <div className='layout-footer'>
-        <GetTicketOncarousel status={statusTicketSale} name={nameCinema}  movie_theater_name={movieTheaterName}/>
+        <GetTicketOncarousel status={statusTicketSale} name={nameCinema} movie_theater_name={movieTheaterName} />
       </div>
     </div>
   )
