@@ -25,7 +25,7 @@ export default function DeleteCartbyId({ onDelete,cartId }) {
                 cancelText="No"
                 onConfirm={handleDelete}
             >
-                <Button type="primary" danger><CloseOutlined /></Button>
+                <Button style={{width:'100px',paddingLeft:'10px'}} type="primary" danger><CloseOutlined /></Button>
             </Popconfirm>
         </div>
     );

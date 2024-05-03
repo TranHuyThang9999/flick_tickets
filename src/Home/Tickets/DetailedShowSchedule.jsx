@@ -162,8 +162,13 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
 
       localStorage.setItem("order_id", response.data.orderCode);
       Cookies.set("order_id", response.data.orderCode, { expires: 30 }); // Đặt cookie với thời gian sống là 1 tháng (30 ngày)
-
+      
       const paymentResult = response.data;
+      if(paymentResult.resp_order === 44){
+        setLoadingPayment(false); // Kết thúc loading nếu có lỗi
+          showWarning("Ghế này đã được người mua trước vui lòng chọn lại");
+          return
+      }
       if (paymentResult && paymentResult.checkoutUrl) {
         // Chuyển hướng người dùng đến trang thanh toán
         window.location.href = paymentResult.checkoutUrl;

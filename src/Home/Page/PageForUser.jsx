@@ -177,7 +177,7 @@ export default function PageForUser() {
           <div>Thông báo <BellFilled /></div>
 
           <div>
-            <Button> Giỏ hàng <ShoppingCartOutlined /></Button>
+            <Button> Giỏ hàng <ShoppingCartOutlined /> </Button>
           </div>
 
           <div>
@@ -207,7 +207,7 @@ export default function PageForUser() {
 
           </Col>
           <Col className='layout-content-image'>
-            <img width='600px' height='400px' src='http://localhost:1234/manager/shader/huythang/daidien.png' alt="Avatar" />
+            <img width='600px'  Height='400px' src='http://localhost:1234/manager/shader/huythang/daidien.png' alt="Avatar" />
           </Col>
         </Row>
       </div>
