@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flick_tickets/common/log"
+	"flick_tickets/core/mapper"
 	"fmt"
 	"io"
 	"net/http"
@@ -25,21 +25,13 @@ func main() {
 	// 	fmt.Println(utils.GeneratePassword())
 
 	// }
-	log.LoadLogger()
-	// Thời điểm hiện tại
-	currentTime := time.Now().Unix()
-
-	// Thời điểm tạo của đơn hàng
-	orderCreatedAt := int64(1714144681) // Đây là thời gian tạo của đơn hàng trong dữ liệu của bạn
-
-	// Tính thời gian cách đây bao nhiêu giây
-	timeDifference := currentTime - orderCreatedAt
-
-	// Kiểm tra nếu thời gian cách đây lớn hơn 15 phút (15 * 60 giây)
-	if timeDifference > 15*60 {
-		fmt.Println("Đơn hàng này đã được tạo cách đây hơn 15 phút.")
+	slice1 := []int{1, 2, 3, 4, 5}
+	slice2 := []int{6, 7, 8, 9, 10}
+	status := mapper.HasDuplicateList(slice1, slice2)
+	if status {
+		fmt.Println("1")
 	} else {
-		fmt.Println("Đơn hàng này được tạo trong vòng 15 phút gần đây.")
+		fmt.Println("3")
 	}
 }
 

@@ -87,7 +87,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 		}, nil
 	}
 
-	listSeat, err := mapper.ParseToIntSlice(showTimeForUserRegisterOrder.SelectedSeat)
+	listSeat, err := mapper.ParseToIntSlice(showTimeForUserRegisterOrder.SelectedSeat) // string to array 12,32,432 =>[12,32,432]
 	if err != nil {
 		tx.Rollback()
 		return &entities.OrdersResponseResgister{
@@ -108,7 +108,17 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 			},
 		}, nil
 	}
-
+	log.Infof("list : ", listSeatsChoice, listSeat)
+	checkDuplicate := mapper.HasDuplicateList(listSeat, listSeatsChoice)
+	log.Infof("status", checkDuplicate)
+	if !checkDuplicate {
+		return &entities.OrdersResponseResgister{
+			Result: entities.Result{
+				Code:    enums.SHOW_TIME_ORDER_CODE,
+				Message: enums.SHOW_TIME_ORDER_MESS,
+			},
+		}, nil
+	}
 	if err != nil {
 		tx.Rollback()
 		return &entities.OrdersResponseResgister{
@@ -117,7 +127,7 @@ func (u *UseCaseOrder) RegisterTicket(ctx context.Context, req *entities.OrdersR
 				Message: enums.ERROR_CONVERT_JSON_MESS,
 			},
 		}, nil
-	}
+	} //
 	// Lấy thông tin vé từ cơ sở dữ liệu
 	ticket, err := u.tickets.GetTicketById(ctx, showTimeForUserRegisterOrder.TicketID)
 	if err != nil {

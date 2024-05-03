@@ -92,6 +92,9 @@ const (
 
 	TICKET_OPEN_SALE_CODE = 42
 	TICKET_OPEN_SALE_MESS = "ticket open sale"
+
+	SHOW_TIME_ORDER_CODE = 44
+	SHOW_TIME_ORDER_MESS = ""
 )
 const (
 	ROLE_ADMIN     = 1

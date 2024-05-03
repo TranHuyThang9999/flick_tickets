@@ -154,3 +154,26 @@ func RemoveDuplicates(slice1, slice2 []int) []int {
 
 	return filteredSlice
 }
+func HasDuplicateList(slice1, slice2 []int) bool {
+	// Tạo một map để đếm số lần xuất hiện của mỗi phần tử trong slice1
+	if len(slice1) == 0 || len(slice2) == 0 {
+		return true
+	}
+	counter := make(map[int]int)
+
+	// Đếm số lần xuất hiện của mỗi phần tử trong slice1
+	for _, num := range slice1 {
+		counter[num]++
+	}
+
+	// Kiểm tra các phần tử trong slice2 có trùng với slice1 không
+	for _, num := range slice2 {
+		// Nếu phần tử num đã tồn tại trong map và có số lần xuất hiện > 0
+		if counter[num] > 0 {
+			return false // Có phần tử trùng nhau
+		}
+	}
+
+	// Không có phần tử trùng nhau
+	return true
+}

@@ -6,7 +6,7 @@ type OrdersReq struct {
 	Id         int64  `form:"id"`
 	ShowTimeId int64  `form:"show_time_id"`
 	Email      string `form:"email"`
-	Seats      string `form:"seats"`
+	Seats      string `form:"seats"` //list [2,4,5]
 }
 type OrdersResponseResgister struct {
 	Result  Result `json:"result"`

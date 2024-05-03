@@ -162,10 +162,17 @@ func (u *UseCasePayment) CreatePayment(ctx context.Context, paymentData entities
 				log.Error(err, "error payment")
 				return &entities.CheckoutResponseDataType{RespOrder: resp}, nil
 			}
+			if resp.Result.Code == enums.SHOW_TIME_ORDER_CODE {
+				log.Infof("order regietrd")
+				return &entities.CheckoutResponseDataType{
+					RespOrder: enums.SHOW_TIME_ORDER_CODE,
+				}, nil
+			}
 			if resp.Result.Code != 0 {
 				log.Error(err, "error payment")
 				return &entities.CheckoutResponseDataType{RespOrder: resp}, nil
 			}
+
 			//them check
 			return &paymentLinkData, nil
 		}

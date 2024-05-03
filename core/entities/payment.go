@@ -75,7 +75,7 @@ type CheckoutRequestType struct {
 	BuyerAddress *string `json:"buyerAddress"`
 	ExpiredAt    *int    `json:"expiredAt"`
 	ShowTimeId   int64   `json:"showTimeId"`
-	Seats        string  `bson:"seats"`
+	Seats        string  `json:"seats"`
 }
 
 type CheckoutRequestController struct {
@@ -91,7 +91,7 @@ type CheckoutRequestController struct {
 	BuyerPhone   *string `json:"buyerPhone"`
 	BuyerAddress *string `json:"buyerAddress"`
 	ShowTimeId   int64   `json:"showTimeId"`
-	Seats        string  `bson:"seats"`
+	Seats        string  `json:"seats"`
 	// ExpiredAt    *int    `json:"expiredAt"`
 }
 

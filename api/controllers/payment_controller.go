@@ -52,7 +52,7 @@ func (c *ControllerPayMent) CreatePayment(ctx *gin.Context) {
 		BuyerAddress: req.BuyerAddress,
 		ShowTimeId:   req.ShowTimeId,
 		Seats:        req.Seats,
-		ExpiredAt:    utils.GenerateTimestampExpiredAt(1),
+		ExpiredAt:    utils.GenerateTimestampExpiredAt(15), // thoi gian ton tai QR code = 15 phut
 	})
 
 	if err != nil {
