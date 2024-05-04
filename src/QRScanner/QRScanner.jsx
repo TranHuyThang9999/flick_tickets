@@ -42,7 +42,7 @@ const QRScanner = () => {
       }
     }
   };
-  
+
 
   const handleError = (error) => {
     console.error(error);
@@ -60,12 +60,13 @@ const QRScanner = () => {
     const file = event.target.files[0];
     if (file && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
       try {
+        setResultInforQrCode(''); // Xóa dữ liệu QR code trước đó
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
           const imageData = e.target.result;
           const image = new Image();
           image.src = imageData;
-          image.onload = () => {
+          image.onload = async () => {
             const canvas = document.createElement('canvas');
             canvas.width = image.width;
             canvas.height = image.height;
@@ -75,13 +76,17 @@ const QRScanner = () => {
             const code = jsQR(imageData.data, imageData.width, imageData.height);
             if (code) {
               setResultInforQrCode(code.data);
+              setImageSelected(true); // Đặt state thành true khi tập tin được chọn
+              // Gọi lại hàm để tải lại dữ liệu khi xử lý thành công
+              if (resultInforQrCode) {
+                await handlerDetailOrderById(code.data);
+              }
             } else {
               console.error('Failed to decode QR code');
             }
           };
         };
         reader.readAsDataURL(file);
-        setImageSelected(true); // Set state to true when image is selected
       } catch (error) {
         console.error('Error while uploading file:', error);
       }
@@ -89,6 +94,7 @@ const QRScanner = () => {
       console.error('Invalid file type. Only .png, .jpg, .jpeg files are accepted.');
     }
   };
+  
 
   const handleButtonClick = async () => {
     try {
@@ -181,7 +187,7 @@ const QRScanner = () => {
   if (order) {
     const addressDetailsString = order.addressDetails ? formatAddressDetails(order.addressDetails) : '';
     orderInfo = (
-      <div style={{padding:'10px'}}>
+      <div style={{ padding: '10px' }}>
         <p>ID Đơn hàng: {order.id}</p>
         <p>Giờ chiếu: {order.show_time_id}</p>
         <p>Ngày phát hành: {order.release_date}</p>
@@ -198,7 +204,7 @@ const QRScanner = () => {
   }
 
   return (
-    <div style={{width:'600px'}}>
+    <div style={{ width: '600px' }}>
       {scannerContent}
       {scanButton}
       <Button onClick={handleButtonClick} disabled={!imageSelected}>Check QRCode</Button>
