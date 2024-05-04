@@ -14,11 +14,35 @@ const QRScanner = () => {
   const qrReaderRef = useRef(null);
   const [imageSelected, setImageSelected] = useState(false);
 
-  const handleScan = (data) => {
+  const handleScan = async (data) => {
     if (data) {
       setResultInforQrCode(data.text);
+      setScanEnabled(false); // Đóng camera sau khi lấy được thông tin
+      try {
+        const response = await axios.get('http://localhost:8080/manager/user/verify/aes', {
+          params: {
+            token: data.text
+          }
+        });
+        console.log(response.data);
+        if (response.data.result.code === 0) {
+          setOrderIdToQrCode(response.data.content);
+          handlerDetailOrderById(response.data.content);
+          showSuccess("Mời xem thông tin đơn hàng");
+        } else if (response.data.result.code === 18) {
+          showWarning("QR code hợp lệ");
+        } else if (response.data.result.code === 12) {
+          showError("Lỗi yêu cầu không hợp lệ");
+        } else {
+          showError("Lỗi máy chủ");
+        }
+      } catch (error) {
+        console.error(error);
+        showError("Lỗi máy chủ");
+      }
     }
   };
+  
 
   const handleError = (error) => {
     console.error(error);
@@ -34,7 +58,7 @@ const QRScanner = () => {
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
-    if (file) {
+    if (file && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
       try {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -61,10 +85,10 @@ const QRScanner = () => {
       } catch (error) {
         console.error('Error while uploading file:', error);
       }
+    } else {
+      console.error('Invalid file type. Only .png, .jpg, .jpeg files are accepted.');
     }
   };
-  
-  
 
   const handleButtonClick = async () => {
     try {
@@ -116,13 +140,13 @@ const QRScanner = () => {
         delay={300}
         onError={handleError}
         onScan={handleScan}
-        style={{ width: '20%' }}
+        style={{ width: '50%' }}
       />
     );
   } else {
     scannerContent = (
       <div>
-        <Input type="file" accept="image/*" onChange={handleFileUpload} />
+        <Input type="file" accept=".png, .jpg, .jpeg" onChange={handleFileUpload} />
       </div>
     );
   }
@@ -152,7 +176,6 @@ const QRScanner = () => {
       return 'Thông tin địa chỉ không hợp lệ';
     }
   };
-  //const addressDetailsString = formatAddressDetails(order.addressDetails);
 
   let orderInfo;
   if (order) {
@@ -173,14 +196,14 @@ const QRScanner = () => {
       </div>
     );
   }
-  <Button onClick={handleButtonClick} disabled={!imageSelected}>Check QRCode</Button>
 
   return (
     <div style={{width:'600px'}}>
       {scannerContent}
       {scanButton}
-      <Button onClick={handleButtonClick}>Check QRCode</Button>
+      <Button onClick={handleButtonClick} disabled={!imageSelected}>Check QRCode</Button>
       {orderInfo}
+      {/* {resultInforQrCode} */}
     </div>
   );
 };
