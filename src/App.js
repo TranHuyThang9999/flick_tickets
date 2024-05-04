@@ -72,7 +72,8 @@ export default function App() {
       {/* <GetListCart/> */}
       {/* <PageForUser/> */}
       {/* <QRScanner/> */}
-      <FormLogin/>
+      {/* <FormLogin/> */}
+      <HomeaAdmin/>
     </div>
   );
 }

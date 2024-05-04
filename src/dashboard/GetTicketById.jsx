@@ -44,7 +44,6 @@ export default function GetTicketById({ id }) {
             {ticket && (
                 <Table scroll={{ x: 190 }} dataSource={[ticket]} pagination={false}>
                     <Table.Column title="Tên" dataIndex="name" key="name" />
-                    <Table.Column title="Giá" dataIndex="price" key="price" />
                     <Table.Column title="Mô tả" dataIndex="description" key="description" />
                     <Table.Column title="Giảm giá" dataIndex="sale" key="sale" />
                     <Table.Column title="Ngày phát hành" dataIndex="release_date" key="release_date" />
@@ -63,7 +62,7 @@ export default function GetTicketById({ id }) {
             }
             <DetailedShowSchedule
                 id={ticket.id}
-             />{/**/}
+             />{/*ci tiet phong*/}
 
             <GetListFileByTicketId id={ticket.id} />
 

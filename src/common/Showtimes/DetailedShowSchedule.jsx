@@ -57,9 +57,9 @@ export default function DetailedShowSchedule({ id }) {
 
   const columns = [
     {
-      title: 'Mã vé',
-      dataIndex: 'ticket_id',
-      key: 'ticket_id',
+      title: 'Mã suất chiếu',
+      dataIndex: 'id',
+      key: 'id',
     },
     {
       title: 'Phòng để chiếu',
@@ -104,6 +104,8 @@ export default function DetailedShowSchedule({ id }) {
           <Button type="primary" onClick={() => showDrawer(record)}>
             Xem chi tiết phòng
           </Button>
+          <Button>Xóa</Button>
+          <Button>Sửa</Button>
           <Drawer
             title="Phòng"
             width={1000}
@@ -128,6 +130,7 @@ export default function DetailedShowSchedule({ id }) {
         </div>
       ),
     },
+   
   ];
 
   return (
