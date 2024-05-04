@@ -19,3 +19,6 @@ type TokenResponseCheckQrCode struct {
 	Content string `json:"content"`
 	Created int    `json:"created"`
 }
+type AesContentEncryptReq struct {
+	Token string `form:"token"`
+}

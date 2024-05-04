@@ -1,8 +1,11 @@
 package main
 
 import (
-	"flick_tickets/core/mapper"
+	"flick_tickets/common/log"
+	"flick_tickets/configs"
+	"flick_tickets/core/usecase"
 	"fmt"
+	"image/png"
 	"io"
 	"net/http"
 	"os"
@@ -10,6 +13,7 @@ import (
 
 	"github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
+	"github.com/skip2/go-qrcode"
 )
 
 func main() {
@@ -25,14 +29,39 @@ func main() {
 	// 	fmt.Println(utils.GeneratePassword())
 
 	// }
-	slice1 := []int{1, 2, 3, 4, 5}
-	slice2 := []int{6, 7, 8, 9, 10}
-	status := mapper.HasDuplicateList(slice1, slice2)
-	if status {
-		fmt.Println("1")
-	} else {
-		fmt.Println("3")
+	configs.LoadConfig("./configs/configs.json")
+	log.LoadLogger()
+	resp, _ := usecase.NewUseCaseAes(configs.Get())
+	data := []byte("7452143")
+	key, _ := resp.EncryptAes(data, []byte(configs.Get().KeyAES128))
+	dataEncrypt := "K3DSu2akRFxbZ/x1I+0WuA=="
+	statusSData, _ := resp.DecryptAes(dataEncrypt, []byte(configs.Get().KeyAES128))
+	fmt.Println(key)
+	fmt.Println(string(statusSData))
+
+	// Tạo mã QR từ dữ liệu đã mã hóa
+	qrCode, err := qrcode.New(dataEncrypt, qrcode.Medium)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
 	}
+
+	// Lưu mã QR vào file PNG
+	file, err := os.Create("qrcode.png")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	defer file.Close()
+
+	// Lưu hình ảnh mã QR vào file PNG
+	err = png.Encode(file, qrCode.Image(256))
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	fmt.Println("QR code generated successfully!")
 }
 
 func LoadFileHtml(c *gin.Context) {

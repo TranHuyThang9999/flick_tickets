@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"flick_tickets/common/enums"
+	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
 	"flick_tickets/configs"
 	"flick_tickets/core/entities"
@@ -22,7 +23,7 @@ func NewUseCaseAes(cf *configs.Configs) (*UseCaseAes, error) {
 }
 func (c *UseCaseAes) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entities.TokenRequestSendQrCode) (*entities.TokenRespSendQrCode, error) {
 
-	key := []byte(c.config.KeyAES128)
+	key := []byte(configs.Get().KeyAES128)
 	plaintext := []byte(req.Content)
 
 	// Mã hóa dữ liệu
@@ -60,9 +61,9 @@ func (c *UseCaseAes) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entiti
 		Created: utils.GenerateTimestamp(),
 	}, nil
 }
-func (c *UseCaseAes) CheckQrCode(ctx context.Context, token string) (*entities.TokenResponseCheckQrCode, error) {
-
-	if token == "" {
+func (c *UseCaseAes) CheckQrCode(ctx context.Context, req *entities.AesContentEncryptReq) (*entities.TokenResponseCheckQrCode, error) {
+	log.Infof("req : ", req)
+	if req.Token == "" {
 		return &entities.TokenResponseCheckQrCode{
 			Result: entities.Result{
 				Code:    enums.INVALID_REQUEST_CODE,
@@ -71,9 +72,9 @@ func (c *UseCaseAes) CheckQrCode(ctx context.Context, token string) (*entities.T
 		}, nil
 	}
 
-	key := []byte(c.config.KeyAES128)
+	//	key := []byte(c.config.KeyAES128)
 
-	data, err := c.DecryptAes(token, key)
+	data, err := c.DecryptAes(req.Token, []byte(configs.Get().KeyAES128))
 	if err != nil {
 		return &entities.TokenResponseCheckQrCode{
 			Result: entities.Result{

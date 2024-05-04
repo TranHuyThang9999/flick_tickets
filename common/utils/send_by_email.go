@@ -39,6 +39,7 @@ func GeneratesQrCodeAndSendQrWithEmail(addressEmail string, req *entities.OrderS
 	// Sử dụng goroutine để gửi hình ảnh mã QR đến dịch vụ khác
 	go func(qrCodeBytes []byte) {
 		resp := setByCurlImageQrToService(qrCodeBytes)
+		log.Infof("url qr code ", resp.URL)
 		if resp.Result.Code != 0 {
 			serviceErrCh <- fmt.Errorf("failed to send QR image to service: %s", resp.Result.Message)
 		} else {
