@@ -103,7 +103,7 @@ export default function GetTicketById({ id }) {
                                 Giới hạn độ tuổi: {ticket.age_limit}<br />
                             </div>
 
-                            Giá: <span style={{ fontSize: '16px' }}><u>{ticket.price} VND</u></span><br />
+                            {/* Giá: <span style={{ fontSize: '16px' }}><u>{ticket.price} VND</u></span><br /> */}
                         </li>
                     </ul>
                 </Col>

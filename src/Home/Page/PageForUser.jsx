@@ -4,7 +4,7 @@ import { Avatar, Button, Col, Drawer, Menu, Row } from 'antd';
 import {
   BellFilled, ShoppingCartOutlined, TwitterCircleFilled,
   InteractionFilled, WeiboCircleOutlined,
-  AppstoreOutlined, HomeFilled, RightOutlined
+  AppstoreOutlined, HomeFilled, RightOutlined, UnorderedListOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
 import FormLogin from '../../dashboard/FormLogin';
@@ -133,7 +133,7 @@ export default function PageForUser() {
           )}
           <div>
             {!username && (
-              <Button onClick={handlerNextLogin}>
+              <Button className='layout-header-start-button-login' onClick={handlerNextLogin}>
                 Đăng nhập <InteractionFilled />
               </Button>
             )}
@@ -141,12 +141,12 @@ export default function PageForUser() {
         </div>
         <div className='layout-header-center'>
           <div className='layout-header-center-menu-choice-two'>
-            <div></div>
-            <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
+            <Menu className='layout-header-center-menu-item-title' style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
               <Menu.Item>
-                <Avatar shape="square" size="large" src='http://localhost:1234/manager/shader/huythang/638518679.jpeg' onClick={handlerGobackHome} />
+                <Avatar className='layout-header-center-menu-item-title-avatar' shape="square" size="large" 
+                src='http://localhost:1234/manager/shader/huythang/638518679.jpeg' onClick={handlerGobackHome} />
               </Menu.Item>
-              <Menu.SubMenu key="SubMenu" icon={<WeiboCircleOutlined />} title={<span>Lịch chiếu</span>}>
+              <Menu.SubMenu className='layout-header-center-menu-item-title-sub'  key="SubMenu" icon={<WeiboCircleOutlined />} title={<span>Lịch chiếu</span>}>
                 <Menu.Item key="one" icon={<AppstoreOutlined />} onClick={handleShowingTickets}>
                   Đang chiếu
                 </Menu.Item>
@@ -157,9 +157,9 @@ export default function PageForUser() {
               </Menu.SubMenu>
             </Menu>
           </div>
-          <div>
+          <div className='layout-header-center-menu-choice-select-from-api'>
             <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
-              <Menu.SubMenu key="SubMenu" title={<span> Rạp chiếu</span>}>
+              <Menu.SubMenu className='layout-header-center-menu-choice-select-from-api-cinema-name' key="SubMenu" title={<span> Rạp chiếu</span>}>
                 {listRoomCinema.map((cinema) => (
                   <Menu.Item key={cinema.id} icon={<AppstoreOutlined />} onClick={() => handlerMovieTheaterName(cinema.cinema_name)}>
                     {cinema.cinema_name}
@@ -170,7 +170,7 @@ export default function PageForUser() {
           </div>
           <div className='layout-header-center-menu-choice-end'>
             <Menu style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
-              <Menu.SubMenu key="SubMenu" title={<span> Phim chiếu</span>}>
+              <Menu.SubMenu className='layout-header-center-menu-choice-select-from-api-movie-name' key="SubMenu" title={<span> Phim chiếu</span>}>
                 {tickets.map((ticket) => (
                   <Menu.Item key={ticket.id} icon={<AppstoreOutlined />} onClick={() => handlerNameCinema(ticket.name)}>
                     {ticket.name}

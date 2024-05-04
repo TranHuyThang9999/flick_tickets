@@ -87,7 +87,6 @@ export default function GetTicketOncarousel({ status ,name,movie_theater_name}) 
                 </Row>
                 <Row style={{ paddingTop: '10px', width: '270px', justifyContent: 'center' }}>
                   <Col span={12} offset={6}>
-                    <p>{ticket.price}</p>
                     <p>{ticket.description}</p>
                     <p>{ticket.name}</p>
                     <Button onClick={() => handlerDetail(ticket.id)}>

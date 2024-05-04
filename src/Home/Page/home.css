@@ -69,12 +69,52 @@
   justify-content: center;
   padding-bottom: 40px;
 }
-.layout-content-descript ul li{
+.layout-content-descript ul li {
   list-style: none;
   font-size: 16px;
   color: white;
   padding-top: 10px;
 }
-.layout-footer .list-body{
+.layout-footer .list-body {
   padding-top: 50px;
+}
+.layout-header .out_lined {
+  display: none;
+}
+
+@media screen and (max-width: 950px) {
+  .layout-header {
+    display: block;
+    width: 100%;
+  }
+  .layout-header .out_lined {
+    display: block;
+  }
+  .layout-header-center {
+    display: flex;
+    flex-direction: column; /* Hiển thị các phần tử trong form dưới dạng cột */
+    align-items: center; /* Căn các phần tử vào giữa form */
+    padding: 20px; /* Thêm padding cho form */
+    background-color: #f0f0f0; /* Màu nền của form */
+    border-radius: 10px; /* Bo tròn các góc của form */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng đổ cho form */
+  }
+  .layout-header-center-menu-choice-two,
+  .layout-header-center-menu-choice-select-from-api,
+  .layout-header-center-menu-choice-end,
+  .layout-header-center-menu-choice-notification,
+  .layout-header-center-menu-choice-community,
+  .layout-header-center-menu-choice-cart {
+    width: 100%; /* Đảm bảo các phần tử trong form chiếm full width */
+    margin-bottom: 10px; /* Khoảng cách giữa các phần tử */
+  }
+  .layout-header-center-menu-choice-end {
+    margin-top: 10px; /* Khoảng cách giữa form và phần cuối cùng */
+  }
+}
+.layout-content-image img {
+  width: 100%; /* Chiều rộng 100% của phần tử chứa */
+  height: auto; /* Giữ tỷ lệ khung hình */
+  max-height: 400px; /* Chiều cao tối đa của ảnh */
+  object-fit: cover; /* Hiển thị ảnh mà không biến dạng và điền đầy phần tử chứa */
 }

@@ -30,6 +30,7 @@ import Profile from "./common/customers/Profile";
 import PageForUser from "./Home/Page/PageForUser";
 import GetListCart from "./cart/GetListCart";
 import UpdateCartById from "./cart/UpdateCartById";
+import QRScanner from "./QRScanner/QRScanner";
 
 export default function App() {
   return (
@@ -69,7 +70,8 @@ export default function App() {
       {/* <GetTicketById id={1485296}/> */}
       {/* <TestDisPlayTicket/> */}
       {/* <GetListCart/> */}
-      <PageForUser/>
+      {/* <PageForUser/> */}
+      <QRScanner/>
     </div>
   );
 }
