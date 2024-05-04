@@ -163,7 +163,7 @@ const QRScanner = () => {
   if (scanEnabled) {
     scanButton = <Button onClick={stopScan}>Stop Scan</Button>;
   } else {
-    scanButton = <Button onClick={startScan}>Check QR With Camera</Button>;
+    scanButton = <Button onClick={startScan}>Kiểm tra mã QrCode</Button>;
   }
 
   const getOrderStatus = (status) => {
@@ -211,7 +211,7 @@ const QRScanner = () => {
     <div style={{ width: '600px' }}>
       {scannerContent}
       {scanButton}
-      <Button onClick={handleButtonClick} disabled={!imageSelected}>Check QRCode</Button>
+      <Button onClick={handleButtonClick} disabled={!imageSelected}>Kiểm tra mã QRCode</Button>
       {orderInfo}
     </div>
   );

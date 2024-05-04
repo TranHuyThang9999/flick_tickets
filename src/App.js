@@ -71,7 +71,8 @@ export default function App() {
       {/* <TestDisPlayTicket/> */}
       {/* <GetListCart/> */}
       {/* <PageForUser/> */}
-      <QRScanner/>
+      {/* <QRScanner/> */}
+      <FormLogin/>
     </div>
   );
 }

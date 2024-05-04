@@ -4,7 +4,7 @@ import { Avatar, Button, Col, Drawer, Menu, Row } from 'antd';
 import {
   BellFilled, ShoppingCartOutlined, TwitterCircleFilled,
   InteractionFilled, WeiboCircleOutlined,
-  AppstoreOutlined, HomeFilled, RightOutlined, UnorderedListOutlined
+  AppstoreOutlined, HomeFilled, RightOutlined, WeiboSquareFilled
 } from '@ant-design/icons';
 import axios from 'axios';
 import FormLogin from '../../dashboard/FormLogin';
@@ -12,6 +12,7 @@ import CinemasGetAll from '../../common/cinemas/CinemasGetAll';
 import Profile from '../../common/customers/Profile';
 import GetTicketOncarousel from '../../common/ViewTicketsForSell/GetTicketOncarousel';
 import GetListCart from '../../cart/GetListCart';
+import QRScanner from '../../QRScanner/QRScanner';
 
 export default function PageForUser() {
 
@@ -24,6 +25,7 @@ export default function PageForUser() {
   const [nameCinema, setNameCinema] = useState('');
   const [movieTheaterName, setMovieTheaterName] = useState('');
   const [openCart, setOpencart] = useState(false);
+  const [openCheck, setOpenCheck] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -91,7 +93,12 @@ export default function PageForUser() {
   const onClose = () => {
     setOpencart(false);
   };
-
+  const showDrawerCheck = () => {
+    setOpenCheck(true);
+  };
+  const onCloseCCheck = () => {
+    setOpenCheck(false);
+  };
   const listRoomCinema = CinemasGetAll();
 
   useEffect(() => {
@@ -143,10 +150,10 @@ export default function PageForUser() {
           <div className='layout-header-center-menu-choice-two'>
             <Menu className='layout-header-center-menu-item-title' style={{ backgroundColor: 'blanchedalmond', fontSize: '17px' }} mode="horizontal">
               <Menu.Item>
-                <Avatar className='layout-header-center-menu-item-title-avatar' shape="square" size="large" 
-                src='http://localhost:1234/manager/shader/huythang/638518679.jpeg' onClick={handlerGobackHome} />
+                <Avatar className='layout-header-center-menu-item-title-avatar' shape="square" size="large"
+                  src='http://localhost:1234/manager/shader/huythang/638518679.jpeg' onClick={handlerGobackHome} />
               </Menu.Item>
-              <Menu.SubMenu className='layout-header-center-menu-item-title-sub'  key="SubMenu" icon={<WeiboCircleOutlined />} title={<span>Lịch chiếu</span>}>
+              <Menu.SubMenu className='layout-header-center-menu-item-title-sub' key="SubMenu" icon={<WeiboCircleOutlined />} title={<span>Lịch chiếu</span>}>
                 <Menu.Item key="one" icon={<AppstoreOutlined />} onClick={handleShowingTickets}>
                   Đang chiếu
                 </Menu.Item>
@@ -182,8 +189,26 @@ export default function PageForUser() {
         </div>
         <div className='layout-header-end'>
 
-          <div>Thông báo <BellFilled /></div>
+          <div style={{ paddingRight: '10px' }}>
+            <Button onClick={showDrawerCheck}><WeiboSquareFilled /> Kiểm tra vé</Button>
+            <WeiboSquareFilled />
 
+            <Drawer
+              title="Create a new account"
+              width={720}
+              onClose={onCloseCCheck}
+              open={openCheck}
+              styles={{
+                body: {
+                  paddingBottom: 80,
+                },
+              }}
+            >
+              <QRScanner />
+            </Drawer>
+          </div>
+
+          <div>Thông báo <BellFilled /></div>
           <div>
             <Button onClick={showDrawer}> Giỏ hàng <ShoppingCartOutlined /> </Button>
             <Drawer
