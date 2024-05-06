@@ -31,6 +31,7 @@ import PageForUser from "./Home/Page/PageForUser";
 import GetListCart from "./cart/GetListCart";
 import UpdateCartById from "./cart/UpdateCartById";
 import QRScanner from "./QRScanner/QRScanner";
+import GetOrderById from "./Orders/GetOrderById";
 
 export default function App() {
   return (
@@ -73,7 +74,8 @@ export default function App() {
       {/* <PageForUser/> */}
       {/* <QRScanner/> */}
       {/* <FormLogin/> */}
-      <HomeaAdmin/>
+      {/* <HomeaAdmin/> */}
+      <GetOrderById/>
     </div>
   );
 }

@@ -17,8 +17,8 @@ export default function CinemasAdd() {
         try {
             const formData = new FormData();
 
-            formData.append('cinema_name', values.cinema_name);
-            formData.append('description', values.description);
+            formData.append('cinema_name', values.cinema_name.trim());
+            formData.append('description', values.description.trim());
             formData.append('conscious', address.city);
             formData.append('district', address.district);
             formData.append('commune', address.commune);
@@ -76,7 +76,7 @@ export default function CinemasAdd() {
                             name="cinema_name"
                             rules={[{ required: true, message: 'Vui lòng nhập tên phong!' }]}
                         >
-                            <Input />
+                            <Input trim />
                         </Form.Item>
 
                         <Form.Item
@@ -85,7 +85,7 @@ export default function CinemasAdd() {
                             name="description"
                             rules={[{ required: true, message: 'Vui lòng nhập Mô tả phòng!' }]}
                         >
-                            <Input />
+                            <Input trim />
                         </Form.Item>
 
                         <Form.Item
@@ -102,7 +102,7 @@ export default function CinemasAdd() {
                             rules={[{ required: true, message: 'Vui lòng nhập chi tiết địa chỉ phòng chiếu!' }]}
 
                         >
-                            <Input />
+                            <Input trim />
                         </Form.Item>
                         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                             <Button type="primary" htmlType="submit">
