@@ -15,10 +15,7 @@ export default function GetOrderById() {
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:8080/manager/user/order/getlist', {
-        params: {
-          offset: 0,
-          limit: 100,
-        }
+       
       });
 
       if (response.data.result.code === 0) {
@@ -128,9 +125,7 @@ export default function GetOrderById() {
           ),
           rowExpandable: (record) => record.name !== 'Not Expandable',
         }}
-        onRow={(record) => ({
-          onClick: () => handleRowClick(record),
-        })}
+       
         rowClassName={(record) => (record.key === selectedRow ? 'selected-row' : '')}
         pagination={pagination} // Sử dụng đối tượng phân trang
       />
