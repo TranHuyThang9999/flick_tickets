@@ -7,25 +7,25 @@ import moment from 'moment';
 export default function GetOrderById() {
   const [orders, setOrders] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   useEffect(() => {
     fetchData();
-  }, [pagination]);
+  }, []);
 
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:8080/manager/user/order/getlist', {
         params: {
-          offset: (pagination.current - 1) * pagination.pageSize,
-          limit: pagination.pageSize,
+          offset: 0,
+          limit: 100,
         }
       });
 
       if (response.data.result.code === 0) {
         setOrders(response.data.orders);
+        
       } else if (response.data.result.code === 20) {
-        // Handle code 20
+        // Xử lý code 20
       } else if (response.data.result.code === 4) {
         showError("Server error");
       } else {
@@ -38,7 +38,7 @@ export default function GetOrderById() {
 
   const handleRowClick = (record) => {
     setSelectedRow(record.key);
-    // Do something with the clicked row
+    // Làm gì đó với hàng được nhấp
   };
 
   const getStatusText = (status) => {
@@ -110,6 +110,11 @@ export default function GetOrderById() {
     },
   ];
 
+
+  const pagination = {
+    pageSize: 10,
+    position: ['bottomLeft'],
+  };
   return (
     <div>
       <Table
@@ -119,7 +124,6 @@ export default function GetOrderById() {
           expandedRowRender: (record) => (
             <p style={{ margin: 0, color: 'dodgerblue', paddingLeft: '10px' }}>
               {formatAddressDetails(record.addressDetails)} | {record.movie_time}
-              
             </p>
           ),
           rowExpandable: (record) => record.name !== 'Not Expandable',
@@ -128,8 +132,7 @@ export default function GetOrderById() {
           onClick: () => handleRowClick(record),
         })}
         rowClassName={(record) => (record.key === selectedRow ? 'selected-row' : '')}
-        pagination={pagination}
-        onChange={(pagination) => setPagination(pagination)}
+        pagination={pagination} // Sử dụng đối tượng phân trang
       />
     </div>
   );
