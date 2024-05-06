@@ -1,4 +1,4 @@
-import { Table, Button, Pagination } from 'antd';
+import { Table, Pagination } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { showError } from '../common/log/log';
@@ -68,47 +68,65 @@ export default function GetOrderById() {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
+      ellipsis: true,
+      width: '10%'
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
+      ellipsis: true,
+      width: '20%'
     },
     {
-      title: 'Release Date',
+      title: 'Ngày Phát Hành',
       dataIndex: 'release_date',
       key: 'release_date',
       render: (timestamp) => moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss'),
+      ellipsis: true,
+      width: '15%'
     },
     {
-      title: 'Status',
+      title: 'Trạng Thái',
       dataIndex: 'status',
       key: 'status',
       render: (status) => getStatusText(status),
+      ellipsis: true,
+      width: '10%'
     },
     {
-      title: 'Price',
+      title: 'Giá',
       dataIndex: 'price',
       key: 'price',
+      ellipsis: true,
+      width: '10%'
     },
     {
-      title: 'Sale',
+      title: 'Giảm Giá %',
       dataIndex: 'sale',
       key: 'sale',
+      ellipsis: true,
+      width: '10%'
     },
     {
-      title: 'addressDetails',
+      title: 'Chi Tiết Địa Chỉ',
       dataIndex: 'addressDetails',
       key: 'addressDetails',
       render: (addressDetails) => addressDetails ? JSON.parse(addressDetails).cinema_name : null,
+      ellipsis: true,
+      width: '20%'
     },
     {
-      title: 'Created At',
+      title: 'Đã Tạo Lúc',
       dataIndex: 'created_at',
       key: 'created_at',
       render: (timestamp) => moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss'),
+      ellipsis: true,
+      width: '15%'
     },
   ];
+
+
 
   return (
     <div>
