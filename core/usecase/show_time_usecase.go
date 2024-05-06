@@ -99,6 +99,7 @@ func (s *UseCaseShowTime) DeleteShowTime(ctx context.Context, req *entities.Show
 	}, nil
 }
 func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) (*entities.ShowTimeByTicketIdresp, error) {
+
 	number := mapper.ConvertStringToInt(id) //ticket id
 
 	// Lấy danh sách thời gian chiếu từ cơ sở dữ liệu
@@ -150,17 +151,25 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 		mapCinemaByName[cinema.CinemaName] = cinema
 	}
 
-	// Tạo danh sách chi tiết thời gian chiếu đã được chế biến
+	// Tạo danh sách chi tiết thời gian chiếu
 	var listRespDetail []*entities.ShowTime
 	for _, showTime := range listShowTime {
+		log.Infof("daTa : ", showTime.CinemaName)
 		cinema := mapCinemaByName[showTime.CinemaName]
+		log.Infof("data  c", cinema)
 		if cinema == nil {
-			return &entities.ShowTimeByTicketIdresp{
-				Result: entities.Result{
-					Code:    enums.DATA_EMPTY_ERR_CODE,
-					Message: enums.DATA_EMPTY_ERR_MESS,
-				},
-			}, nil
+			// Nếu không tìm thấy thông tin về rạp chiếu, gán các trường thông tin về rạp chiếu bằng chuỗi rỗng
+			cinema = &domain.Cinemas{
+				// Gán các trường thông tin về rạp chiếu bằng chuỗi rỗng
+				CinemaName:      "",
+				Description:     "",
+				Conscious:       "",
+				District:        "",
+				Commune:         "",
+				AddressDetails:  "",
+				WidthContainer:  0, // hoặc giá trị mặc định khác nếu thích
+				HeightContainer: 0, // hoặc giá trị mặc định khác nếu thích
+			}
 		}
 
 		// Thêm chi tiết thời gian chiếu vào danh sách

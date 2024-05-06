@@ -3,13 +3,10 @@ package routers
 import (
 	"flick_tickets/api/controllers"
 	"flick_tickets/api/middlewares"
-	"flick_tickets/common/log"
 	"flick_tickets/configs"
 	"flick_tickets/core/events/sockets"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/robfig/cron"
 	cors "github.com/rs/cors/wrapper/gin"
 )
 
@@ -121,22 +118,22 @@ func NewApiRouter(
 	r.PUT("/cart/update", cart.UpdateCartById)
 	r.DELETE("/cart/delete/:id", cart.DeleteCartById)
 	// Thêm công việc vào lịch để chạy mỗi 15 phút = 900s
-	scheduler := cron.New()
-	err := scheduler.AddFunc("*/900 * * * *", func() {
-		resp, err := http.Get("http://localhost:8080/manager/user/trigger")
-		if err != nil {
-			// Xử lý lỗi khi gọi API
-			log.Error(err, "error controller")
-			return
-		}
-		defer resp.Body.Close()
-		// Xử lý phản hồi nếu cần
-	})
-	if err != nil {
-		log.Error(err, "error")
-	}
-	// Bắt đầu lịch sau khi thêm công việc vào
-	scheduler.Start()
+	// scheduler := cron.New()
+	// err := scheduler.AddFunc("*/900 * * * *", func() {
+	// 	resp, err := http.Get("http://localhost:8080/manager/user/trigger")
+	// 	if err != nil {
+	// 		// Xử lý lỗi khi gọi API
+	// 		log.Error(err, "error controller")
+	// 		return
+	// 	}
+	// 	defer resp.Body.Close()
+	// 	// Xử lý phản hồi nếu cần
+	// })
+	// if err != nil {
+	// 	log.Error(err, "error")
+	// }
+	// // Bắt đầu lịch sau khi thêm công việc vào
+	// scheduler.Start()
 
 	return &ApiRouter{
 		Engine: engine,
