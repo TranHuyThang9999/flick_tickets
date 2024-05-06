@@ -8,6 +8,7 @@ export default function DetailedShowSchedule({ id }) {
   const [open, setOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [selectPopChid, setSelectPopChid] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const showDrawer = (record) => {
     const { id } = record; // Extract the id from the record
@@ -77,28 +78,9 @@ export default function DetailedShowSchedule({ id }) {
       dataIndex: 'description',
       key: 'description',
     },
+   
     {
-      title: 'Tỉnh',
-      dataIndex: 'conscious',
-      key: 'conscious',
-    },
-    {
-      title: 'Huyện',
-      dataIndex: 'district',
-      key: 'district',
-    },
-    {
-      title: 'Xã/Phường',
-      dataIndex: 'commune',
-      key: 'commune',
-    },
-    {
-      title: 'Địa chỉ Chi tiết',
-      dataIndex: 'address_details',
-      key: 'address_details',
-    },
-    {
-      title: 'Mô tả phòng',
+      title: 'Action',
       render: (record) => (
         <div>
           <Button type="primary" onClick={() => showDrawer(record)}>
@@ -130,12 +112,35 @@ export default function DetailedShowSchedule({ id }) {
         </div>
       ),
     },
-   
-  ];
 
+  ];
+  const handleRowClick = (record) => {
+    if (selectedRow === record.key) {
+        setSelectedRow(null);
+    } else {
+        setSelectedRow(record.key);
+    }
+};
   return (
     <div>
-      <Table scroll={{ x: 90 }} dataSource={showTimeTicket} columns={columns} />
+     <Table
+        scroll={{ x: 90 }}
+        dataSource={showTimeTicket}
+        columns={columns}
+        expandable={{
+          expandedRowRender: (record) => (
+            <p style={{ margin: 0, color: 'dodgerblue', paddingLeft: '10px' }}>
+              |{record.price} VND | {record.description} | {record.conscious} | 
+              {record.district} | {record.commune} | {record.address_details} |Số lượng ghế: {record.original_number}
+            </p>
+          ),
+          rowExpandable: (record) => record.name !== 'Not Expandable',
+        }}
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+        })}
+        rowClassName={(record) => (record.key === selectedRow ? 'selected-row' : '')}
+      />
     </div>
   );
 }

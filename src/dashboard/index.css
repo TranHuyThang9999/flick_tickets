@@ -2,11 +2,7 @@
     display: flex;
 }
 
-/* :where(.css-dev-only-do-not-override-11xg00t).ant-layout .ant-layout-sider-children {
-    height: 1288px;
-    margin-top: -0.1px;
-    padding-top: 0.1px;
-} */
+
 .col_span_list{
     display: flex;
     justify-content: space-between;
@@ -22,9 +18,7 @@
     color: brown;
 
 }
-/* index.css */
 
-/* Phần CSS cho Sider */
 .fixed-sider {
     position: sticky;
     top: 0;
@@ -56,4 +50,13 @@
     margin: 50px auto;
     /* Cách top 50px */
   }
-  
+
+.ant-form ant-form-horizontal css-dev-only-do-not-override-11xg00t form-container .form-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+
+    width: 700px;
+    margin: 50px auto;
+}

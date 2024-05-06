@@ -127,9 +127,9 @@ export default function AdminUploadTickets() {
     return (
         <div>
 
-            <Form {...layout} form={form} className="form-container" onFinish={handleFormSubmit}>
+            <Form {...layout} style={{width:''}} form={form} className="form-container-upload-ticket" onFinish={handleFormSubmit}>
                 <Form.Item
-                    label="Nhập tên vé"
+                    label="Nhập tên phim"
                     className="form-row"
                     name="name"
                     rules={[{ required: true, message: 'Vui lòng nhập tên vé!' }]}
