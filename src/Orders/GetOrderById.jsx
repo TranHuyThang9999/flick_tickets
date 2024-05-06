@@ -1,4 +1,4 @@
-import { Table, Button } from 'antd';
+import { Table, Button, Pagination } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { showError } from '../common/log/log';
@@ -6,21 +6,27 @@ import moment from 'moment';
 
 export default function GetOrderById() {
   const [orders, setOrders] = useState([]);
-  const [selectedRow, setSelectedRow] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentPage]); // Gọi fetchData khi trang hiện tại thay đổi
 
   const fetchData = async () => {
     try {
+      const offset = (currentPage - 1) * limit;
       const response = await axios.get('http://localhost:8080/manager/user/order/getlist', {
-       
+        params: {
+          offset: offset,
+          limit: limit,
+        }
       });
 
       if (response.data.result.code === 0) {
         setOrders(response.data.orders);
-        
+        setTotal(response.data.total);
       } else if (response.data.result.code === 20) {
         // Xử lý code 20
       } else if (response.data.result.code === 4) {
@@ -31,11 +37,6 @@ export default function GetOrderById() {
     } catch (error) {
       showError("Network error");
     }
-  };
-
-  const handleRowClick = (record) => {
-    setSelectedRow(record.key);
-    // Làm gì đó với hàng được nhấp
   };
 
   const getStatusText = (status) => {
@@ -50,6 +51,7 @@ export default function GetOrderById() {
         return 'Unknown';
     }
   };
+
   const formatAddressDetails = (addressDetails) => {
     try {
       const parsedAddress = JSON.parse(addressDetails);
@@ -59,7 +61,8 @@ export default function GetOrderById() {
       console.error('Error parsing address details:', error);
       return 'Thông tin địa chỉ không hợp lệ';
     }
-  }
+  };
+
   const columns = [
     {
       title: 'ID',
@@ -107,11 +110,6 @@ export default function GetOrderById() {
     },
   ];
 
-
-  const pagination = {
-    pageSize: 10,
-    position: ['bottomLeft'],
-  };
   return (
     <div>
       <Table
@@ -125,9 +123,13 @@ export default function GetOrderById() {
           ),
           rowExpandable: (record) => record.name !== 'Not Expandable',
         }}
-       
-        rowClassName={(record) => (record.key === selectedRow ? 'selected-row' : '')}
-        pagination={pagination} // Sử dụng đối tượng phân trang
+        pagination={false} // Tắt phân trang mặc định của Table
+      />
+      <Pagination
+        total={total}
+        defaultPageSize={limit}
+        current={currentPage}
+        onChange={(page) => setCurrentPage(page)}
       />
     </div>
   );
