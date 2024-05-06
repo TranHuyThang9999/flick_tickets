@@ -7,19 +7,18 @@ import moment from 'moment';
 export default function GetOrderById() {
   const [orders, setOrders] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   useEffect(() => {
     fetchData();
-  }, [page]);
+  }, [pagination]);
 
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:8080/manager/user/order/getlist', {
         params: {
-          offset: (page - 1) * pageSize,
-          limit: pageSize,
+          offset: (pagination.current - 1) * pagination.pageSize,
+          limit: pagination.pageSize,
         }
       });
 
@@ -42,10 +41,6 @@ export default function GetOrderById() {
     // Do something with the clicked row
   };
 
-  const handleNextPage = () => {
-    setPage(page + 1);
-  };
-
   const getStatusText = (status) => {
     switch (status) {
       case 7:
@@ -58,7 +53,16 @@ export default function GetOrderById() {
         return 'Unknown';
     }
   };
-
+  const formatAddressDetails = (addressDetails) => {
+    try {
+      const parsedAddress = JSON.parse(addressDetails);
+      const { cinema_name, description, conscious, district, commune, address_details } = parsedAddress;
+      return `${cinema_name}, ${description}, ${conscious}, ${district}, ${commune}, ${address_details}`;
+    } catch (error) {
+      console.error('Error parsing address details:', error);
+      return 'Thông tin địa chỉ không hợp lệ';
+    }
+  }
   const columns = [
     {
       title: 'ID',
@@ -114,7 +118,8 @@ export default function GetOrderById() {
         expandable={{
           expandedRowRender: (record) => (
             <p style={{ margin: 0, color: 'dodgerblue', paddingLeft: '10px' }}>
-              {record.addressDetails} | {record.movie_time}
+              {formatAddressDetails(record.addressDetails)} | {record.movie_time}
+              
             </p>
           ),
           rowExpandable: (record) => record.name !== 'Not Expandable',
@@ -123,9 +128,9 @@ export default function GetOrderById() {
           onClick: () => handleRowClick(record),
         })}
         rowClassName={(record) => (record.key === selectedRow ? 'selected-row' : '')}
-        pagination={false}
+        pagination={pagination}
+        onChange={(pagination) => setPagination(pagination)}
       />
-      <Button onClick={handleNextPage}>Next</Button>
     </div>
   );
 }
