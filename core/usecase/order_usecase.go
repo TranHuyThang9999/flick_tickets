@@ -467,7 +467,11 @@ func (u *UseCaseOrder) UpdateOrderWhenCancel(ctx context.Context, req *entities.
 	}, nil
 }
 func (u *UseCaseOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReqByForm) (*entities.OrderGetAll, error) {
+	var orderResp = make([]*entities.Orders, 0)
+	var mapShowTimeByID = make(map[int64]*domain.ShowTime)
+	var mapTicketByID = make(map[int64]*domain.Tickets)
 
+	// Lấy danh sách order
 	resp, err := u.order.GetAllOrder(ctx, req)
 	if err != nil {
 		return &entities.OrderGetAll{
@@ -486,12 +490,82 @@ func (u *UseCaseOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReqByF
 		}, nil
 	}
 
+	// Lấy tất cả danh sách ticket
+	listTickets, err := u.tickets.GetAllTickets(ctx, &domain.TicketreqFindByForm{})
+	if err != nil {
+		return &entities.OrderGetAll{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+
+	// Tạo map lưu trữ thông tin ticket theo ID
+	for _, ticket := range listTickets {
+		mapTicketByID[ticket.ID] = ticket
+	}
+
+	// Lấy danh sách show time
+	listShowTime, err := u.showTime.GetAll(ctx)
+	if err != nil {
+		return &entities.OrderGetAll{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+
+	// Tạo map lưu trữ thông tin show time theo ID
+	for _, showTime := range listShowTime {
+		mapShowTimeByID[showTime.ID] = showTime
+	}
+
+	// Xử lý thông tin order
+	for _, order := range resp {
+		showTime, ok := mapShowTimeByID[order.ShowTimeID]
+		if !ok {
+			return &entities.OrderGetAll{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, nil
+		}
+
+		ticket, ok := mapTicketByID[showTime.TicketID]
+		if !ok {
+			return &entities.OrderGetAll{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, nil
+		}
+
+		orderResp = append(orderResp, &entities.Orders{
+			ID:             order.ID,
+			CinemaName:     showTime.CinemaName,
+			MovieName:      ticket.Name, // Lấy tên phim từ ticket
+			ReleaseDate:    order.ReleaseDate,
+			Description:    order.Description,
+			Status:         order.Status,
+			Price:          order.Price,
+			Seats:          order.Seats,
+			MovieTime:      order.MovieTime,
+			AddressDetails: order.AddressDetails,
+			CreatedAt:      order.CreatedAt,
+		})
+	}
+
 	return &entities.OrderGetAll{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
-		Orders: resp,
+		Total:  len(resp),
+		Orders: orderResp,
 	}, nil
 }
 

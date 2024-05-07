@@ -73,7 +73,7 @@ func (c *CollectionOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReq
 		AddressDetails: req.AddressDetails,
 		CreatedAt:      req.CreatedAt,
 		UpdatedAt:      req.UpdatedAt,
-	}).Limit(req.Limit).Offset(req.Offset).Find(&listOrder)
+	}).Order("created_at asc").Limit(req.Limit).Offset(req.Offset).Find(&listOrder)
 	return listOrder, result.Error
 }
 func (c *CollectionOrder) TriggerOrder(ctx context.Context) ([]*domain.Orders, error) {

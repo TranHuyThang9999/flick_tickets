@@ -23,7 +23,7 @@ func SetByCurlImage(ctx context.Context, file *multipart.FileHeader) (*entities.
 	fileExt := strings.ToLower(filepath.Ext(file.Filename))
 	url := strings.TrimSpace(strings.Trim(configs.Get().FileLc, " "))
 
-	acceptedExts := []string{".jpg", ".jpeg", ".gif", ".png", ".svg", ".MP4", ".flv"}
+	acceptedExts := []string{".jpg", ".jpeg", ".gif", ".png", ".svg", ".MP4", ".flv", ".webm", ".mp4"}
 	accepted := false
 	for _, ext := range acceptedExts {
 		if fileExt == ext {
