@@ -59,7 +59,8 @@ func NewApiRouter(
 	r.GET("/user/load", file_lc.GetListFileById)
 	r.GET("/user/verify/aes", aes.VerifyTickets)
 	r.DELETE("/user/delete/ticket/:id", ticket.DeleteTicketsById)
-	r.GET("/customer/ticket/action", ticket.GetAllTicketsAttachSale)
+	r.GET("/customer/ticket/action", ticket.GetAllTicketsAttachSale) // ko dung
+	r.PUT("/use/ticket/updates", ticket.UpdateTicketById)
 	// r.PUT("/user/update/size/room", ticket.UpdateSizeRoom)
 	//	r.GET("/ws", managerClient.ServerWs) //auto pool
 	//cinema

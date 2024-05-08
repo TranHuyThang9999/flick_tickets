@@ -59,6 +59,21 @@ type TicketRespGetAll struct {
 type TicketRespDeleteById struct {
 	Result Result `json:"result"`
 }
+type TicketReqUpdateById struct {
+	ID            int64   `form:"id"`
+	Name          string  `form:"name"`
+	Price         float64 `form:"price"`
+	Description   string  `form:"description"`
+	Sale          int     `form:"sale"`
+	ReleaseDate   int     `form:"release_date"`
+	Status        int     `form:"status"`
+	MovieDuration int     `form:"movieDuration"`
+	AgeLimit      int     `form:"age_limit"`
+	Director      string  `form:"director"`
+	Actor         string  `form:"actor"`
+	Producer      string  `form:"producer"`
+	MovieType     string  `form:"movie_type"`
+}
 type TicketRespUpdateById struct {
 	Result Result `json:"result"`
 }

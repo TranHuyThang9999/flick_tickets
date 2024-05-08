@@ -76,5 +76,15 @@ func (c *ControllerTicket) GetAllTicketsAttachSale(ctx *gin.Context) {
 	status := ctx.Query("status")
 	resp, err := c.ticket.GetAllTicketsAttachSale(ctx, status)
 	c.baseController.Response(ctx, resp, err)
+}
+func (c *ControllerTicket) UpdateTicketById(ctx *gin.Context) {
 
+	var req entities.TicketReqUpdateById
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := c.ticket.UpdateTicketById(ctx, &req)
+
+	c.baseController.Response(ctx, resp, err)
 }

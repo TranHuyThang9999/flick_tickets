@@ -45,8 +45,8 @@ func (u *CollectionTickets) GetAllTickets(ctx context.Context, req *domain.Ticke
 	}).Find(&tickets)
 	return tickets, result.Error
 }
-func (u *CollectionTickets) UpdateTicketById(ctx context.Context, tx *gorm.DB, req *domain.TicketReqUpdateById) error {
-	result := tx.Where("id=?", req.ID).Updates(&req)
+func (u *CollectionTickets) UpdateTicketById(ctx context.Context, req *domain.TicketReqUpdateById) error {
+	result := u.collection.Model(&domain.Tickets{}).Where("id=?", req.ID).Updates(&req)
 	return result.Error
 }
 func (u *CollectionTickets) DeleteTicketsById(ctx context.Context, tx *gorm.DB, id int64) error {

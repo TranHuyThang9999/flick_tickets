@@ -47,25 +47,22 @@ type TicketReqUpdateById struct {
 	ID            int64   `json:"id"`
 	Name          string  `json:"name"`
 	Price         float64 `json:"price"`
-	MaxTicket     int64   `json:"max_ticket"`
-	Quantity      int     `json:"quantity"`
 	Description   string  `json:"description"`
 	Sale          int     `json:"sale"`
-	Showtime      string  `json:"showtime"`
+	ReleaseDate   int     `json:"release_date"`
+	Status        int     `json:"status"`
 	MovieDuration int     `json:"movieDuration"`
 	AgeLimit      int     `json:"age_limit"`
-	ReleaseDate   int     `json:"release_date"`
 	Director      string  `json:"director"`
 	Actor         string  `json:"actor"`
 	Producer      string  `json:"producer"`
 	MovieType     string  `json:"movie_type"`
-	CreatedAt     int     `json:"created_at"`
 	UpdatedAt     int     `json:"updated_at"`
 }
 type RepositoryTickets interface {
 	AddTicket(ctx context.Context, tx *gorm.DB, req *Tickets) error
 	GetAllTickets(ctx context.Context, req *TicketreqFindByForm) ([]*Tickets, error)
-	UpdateTicketById(ctx context.Context, tx *gorm.DB, req *TicketReqUpdateById) error
+	UpdateTicketById(ctx context.Context, req *TicketReqUpdateById) error
 	DeleteTicketsById(ctx context.Context, tx *gorm.DB, id int64) error
 	UpdateTicketQuantity(ctx context.Context, tx *gorm.DB, id int64, quantity int) error
 	GetTicketById(ctx context.Context, id int64) (*Tickets, error)

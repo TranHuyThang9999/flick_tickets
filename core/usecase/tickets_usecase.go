@@ -417,20 +417,24 @@ func (c *UseCaseTicker) DeleteTicketsById(ctx context.Context, ticketId string) 
 		},
 	}, nil
 }
-func (c *UseCaseTicker) UpdateTicket(ctx context.Context, req *domain.TicketReqUpdateById) (*entities.TicketRespUpdateById, error) {
+func (c *UseCaseTicker) UpdateTicketById(ctx context.Context, req *entities.TicketReqUpdateById) (*entities.TicketRespUpdateById, error) {
 
-	tx, err := c.trans.BeginTransaction(ctx)
-
-	if err != nil {
-		return &entities.TicketRespUpdateById{
-			Result: entities.Result{
-				Code:    enums.TRANSACTION_INVALID_CODE,
-				Message: enums.TRANSACTION_INVALID_MESS,
-			},
-		}, nil
-	}
-
-	err = c.ticket.UpdateTicketById(ctx, tx, req)
+	err := c.ticket.UpdateTicketById(ctx, &domain.TicketReqUpdateById{
+		ID:            req.ID,
+		Name:          req.Name,
+		Price:         req.Price,
+		Description:   req.Description,
+		Sale:          req.Sale,
+		ReleaseDate:   req.ReleaseDate,
+		Status:        req.Status,
+		MovieDuration: req.MovieDuration,
+		AgeLimit:      req.AgeLimit,
+		Director:      req.Director,
+		Actor:         req.Actor,
+		Producer:      req.Producer,
+		MovieType:     req.MovieType,
+		UpdatedAt:     utils.GenerateTimestamp(),
+	})
 	if err != nil {
 		return &entities.TicketRespUpdateById{
 			Result: entities.Result{
@@ -440,7 +444,6 @@ func (c *UseCaseTicker) UpdateTicket(ctx context.Context, req *domain.TicketReqU
 		}, nil
 	}
 
-	tx.Commit()
 	return &entities.TicketRespUpdateById{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
