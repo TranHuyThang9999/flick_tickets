@@ -467,6 +467,7 @@ func (u *UseCaseOrder) UpdateOrderWhenCancel(ctx context.Context, req *entities.
 	}, nil
 }
 func (u *UseCaseOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReqByForm) (*entities.OrderGetAll, error) {
+
 	var orderResp = make([]*entities.Orders, 0)
 	var mapShowTimeByID = make(map[int64]*domain.ShowTime)
 	var mapTicketByID = make(map[int64]*domain.Tickets)
@@ -548,6 +549,7 @@ func (u *UseCaseOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReqByF
 			ID:             order.ID,
 			CinemaName:     showTime.CinemaName,
 			MovieName:      ticket.Name, // Lấy tên phim từ ticket
+			Email:          order.Email,
 			ReleaseDate:    order.ReleaseDate,
 			Description:    order.Description,
 			Status:         order.Status,
@@ -558,13 +560,21 @@ func (u *UseCaseOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReqByF
 			CreatedAt:      order.CreatedAt,
 		})
 	}
-
+	countOrder, err := u.order.GetTotalOrder(ctx, req.Email)
+	if err != nil {
+		return &entities.OrderGetAll{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
 	return &entities.OrderGetAll{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
-		Total:  len(resp),
+		Total:  int(countOrder),
 		Orders: orderResp,
 	}, nil
 }

@@ -66,17 +66,6 @@ func (c *ControllerTicket) GetAllTickets(ctx *gin.Context) {
 	c.baseController.Response(ctx, resp, err)
 }
 
-// func (c *ControllerTicket) UpdateSizeRoom(ctx *gin.Context) {
-
-// 	var req entities.TicketReqUpdateSizeRoom
-// 	if err := ctx.ShouldBind(&req); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, err)
-// 		return
-// 	}
-// 	resp, err := c.ticket.UpdateSizeRoom(ctx, &req)
-
-//		c.baseController.Response(ctx, resp, err)
-//	}
 func (c *ControllerTicket) DeleteTicketsById(ctx *gin.Context) {
 	id := ctx.Param("id")
 	resp, err := c.ticket.DeleteTicketsById(ctx, id)

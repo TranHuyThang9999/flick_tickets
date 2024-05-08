@@ -63,6 +63,7 @@ type CustomerReqLogin struct {
 type CustomerRespLogin struct {
 	Result    Result    `json:"result"`
 	JwtToken  *JwtToken `json:"jwt_token"`
+	Email     string    `json:"email"`
 	CreatedAt int       `json:"created_at"`
 }
 type CustomersReqRegisterAdminForStaff struct {

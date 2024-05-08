@@ -5,6 +5,7 @@ import (
 	"flick_tickets/common/utils"
 	"flick_tickets/core/entities"
 	"flick_tickets/core/usecase"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -30,7 +31,7 @@ func (c *ControllerPayMent) CreatePayment(ctx *gin.Context) {
 	id := utils.GenerateUniqueKey()
 
 	// Lưu id vào cookie và đặt nó để tồn tại ở domain cụ thể
-	ctx.SetCookie("order_id", string(id), 3600, "/", "localhost:8080", false, true)
+	ctx.SetCookie("order_id", fmt.Sprintln(id), 3600, "/", "localhost:8080", false, true)
 
 	var req entities.CheckoutRequestController
 	if err := ctx.ShouldBind(&req); err != nil {

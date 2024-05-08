@@ -36,3 +36,7 @@ func (c *CollectionFileStore) GetAll(ctx context.Context) ([]*domain.FileStorage
 	result := c.fs.Find(&files)
 	return files, result.Error
 }
+func (c *CollectionFileStore) DeleteFileByAnyIdObject(ctx context.Context, tx *gorm.DB, anyId int64) error {
+	result := tx.Where("ticket_id = ?", anyId).Delete(&domain.FileStorages{}) //
+	return result.Error
+}

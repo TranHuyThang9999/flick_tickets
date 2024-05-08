@@ -397,30 +397,19 @@ func (c *UseCaseTicker) GetAllTickets(ctx context.Context, req *domain.Ticketreq
 
 }
 
-// func (c *UseCaseTicker) UpdateSizeRoom(ctx context.Context, req *entities.TicketReqUpdateSizeRoom) (*entities.TicketRespUpdateSizeRoom, error) {
-
-// 	log.Infof("req update : ", req)
-
-// 	err := c.ticket.UpdateSizeRoom(ctx, req.TicketId, req.WidthContainer, req.HeightContainer)
-// 	if err != nil {
-// 		return &entities.TicketRespUpdateSizeRoom{
-// 			Result: entities.Result{
-// 				Code:    enums.DB_ERR_CODE,
-// 				Message: enums.DB_ERR_MESS,
-// 			},
-// 		}, err
-// 	}
-// 	return &entities.TicketRespUpdateSizeRoom{
-// 		Result: entities.Result{
-// 			Code:    enums.SUCCESS_CODE,
-// 			Message: enums.SUCCESS_MESS,
-// 		},
-// 	}, nil
-// }
-
 func (c *UseCaseTicker) DeleteTicketsById(ctx context.Context, ticketId string) (*entities.TicketRespDeleteById, error) {
 
 	ticketIdNumber := mapper.ConvertStringToInt(ticketId)
+	tx, err := c.trans.BeginTransaction(ctx)
+	if err != nil {
+		return &entities.TicketRespDeleteById{
+			Result: entities.Result{
+				Code:    enums.TRANSACTION_INVALID_CODE,
+				Message: enums.TRANSACTION_INVALID_MESS,
+			},
+		}, nil
+	}
+
 	ticket, err := c.ticket.GetTicketById(ctx, int64(ticketIdNumber))
 	if err != nil {
 		return &entities.TicketRespDeleteById{
@@ -430,14 +419,36 @@ func (c *UseCaseTicker) DeleteTicketsById(ctx context.Context, ticketId string) 
 			},
 		}, nil
 	}
-	if ticket.Status == enums.TICKET_OPEN_SALE {
+	err = c.ticket.DeleteTicketsById(ctx, tx, ticket.ID)
+	if err != nil {
 		return &entities.TicketRespDeleteById{
 			Result: entities.Result{
-				Code:    enums.TICKET_OPEN_SALE_CODE,
-				Message: enums.TICKET_OPEN_SALE_MESS,
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
 			},
 		}, nil
 	}
+	err = c.file.DeleteFileByAnyIdObject(ctx, tx, ticket.ID)
+	if err != nil {
+		tx.Rollback()
+		return &entities.TicketRespDeleteById{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	err = c.showTime.DeleteShowTimesByTicketId(ctx, tx, ticket.ID)
+	if err != nil {
+		tx.Rollback()
+		return &entities.TicketRespDeleteById{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	tx.Commit()
 	return &entities.TicketRespDeleteById{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,

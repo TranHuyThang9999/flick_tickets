@@ -65,32 +65,21 @@ func (u *CollectionTickets) GetTicketById(ctx context.Context, id int64) (*domai
 	result := u.collection.Where("id = ?", id).First(&ticket)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			// Tr? v? nil n?u kh�ng t?m th?y b?n ghi
 			return nil, nil
 		}
-		// X? l? l?i kh�c n?u c�
 		return nil, result.Error
 
 	}
 	return ticket, nil
 }
 
-// func (u *CollectionTickets) UpdateTicketSelectedSeat(ctx context.Context, tx *gorm.DB, id int64, selected_seat string) error {
-
-//		if err := tx.Model(&domain.Tickets{}).Where("id = ?", id).UpdateColumn("selected_seat", selected_seat).Error; err != nil {
-//			return err
-//		}
-//		return nil
-//	}
 func (u *CollectionTickets) GetListTicketWithSatus(ctx context.Context, staus_sale int) ([]*domain.Tickets, error) { // ko dung
 	var ticket []*domain.Tickets
 	result := u.collection.Where("status = ?", staus_sale).Find(&ticket)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			// Tr? v? nil n?u kh�ng t?m th?y b?n ghi
 			return nil, nil
 		}
-		// X? l? l?i kh�c n?u c�
 		return nil, result.Error
 
 	}

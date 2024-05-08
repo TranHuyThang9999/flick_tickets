@@ -57,6 +57,7 @@ type Orders struct {
 	ID             int64   `json:"id"`
 	MovieName      string  `json:"movie_name"`
 	CinemaName     string  `json:"cinema_name"`
+	Email          string  `json:"email"`
 	ReleaseDate    int     `json:"release_date"`
 	Description    string  `json:"description"`
 	Status         int     `json:"status"`

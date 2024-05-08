@@ -112,3 +112,8 @@ func (c *CollectionShowTime) GetListShowTimeByListId(ctx context.Context, ids []
 	result := c.collection.Where("id in(?)", ids).Find(&listCinema)
 	return listCinema, result.Error
 }
+
+func (c *CollectionShowTime) DeleteShowTimesByTicketId(ctx context.Context, tx *gorm.DB, ticketId int64) error {
+	result := tx.Where("ticket_id = ?", ticketId).Delete(&domain.ShowTime{})
+	return result.Error
+}

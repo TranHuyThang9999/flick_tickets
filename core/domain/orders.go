@@ -51,4 +51,5 @@ type RepositoryOrder interface {
 	UpdateOrderWhenCancel(ctx context.Context, tx *gorm.DB, id int64, status int) error
 	GetAllOrder(ctx context.Context, req *OrdersReqByForm) ([]*Orders, error)
 	TriggerOrder(ctx context.Context) ([]*Orders, error)
+	GetTotalOrder(ctx context.Context, email string) (int64, error)
 }

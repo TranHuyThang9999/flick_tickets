@@ -93,3 +93,14 @@ func (c *CollectionOrder) TriggerOrder(ctx context.Context) ([]*domain.Orders, e
 
 	return orders, nil
 }
+func (c *CollectionOrder) GetTotalOrder(ctx context.Context, email string) (int64, error) {
+	if email == "" {
+		var count int64
+		result := c.collection.Model(&domain.Orders{}).Count(&count)
+		return count, result.Error
+	}
+
+	var count int64
+	result := c.collection.Model(&domain.Orders{}).Where("email = ?", email).Count(&count)
+	return count, result.Error
+}

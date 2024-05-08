@@ -31,7 +31,7 @@ type ShowTimeCheckList struct {
 type RepositoryShowTime interface {
 	AddShowTime(ctx context.Context, req *ShowTime) error
 	AddListShowTime(ctx context.Context, tx *gorm.DB, req []*ShowTime) error
-	DeleteShowTimeByTicketId(ctx context.Context, req *ShowTimeDelete) error
+	DeleteShowTimeByTicketId(ctx context.Context, req *ShowTimeDelete) error                   // ko dung
 	GetTimeUseCheckAddTicket(ctx context.Context, req *ShowTimeCheckList) ([]*ShowTime, error) //.ko dung
 
 	FindDuplicateShowTimes(ctx context.Context, movieTimes []int, cinemaName []string) ([]*ShowTime, error)
@@ -41,4 +41,5 @@ type RepositoryShowTime interface {
 	UpdateQuantitySeat(ctx context.Context, tx *gorm.DB, showTimeId int64, quantity int, selected_seat string) error
 	GetShowTimeByNameCinema(ctx context.Context, cinema_name string) ([]*ShowTime, error)
 	GetListShowTimeByListId(ctx context.Context, ids []int64) ([]*ShowTime, error)
+	DeleteShowTimesByTicketId(ctx context.Context, tx *gorm.DB, ticketId int64) error
 }
