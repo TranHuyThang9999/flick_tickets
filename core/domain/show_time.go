@@ -44,4 +44,5 @@ type RepositoryShowTime interface {
 	DeleteShowTimesByTicketId(ctx context.Context, tx *gorm.DB, ticketId int64) error
 	UpsertListShowTime(ctx context.Context, req []*ShowTime) error
 	DeleteShowTimeByid(ctx context.Context, show_time_id int64) error
+	GetShowTimeById(ctx context.Context, show_time_id int64) (*ShowTime, error)
 }

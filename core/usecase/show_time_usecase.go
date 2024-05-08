@@ -276,3 +276,42 @@ func (s *UseCaseShowTime) DeleteShowTimeById(ctx context.Context, show_time_id s
 		CreatedAt: utils.GenerateTimestamp(),
 	}, nil
 }
+func (s *UseCaseShowTime) GetShowTimeById(ctx context.Context, id string) (*entities.ShowTimeFindByIdResp, error) {
+
+	if id == "" {
+		return &entities.ShowTimeFindByIdResp{
+			Result: entities.Result{
+				Code:    enums.INVALID_REQUEST_CODE,
+				Message: enums.INVALID_REQUEST_MESS,
+			},
+		}, nil
+	}
+
+	showTime, err := s.st.GetShowTimeById(ctx, int64(mapper.ConvertStringToInt(id)))
+	if err != nil {
+		return &entities.ShowTimeFindByIdResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.ShowTimeFindByIdResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		ShowTime: entities.ShowTimeResp{
+			ID:             showTime.ID,
+			TicketID:       showTime.TicketID,
+			CinemaName:     showTime.CinemaName,
+			Price:          showTime.Price,
+			MovieTime:      showTime.MovieTime,
+			SelectedSeat:   showTime.SelectedSeat,
+			Quantity:       showTime.Quantity,
+			OriginalNumber: showTime.OriginalNumber,
+			CreatedAt:      showTime.CreatedAt,
+			UpdatedAt:      showTime.UpdatedAt,
+		},
+	}, nil
+}

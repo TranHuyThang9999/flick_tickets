@@ -60,3 +60,9 @@ func (c *ControllerShowTime) DeleteShowTimeById(ctx *gin.Context) {
 	resp, err := c.st.DeleteShowTimeById(ctx, id)
 	c.baseController.Response(ctx, resp, err)
 }
+func (c *ControllerShowTime) GetShowTimeById(ctx *gin.Context) {
+	id := ctx.Query("id")
+	resp, err := c.st.GetShowTimeById(ctx, id)
+	c.baseController.Response(ctx, resp, err)
+
+}

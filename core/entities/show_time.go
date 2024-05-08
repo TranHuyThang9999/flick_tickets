@@ -53,3 +53,21 @@ type ShowTimeDeleteByIdResp struct {
 	Result    Result `json:"result"`
 	CreatedAt int    `json:"created_at"`
 }
+
+type ShowTimeFindByIdResp struct {
+	Result   Result       `json:"result"`
+	ShowTime ShowTimeResp `json:"show_time"`
+}
+
+type ShowTimeResp struct {
+	ID             int64   `json:"id"`
+	TicketID       int64   `json:"ticket_id"`
+	CinemaName     string  `json:"cinema_name"`
+	Price          float64 `json:"price"`
+	MovieTime      int     `json:"movie_time"` //string
+	SelectedSeat   string  `json:"selected_seat"`
+	Quantity       int     `json:"quantity"`
+	OriginalNumber int     `json:"original_number"`
+	CreatedAt      int     `json:"created_at"`
+	UpdatedAt      int     `json:"updated_at"`
+}

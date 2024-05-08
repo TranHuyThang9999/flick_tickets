@@ -126,3 +126,11 @@ func (c *CollectionShowTime) DeleteShowTimeByid(ctx context.Context, show_time_i
 	result := c.collection.Where("id = ?", show_time_id).Delete(&domain.ShowTime{})
 	return result.Error
 }
+func (c *CollectionShowTime) GetShowTimeById(ctx context.Context, show_time_id int64) (*domain.ShowTime, error) {
+	var showTime *domain.ShowTime
+	result := c.collection.Where("id = ? ", show_time_id).First(&showTime)
+	if result.RowsAffected == 0 {
+		return nil, nil
+	}
+	return showTime, result.Error
+}
