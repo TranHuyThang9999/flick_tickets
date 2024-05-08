@@ -9,24 +9,20 @@ export default function AddShowTime({ ticketId }) {
   const [cinemaName, setCinemaName] = useState('');
   const [timestampsList, setTimestampsList] = useState([]);
   const [timestampListAdd, setTimestampListAdd] = useState([]);
-  const [selectedTags, setSelectedTags] = useState([]);
 
-  const handleTagChange = (value) => {
-    setSelectedTags(value);
-  };
-  const handleSubmit = () => {
-    if (selectedTags.length === 0) {
-      // Hiển thị thông báo lỗi khi không có mục nào được chọn
-      showWarning('Vui lòng chọn ít nhất một thẻ tag!');
-      return;
-    }
-    // Xử lý gửi biểu mẫu khi đã chọn ít nhất một thẻ tag
-    // ...
-  };
 
   const [form] = Form.useForm();
 
   const handleFormSubmit = async (values) => {
+    if (cinemaName.length === 0) {
+      showWarning('Vui lòng chọn phòng để chiếu phim!');
+      return;
+    }
+
+    if (timestampListAdd.length === 0) {
+      showWarning('Vui lòng chọn lịch chiếu phim!');
+      return;
+    }
     try {
 
       const formData = new FormData();
