@@ -1,7 +1,7 @@
 import { Button, Drawer, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { showError, showWarning } from '../log/log';
-import { EditFilled, UnorderedListOutlined } from '@ant-design/icons';
+import { EditFilled, UnorderedListOutlined ,RetweetOutlined} from '@ant-design/icons';
 import SelectedSeatForAdmin from '../../dashboard/SelectedSeatForAdmin';
 import DeleteShowTimeById from '../../dashboard/DeleteShowTimeById';
 
@@ -94,7 +94,7 @@ export default function DetailedShowSchedule({ id }) {// display for admin
     },
 
     {
-      title: 'Action',
+      title: <span><Button><RetweetOutlined /></Button> </span>, // Use RetweetOutlined icon as title
       render: (record) => (
         <div style={{ display: 'flex' }}>
           <Button type="primary" onClick={() => showDrawer(record)}>

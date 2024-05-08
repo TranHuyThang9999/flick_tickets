@@ -2,7 +2,7 @@ import axios from 'axios'
 import React from 'react'
 import { showError } from '../common/log/log';
 import { Button, Popconfirm } from 'antd';
-export default function DeleteTicketById({ onDelete, ticketId }) {
+export default function DeleteTicketById({ onDelete, ticketId }) {// ko dung
 
     const handleDeleteById = async () => {
         try {
