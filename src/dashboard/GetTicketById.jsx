@@ -63,7 +63,7 @@ export default function GetTicketById({ id }) {
                     <Table.Column title="Tên phim" dataIndex="name" key="name" />
                     <Table.Column title="Mô tả" dataIndex="description" key="description" />
                     <Table.Column title="Giảm giá" dataIndex="sale" key="sale" />
-                    <Table.Column title="Ngày phát hành" dataIndex="release_date" key="release_date" />
+                    <Table.Column title="Ngày phát hành" dataIndex="release_date" key="release_date" render={formatTimestamp}  />
                     <Table.Column title="Trạng thái" dataIndex="status" key="status" />
                     <Table.Column title="Ghế đã chọn" dataIndex="selected_seat" key="selected_seat" />
                     <Table.Column title="Thời lượng phim" dataIndex="movieDuration" key="movieDuration" />

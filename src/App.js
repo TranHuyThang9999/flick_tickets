@@ -19,7 +19,6 @@ import Cookies from "js-cookie"; // Import thư viện js-cookie
 import CinemasAdd from "./common/cinemas/CinemasAdd";
 import MovieAdd from "./common/MovieTypes/MovieUpload";
 import GetAllTicketsForAdmin from "./dashboard/GetAllTickets";
-import GetTicketByIdOnForm from './dashboard/GetTicketByIdOnForm';
 import TestGetAllSelect from "./common/test/test";
 import FormLogin from "./dashboard/FormLogin";
 import CheckLogin from "./Routers/CheckLogin";
@@ -33,6 +32,7 @@ import UpdateCartById from "./cart/UpdateCartById";
 import QRScanner from "./QRScanner/QRScanner";
 import PurchaseHistory from "./Home/Tickets/PurchaseHistory";
 import AddShowTime from "./dashboard/AddShowTime";
+import UpdateTicketById from "./dashboard/UpdateTicketById";
 
 export default function App() {
   return (
@@ -47,7 +47,8 @@ export default function App() {
       {/* <GetTicketById id={7133536}/> */}
       {/* <GetListFileByTicketId id={7133536}/> */}
       {/* <PageForUser/> */}
-      {/* <GetListTicket/> */}{/**/}
+      {/* <GetListTicket/> */}
+      {/**/}
       {/* <ListFileByTicketId id={1485296}/> */}
       {/* <AdminUploadTickets/> */}
       {/* <TestDetailedShowSchedule/> */}
@@ -75,11 +76,11 @@ export default function App() {
       {/* <PageForUser/> */}
       {/* <QRScanner/> */}
       {/* <FormLogin/> */}
-      {/* <HomeaAdmin/> */}
       {/* <GetOrderById/> */}
       {/* <PurchaseHistory email={'thuynguyen151387@gmail.com'}/> */}
       {/* <AddShowTime ticketId={3462449}/> */}
-      
+      {/* <UpdateTicketById ticketId={1357952}/> */}
+      <HomeaAdmin />
     </div>
   );
 }
