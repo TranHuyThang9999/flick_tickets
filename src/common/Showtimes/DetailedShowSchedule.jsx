@@ -46,8 +46,16 @@ export default function DetailedShowSchedule({ id }) {// display for admin
     }
   };
 
-  const handleDelete = (show_time_id) => {
-    showTimeTicket(prevShowTimes => prevShowTimes.filter(showTime => showTime.id !== show_time_id));
+  const handleDelete = async (show_time_id) => {
+    try {
+      await fetch(`http://localhost:8080/manager/user/delete/showtime?id=${show_time_id}`, {
+        method: 'DELETE',
+      });
+      fetchData(); // Reload data after deletion
+    } catch (error) {
+      console.error('Error deleting show time:', error);
+      showError("Lỗi xóa suất chiếu, vui lòng thử lại", error);
+    }
   };
 
   function formatTimestamp(timestamp) {
