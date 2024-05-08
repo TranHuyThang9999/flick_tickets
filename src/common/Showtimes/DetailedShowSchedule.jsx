@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { showError, showWarning } from '../log/log';
 import SelectedSeatForAdmin from '../../dashboard/SelectedSeatForAdmin';
 
-export default function DetailedShowSchedule({ id }) {
+export default function DetailedShowSchedule({ id }) {// display for admin
   const [showTimeTicket, setShowTimeTicket] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);

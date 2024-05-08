@@ -32,6 +32,7 @@ import GetListCart from "./cart/GetListCart";
 import UpdateCartById from "./cart/UpdateCartById";
 import QRScanner from "./QRScanner/QRScanner";
 import PurchaseHistory from "./Home/Tickets/PurchaseHistory";
+import AddShowTime from "./dashboard/AddShowTime";
 
 export default function App() {
   return (
@@ -74,9 +75,10 @@ export default function App() {
       {/* <PageForUser/> */}
       {/* <QRScanner/> */}
       {/* <FormLogin/> */}
-      <HomeaAdmin/>
+      {/* <HomeaAdmin/> */}
       {/* <GetOrderById/> */}
       {/* <PurchaseHistory email={'thuynguyen151387@gmail.com'}/> */}
+      <AddShowTime ticketId={3462449}/>
     </div>
   );
 }

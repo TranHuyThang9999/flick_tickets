@@ -1,5 +1,6 @@
-import { Space, Table } from 'antd';
+import { Button, Space, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { PlusCircleFilled } from '@ant-design/icons';
 import DetailedShowSchedule from '../common/Showtimes/DetailedShowSchedule';
 import GetListFileByTicketId from './GetListFileByTicketId';
 
@@ -37,13 +38,15 @@ export default function GetTicketById({ id }) {
         const minutes = String(date.getMinutes()).padStart(2, '0');
       
         return `${year}-${month}-${day} ${hours}:${minutes}`;
-      }
+    }
+    
     return (
         <div>
-
+            <Button>Thêm xuất chiếu <PlusCircleFilled /></Button>
+        
             {ticket && (
                 <Table scroll={{ x: 190 }} dataSource={[ticket]} pagination={false}>
-                    <Table.Column title="Tên" dataIndex="name" key="name" />
+                    <Table.Column title="Tên phim" dataIndex="name" key="name" />
                     <Table.Column title="Mô tả" dataIndex="description" key="description" />
                     <Table.Column title="Giảm giá" dataIndex="sale" key="sale" />
                     <Table.Column title="Ngày phát hành" dataIndex="release_date" key="release_date" />
@@ -57,8 +60,7 @@ export default function GetTicketById({ id }) {
                     <Table.Column title="Ngày tạo" dataIndex="created_at" key="created_at" render={formatTimestamp} />
 
                 </Table>
-
-            )
+                )
             }
             <DetailedShowSchedule
                 id={ticket.id}
@@ -72,7 +74,6 @@ export default function GetTicketById({ id }) {
                     {/* <UpdateSizeRoom ticket_id={ticket.id} /> */}
                 </Space>
 
-                <p>Chi tiết mô tả phòng</p>
             </Space>
 
         </div>

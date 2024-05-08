@@ -48,7 +48,6 @@ export default function AdminUploadTickets() {
     }));
 
 
-    console.log("movie type", movieTypes);
 
     const handleFormSubmit = async (values) => {
         try {
