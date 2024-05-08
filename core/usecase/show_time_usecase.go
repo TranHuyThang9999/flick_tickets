@@ -255,3 +255,24 @@ func (s *UseCaseShowTime) DetailShowTime(ctx context.Context, id string) (*entit
 		ShowTime: showTime,
 	}, nil
 }
+func (s *UseCaseShowTime) DeleteShowTimeById(ctx context.Context, show_time_id string) (*entities.ShowTimeDeleteByIdResp, error) {
+
+	show_time_id_number := mapper.ConvertStringToInt(show_time_id)
+
+	err := s.st.DeleteShowTimeByid(ctx, int64(show_time_id_number))
+	if err != nil {
+		return &entities.ShowTimeDeleteByIdResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.ShowTimeDeleteByIdResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		CreatedAt: utils.GenerateTimestamp(),
+	}, nil
+}

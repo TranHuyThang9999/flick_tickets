@@ -122,3 +122,7 @@ func (c *CollectionShowTime) UpsertListShowTime(ctx context.Context, req []*doma
 	result := c.collection.Create(req)
 	return result.Error
 }
+func (c *CollectionShowTime) DeleteShowTimeByid(ctx context.Context, show_time_id int64) error {
+	result := c.collection.Where("id = ?", show_time_id).Delete(&domain.ShowTime{})
+	return result.Error
+}

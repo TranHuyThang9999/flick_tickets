@@ -49,3 +49,7 @@ type ShowTimeDetail struct {
 	Result   Result           `json:"result"`
 	ShowTime *domain.ShowTime `json:"show_time,omitempty"`
 }
+type ShowTimeDeleteByIdResp struct {
+	Result    Result `json:"result"`
+	CreatedAt int    `json:"created_at"`
+}

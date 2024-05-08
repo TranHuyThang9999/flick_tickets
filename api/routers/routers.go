@@ -98,6 +98,7 @@ func NewApiRouter(
 	r.DELETE("/use/delete/time", showTime.DeleteShowTime)
 	r.GET("/user/getlist/time", showTime.GetShowTimeByTicketId)
 	r.GET("/customer/detail/showtime", showTime.DetailShowTime)
+	r.DELETE("use/delete/byid", showTime.DeleteShowTimeById)
 	//r.Use(middlewares.Authenticate())
 
 	//address public
