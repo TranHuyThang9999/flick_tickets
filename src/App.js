@@ -31,7 +31,7 @@ import PageForUser from "./Home/Page/PageForUser";
 import GetListCart from "./cart/GetListCart";
 import UpdateCartById from "./cart/UpdateCartById";
 import QRScanner from "./QRScanner/QRScanner";
-import GetOrderById from "./Orders/GetOrderById";
+import PurchaseHistory from "./Home/Tickets/PurchaseHistory";
 
 export default function App() {
   return (
@@ -74,8 +74,9 @@ export default function App() {
       {/* <PageForUser/> */}
       {/* <QRScanner/> */}
       {/* <FormLogin/> */}
-      {/* <HomeaAdmin/> */}
-      <GetOrderById/>
+      <HomeaAdmin/>
+      {/* <GetOrderById/> */}
+      {/* <PurchaseHistory email={'thuynguyen151387@gmail.com'}/> */}
     </div>
   );
 }

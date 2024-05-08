@@ -8,6 +8,7 @@ import HomeAdmin from '../dashboard/HomeaAdmin';
 import PageForUser from '../Home/Page/PageForUser';
 
 export default function FormLogin() {
+    
     const [form] = Form.useForm();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoginRole3, setIsLoginRole3] = useState(false);
@@ -42,67 +43,8 @@ export default function FormLogin() {
     };
 
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            checkToken(token);
-        } else {
-            setLoading(false);
-        }
-    }, []);
-    const handleNextHome = ()=>{
-        setNextFromHome(true);
-    }
-    const checkToken = async (token) => {
-        try {
-            const response = await axios.get(`http://localhost:8080/manager/customer/${token}`);
-            if (response.data.Errors === 4) {
-                setLoading(false);
-            } else {
-                localStorage.setItem('user', JSON.stringify(response.data));
-                if (response.data.role === 3) {
-                    setIsLoggedIn(true);
-                    setIsLoginRole3(false);
-                    return;
-                } else if (response.data.role === 13) {
-                    setIsLoggedIn(true);
-                    setIsLoginRole3(true);
-                    return;
-                } else {
-                    setIsLoggedIn(false);
-                    setIsLoginRole3(false);
-                }
-                setLoading(false);
-            }
-        } catch (error) {
-            console.error(error);
-            setLoading(false);
-        }
-    }
-
-    // Nếu đăng nhập thành công và là role 3, chuyển sang component GetListTicket
-    if (isLoggedIn && isLoginRole3) {
-        window.location.reload(); // Reload the page
-        return <HomeAdmin />;
-
-    }
-
-    // Nếu đăng nhập thành công và không phải role 3, chuyển sang component HomeAdmin
-    if (isLoggedIn) {
-        window.location.reload(); // Reload the page
-        return <PageForUser />;
-    }
-
-    // Nếu đang loading, hiển thị thông báo loading
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-    if(nextFromHome){
-        return(
-            <PageForUser/>
-        )
-    }
-    // Nếu không đăng nhập, hiển thị form đăng nhập
+   
+   
     return (
         <div className="container-login-user">
             <div className='form-login'>
@@ -152,7 +94,7 @@ export default function FormLogin() {
                             </a>
                         </div>
                         <div className="login-form-forgot" href="/">
-                            <a onClick={handleNextHome}>
+                            <a>
                             Quay lại trang chủ
                             </a>
                         </div>

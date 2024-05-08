@@ -4,7 +4,8 @@ import { Avatar, Button, Col, Drawer, Menu, Row } from 'antd';
 import {
   BellFilled, ShoppingCartOutlined, TwitterCircleFilled,
   InteractionFilled, WeiboCircleOutlined,
-  AppstoreOutlined, HomeFilled, RightOutlined, WeiboSquareFilled
+  AppstoreOutlined, HomeFilled, RightOutlined, WeiboSquareFilled,
+  MailFilled
 } from '@ant-design/icons';
 import axios from 'axios';
 import FormLogin from '../../dashboard/FormLogin';
@@ -13,6 +14,7 @@ import Profile from '../../common/customers/Profile';
 import GetTicketOncarousel from '../../common/ViewTicketsForSell/GetTicketOncarousel';
 import GetListCart from '../../cart/GetListCart';
 import QRScanner from '../../QRScanner/QRScanner';
+import PurchaseHistory from '../Tickets/PurchaseHistory';
 
 export default function PageForUser() {
 
@@ -26,6 +28,7 @@ export default function PageForUser() {
   const [movieTheaterName, setMovieTheaterName] = useState('');
   const [openCart, setOpencart] = useState(false);
   const [openCheck, setOpenCheck] = useState(false);
+  const [openHistoryOrder,setOpenHistoryOrder] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,6 +101,12 @@ export default function PageForUser() {
   };
   const onCloseCCheck = () => {
     setOpenCheck(false);
+  };
+  const showDrawerHistoryOrder = () => {
+    setOpenHistoryOrder(true);
+  };
+  const onCloseCHistoryOrder= () => {
+    setOpenHistoryOrder(false);
   };
   const listRoomCinema = CinemasGetAll();
 
@@ -212,8 +221,8 @@ export default function PageForUser() {
           <div>
             <Button onClick={showDrawer}> Giỏ hàng <ShoppingCartOutlined /> </Button>
             <Drawer
-              title="Create a new account"
-              width={720}
+              title="Thông tin giỏ hàng"
+              width={1200}
               onClose={onClose}
               open={openCart}
               styles={{
@@ -225,7 +234,22 @@ export default function PageForUser() {
               <GetListCart />
             </Drawer>
           </div>
-
+            <div>
+              <Button onClick={showDrawerHistoryOrder}>Lịch sử  mua hàng <MailFilled /></Button>
+              <Drawer
+              title="Lịch  sử mua hàng"
+              width={1200}
+              onClose={onCloseCHistoryOrder}
+              open={openHistoryOrder}
+              styles={{
+                body: {
+                  paddingBottom: 80,
+                },
+              }}
+            >
+              <PurchaseHistory/>
+            </Drawer>
+            </div>
           <div>
             <Button>Cộng đồng <TwitterCircleFilled /></Button>
           </div>

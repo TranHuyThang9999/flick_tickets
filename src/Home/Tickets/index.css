@@ -136,3 +136,6 @@ body {
     rgba(0, 122, 166) 100%
   );
 }
+:where(.css-dev-only-do-not-override-11xg00t).ant-drawer .ant-drawer-body{
+  width: 1200px;
+}

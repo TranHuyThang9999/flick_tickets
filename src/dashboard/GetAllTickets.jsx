@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import GetTicketById from './GetTicketById';
 import './index.css';
+import DeleteTicketById from './DeleteTicketById';
 
 export default function GetAllTicketsForAdmin() {
     const [tickets, setTickets] = useState([]);
@@ -22,6 +23,11 @@ export default function GetAllTicketsForAdmin() {
             });
     }, []);
 
+    const handleDeleteTicketById = (ticketId) => {
+        setTickets(prevCarts => prevCarts.filter(ticket => ticket.id !== ticketId));
+    };
+
+
     console.log(tickets);
 
 
@@ -40,11 +46,7 @@ export default function GetAllTicketsForAdmin() {
         // Add your logic for editing a ticket here
     };
 
-    const handleDelete = (id) => {
-        console.log(`Delete ticket with id: ${id}`);
-        // Add your logic for deleting a ticket here
-    };
-
+   
     return (
         <>
             <Table dataSource={tickets} rowKey="id">
@@ -77,13 +79,10 @@ export default function GetAllTicketsForAdmin() {
                                 Chỉnh sửa thông tin
                             </Button>
                             
-                            <Button style={{width:'160px'}} onClick={() => handleDelete(record.id)}>
-                                Xóa vé
-                            </Button>
+                          <DeleteTicketById ticketId={record.id} onDelete={()=>handleDeleteTicketById(record.id)}/>
                         </>
                     )}
                 />
-
 
             </Table>
 
