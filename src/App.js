@@ -78,7 +78,8 @@ export default function App() {
       {/* <HomeaAdmin/> */}
       {/* <GetOrderById/> */}
       {/* <PurchaseHistory email={'thuynguyen151387@gmail.com'}/> */}
-      <AddShowTime ticketId={3462449}/>
+      {/* <AddShowTime ticketId={3462449}/> */}
+      
     </div>
   );
 }

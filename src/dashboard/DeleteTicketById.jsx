@@ -2,7 +2,6 @@ import axios from 'axios'
 import React from 'react'
 import { showError } from '../common/log/log';
 import { Button, Popconfirm } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
 export default function DeleteTicketById({ onDelete, ticketId }) {
 
     const handleDeleteById = async () => {

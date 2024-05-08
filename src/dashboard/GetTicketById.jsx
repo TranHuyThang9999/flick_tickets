@@ -1,14 +1,19 @@
-import { Button, Space, Table } from 'antd';
+import { Button, Modal, Space, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { PlusCircleFilled } from '@ant-design/icons';
 import DetailedShowSchedule from '../common/Showtimes/DetailedShowSchedule';
 import GetListFileByTicketId from './GetListFileByTicketId';
+import AddShowTime from './AddShowTime';
 
 
 export default function GetTicketById({ id }) {
 
     const [ticket, setTicket] = useState([]);
+    const [showAddShowTimeModal, setShowAddShowTimeModal] = useState(false);
 
+    const toggleAddShowTimeModal = () => {
+        setShowAddShowTimeModal(!showAddShowTimeModal);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -30,20 +35,29 @@ export default function GetTicketById({ id }) {
     }
     function formatTimestamp(timestamp) {
         const date = new Date(timestamp * 1000); // Nhân 1000 để chuyển đổi từ milliseconds sang seconds
-      
+
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
-      
+
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
-    
+
     return (
         <div>
-            <Button>Thêm xuất chiếu <PlusCircleFilled /></Button>
-        
+            <Button onClick={toggleAddShowTimeModal}>
+                Thêm xuất chiếu <PlusCircleFilled />
+            </Button>
+            <Modal
+                width={800}
+                visible={showAddShowTimeModal}
+                onCancel={toggleAddShowTimeModal}
+                footer={null}
+            >
+                <AddShowTime ticketId={ticket.id} />
+            </Modal>
             {ticket && (
                 <Table scroll={{ x: 190 }} dataSource={[ticket]} pagination={false}>
                     <Table.Column title="Tên phim" dataIndex="name" key="name" />
@@ -60,11 +74,11 @@ export default function GetTicketById({ id }) {
                     <Table.Column title="Ngày tạo" dataIndex="created_at" key="created_at" render={formatTimestamp} />
 
                 </Table>
-                )
+            )
             }
             <DetailedShowSchedule
                 id={ticket.id}
-             />{/*ci tiet phong*/}
+            />{/*ci tiet phong*/}
 
             <GetListFileByTicketId id={ticket.id} />
 
