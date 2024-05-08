@@ -435,6 +435,7 @@ func (c *UseCaseTicker) UpdateTicketById(ctx context.Context, req *entities.Tick
 		MovieType:     req.MovieType,
 		UpdatedAt:     utils.GenerateTimestamp(),
 	})
+	log.Infof("req : ", req)
 	if err != nil {
 		return &entities.TicketRespUpdateById{
 			Result: entities.Result{
