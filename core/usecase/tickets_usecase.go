@@ -105,19 +105,6 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 	}
 
 	listCinemasName := mapper.ConvertListToStringSlice(req.CinemaName)
-	log.Infof("list time : ", listCinemasName)
-
-	// listCinema, err := c.cinema.GetAllCinemaByName(ctx, req.Name)
-	// if err != nil {
-	// 	tx.Rollback()
-	// 	return &entities.TicketRespUpload{
-	// 		Result: entities.Result{
-	// 			Code:    enums.DB_ERR_CODE,
-	// 			Message: enums.DB_ERR_MESS,
-	// 		},
-	// 	}, nil
-	// }
-	//
 
 	checkTime, err := c.showTime.FindDuplicateShowTimes(ctx, listShowTimeInt, listCinemasName)
 	if err != nil {
@@ -140,17 +127,6 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 	///add show time
 	var reqListShowTime = make([]*domain.ShowTime, 0)
 
-	// for i := 0; i < len(listShowTimeInt); i++ {
-	// 	reqListShowTime = append(reqListShowTime, &domain.ShowTime{
-	// 		ID:         utils.GenerateUniqueKey(),
-	// 		TicketID:   idTicket,
-	// 		CinemaName: req.CinemaName,
-	// 		MovieTime:  listShowTimeInt[i],
-	// 		CreatedAt:  utils.GenerateTimestamp(),
-	// 		UpdatedAt:  utils.GenerateTimestamp(),
-	// 	})
-	// }
-
 	for i := 0; i < len(listCinemasName); i++ {
 		for j := 0; j < len(listShowTimeInt); j++ {
 			reqListShowTime = append(reqListShowTime, &domain.ShowTime{
@@ -168,8 +144,6 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 		}
 	}
 
-	// if len(reqListShowTime)==0 break;
-
 	err = c.showTime.AddListShowTime(ctx, tx, reqListShowTime)
 	if err != nil {
 		tx.Rollback()
@@ -177,19 +151,6 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 			Result: entities.Result{
 				Code:    enums.DB_ERR_CODE,
 				Message: enums.DB_ERR_MESS,
-			},
-		}, nil
-	}
-
-	//set cache
-	err = c.menory.SetObjectById(ctx, strconv.FormatInt(idTicket, 10), ticketAdd)
-	if err != nil {
-		log.Infof("error cache", err)
-		tx.Rollback()
-		return &entities.TicketRespUpload{
-			Result: entities.Result{
-				Code:    enums.CACHE_ERR_CODE,
-				Message: enums.CACHE_ERR_MESS,
 			},
 		}, nil
 	}

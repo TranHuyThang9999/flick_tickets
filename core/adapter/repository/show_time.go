@@ -13,6 +13,7 @@ type CollectionShowTime struct {
 	collection *gorm.DB
 }
 
+// UpsertListShowTime implements domain.RepositoryShowTime.
 func NewCollectionShowTime(cf *configs.Configs, sh *adapter.PostGresql) domain.RepositoryShowTime {
 	return &CollectionShowTime{
 		collection: sh.CreateCollection(),
@@ -115,5 +116,9 @@ func (c *CollectionShowTime) GetListShowTimeByListId(ctx context.Context, ids []
 
 func (c *CollectionShowTime) DeleteShowTimesByTicketId(ctx context.Context, tx *gorm.DB, ticketId int64) error {
 	result := tx.Where("ticket_id = ?", ticketId).Delete(&domain.ShowTime{})
+	return result.Error
+}
+func (c *CollectionShowTime) UpsertListShowTime(ctx context.Context, req []*domain.ShowTime) error {
+	result := c.collection.Create(req)
 	return result.Error
 }

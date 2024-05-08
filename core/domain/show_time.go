@@ -42,4 +42,5 @@ type RepositoryShowTime interface {
 	GetShowTimeByNameCinema(ctx context.Context, cinema_name string) ([]*ShowTime, error)
 	GetListShowTimeByListId(ctx context.Context, ids []int64) ([]*ShowTime, error)
 	DeleteShowTimesByTicketId(ctx context.Context, tx *gorm.DB, ticketId int64) error
+	UpsertListShowTime(ctx context.Context, req []*ShowTime) error
 }

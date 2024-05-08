@@ -5,7 +5,7 @@ import "flick_tickets/core/domain"
 type ShowTimeAddReq struct {
 	TicketID     int64   `form:"ticket_id"`
 	CinemaName   string  `form:"cinema_name"`
-	MovieTime    int     `form:"movie_time"`
+	MovieTime    string  `form:"movie_time"`
 	SelectedSeat string  `form:"selected_seat"`
 	Quantity     int     `form:"quantity"`
 	Price        float64 `form:"price"`

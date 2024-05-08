@@ -27,20 +27,20 @@ func NewUseCaseShowTime(
 }
 func (s *UseCaseShowTime) AddShowTime(ctx context.Context, req *entities.ShowTimeAddReq) (*entities.ShowTimeAddResponse, error) {
 
-	resp, err := s.st.GetTimeUseCheckAddTicket(ctx, &domain.ShowTimeCheckList{
-		//	TicketID:   req.TicketID,
-		CinemaName: req.CinemaName,
-		MovieTime:  req.MovieTime,
-	})
+	// check show time
+	listShowTimeInt, err := mapper.ParseToIntSlice(req.MovieTime)
 	if err != nil {
 		return &entities.ShowTimeAddResponse{
 			Result: entities.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
+				Code:    enums.CONVERT_STRING_TO_ARRAY_CODE,
+				Message: enums.CONVERT_STRING_TO_ARRAY_MESS,
 			},
 		}, nil
 	}
-	if len(resp) > 1 {
+
+	// check show
+	statusCheckList := mapper.HasDuplicate(listShowTimeInt)
+	if statusCheckList {
 		return &entities.ShowTimeAddResponse{
 			Result: entities.Result{
 				Code:    enums.SHOW_TIME_CODE,
@@ -48,19 +48,10 @@ func (s *UseCaseShowTime) AddShowTime(ctx context.Context, req *entities.ShowTim
 			},
 		}, nil
 	}
-	err = s.st.AddShowTime(ctx, &domain.ShowTime{
-		ID:             utils.GenerateUniqueKey(),
-		TicketID:       req.TicketID,
-		CinemaName:     req.CinemaName,
-		MovieTime:      req.MovieTime,
-		SelectedSeat:   req.SelectedSeat,
-		OriginalNumber: req.Quantity,
-		Quantity:       req.Quantity,
-		Price:          req.Price,
-		CreatedAt:      utils.GenerateTimestamp(),
-		UpdatedAt:      utils.GenerateTimestamp(),
-	})
 
+	listCinemasName := mapper.ConvertListToStringSlice(req.CinemaName)
+
+	checkTime, err := s.st.FindDuplicateShowTimes(ctx, listShowTimeInt, listCinemasName)
 	if err != nil {
 		return &entities.ShowTimeAddResponse{
 			Result: entities.Result{
@@ -69,10 +60,50 @@ func (s *UseCaseShowTime) AddShowTime(ctx context.Context, req *entities.ShowTim
 			},
 		}, nil
 	}
+	log.Infof("req : ", req)
+	log.Infof("data : ", len(checkTime))
+	if len(checkTime) > 0 {
+		return &entities.ShowTimeAddResponse{
+			Result: entities.Result{
+				Code:    enums.SHOW_TIME_CODE,
+				Message: enums.SHOW_TIME_MESS,
+			},
+		}, nil
+	}
+	// /add show time
+	var reqListShowTime = make([]*domain.ShowTime, 0)
+
+	for i := 0; i < len(listCinemasName); i++ {
+		for j := 0; j < len(listShowTimeInt); j++ {
+			reqListShowTime = append(reqListShowTime, &domain.ShowTime{
+				ID:             utils.GenerateUniqueKey(),
+				TicketID:       req.TicketID,
+				SelectedSeat:   "",
+				Quantity:       req.Quantity,
+				OriginalNumber: req.Quantity,
+				CinemaName:     listCinemasName[i],
+				MovieTime:      listShowTimeInt[j],
+				Price:          req.Price,
+				CreatedAt:      utils.GenerateTimestamp(),
+				UpdatedAt:      utils.GenerateTimestamp(),
+			})
+		}
+	}
+	log.Infof("list insert : ", reqListShowTime)
+	err = s.st.UpsertListShowTime(ctx, reqListShowTime)
+	if err != nil {
+		return &entities.ShowTimeAddResponse{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+
 	return &entities.ShowTimeAddResponse{
 		Result: entities.Result{
-			Code:    enums.DB_ERR_CODE,
-			Message: enums.DB_ERR_MESS,
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
 		},
 	}, nil
 }
@@ -113,7 +144,6 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			},
 		}, err
 	}
-	log.Infof("data : ", len(listShowTime))
 	// Kiểm tra xem danh sách thời gian chiếu có rỗng không
 	if len(listShowTime) == 0 {
 		return &entities.ShowTimeByTicketIdresp{
@@ -134,7 +164,6 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			},
 		}, err
 	}
-	log.Infof("cinema ", listCinema)
 	// Kiểm tra xem danh sách rạp chiếu có rỗng không
 	if len(listCinema) == 0 {
 		return &entities.ShowTimeByTicketIdresp{
@@ -154,9 +183,7 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 	// Tạo danh sách chi tiết thời gian chiếu
 	var listRespDetail []*entities.ShowTime
 	for _, showTime := range listShowTime {
-		log.Infof("daTa : ", showTime.CinemaName)
 		cinema := mapCinemaByName[showTime.CinemaName]
-		log.Infof("data  c", cinema)
 		if cinema == nil {
 			// Nếu không tìm thấy thông tin về rạp chiếu, gán các trường thông tin về rạp chiếu bằng chuỗi rỗng
 			cinema = &domain.Cinemas{
