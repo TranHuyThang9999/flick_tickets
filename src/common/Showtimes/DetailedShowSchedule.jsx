@@ -1,7 +1,9 @@
 import { Button, Drawer, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { showError, showWarning } from '../log/log';
+import { EditFilled, UnorderedListOutlined } from '@ant-design/icons';
 import SelectedSeatForAdmin from '../../dashboard/SelectedSeatForAdmin';
+import DeleteShowTimeById from '../../dashboard/DeleteShowTimeById';
 
 export default function DetailedShowSchedule({ id }) {// display for admin
   const [showTimeTicket, setShowTimeTicket] = useState([]);
@@ -44,6 +46,10 @@ export default function DetailedShowSchedule({ id }) {// display for admin
     }
   };
 
+  const handleDelete = (show_time_id) => {
+    showTimeTicket(prevShowTimes => prevShowTimes.filter(showTime => showTime.id !== show_time_id));
+  };
+
   function formatTimestamp(timestamp) {
     const date = new Date(timestamp * 1000);
 
@@ -78,16 +84,16 @@ export default function DetailedShowSchedule({ id }) {// display for admin
       dataIndex: 'description',
       key: 'description',
     },
-   
+
     {
       title: 'Action',
       render: (record) => (
-        <div>
+        <div style={{ display: 'flex' }}>
           <Button type="primary" onClick={() => showDrawer(record)}>
-            Xem chi tiết phòng
+            <UnorderedListOutlined />
           </Button>
-          <Button>Xóa</Button>
-          <Button>Sửa</Button>
+          <DeleteShowTimeById onDelete={() => handleDelete(record.id)} showTimeId={record.id} />
+          <Button><EditFilled /></Button>
           <Drawer
             title="Phòng"
             width={1000}
@@ -116,21 +122,21 @@ export default function DetailedShowSchedule({ id }) {// display for admin
   ];
   const handleRowClick = (record) => {
     if (selectedRow === record.key) {
-        setSelectedRow(null);
+      setSelectedRow(null);
     } else {
-        setSelectedRow(record.key);
+      setSelectedRow(record.key);
     }
-};
+  };
   return (
     <div>
-     <Table
+      <Table
         scroll={{ x: 90 }}
         dataSource={showTimeTicket}
         columns={columns}
         expandable={{
           expandedRowRender: (record) => (
             <p style={{ margin: 0, color: 'dodgerblue', paddingLeft: '10px' }}>
-              |{record.price} VND | {record.description} | {record.conscious} | 
+              |{record.price} VND | {record.description} | {record.conscious} |
               {record.district} | {record.commune} | {record.address_details} |Số lượng ghế: {record.original_number}
             </p>
           ),
