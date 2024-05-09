@@ -57,6 +57,9 @@ export default function DetailedShowSchedule({ id }) {// display for admin
       showError("Lỗi xóa suất chiếu, vui lòng thử lại", error);
     }
   };
+  const handleReload = () => {
+    fetchData(); // Reload data when reload button is clicked
+  };
 
   function formatTimestamp(timestamp) {
     const date = new Date(timestamp * 1000);
@@ -92,9 +95,8 @@ export default function DetailedShowSchedule({ id }) {// display for admin
       dataIndex: 'description',
       key: 'description',
     },
-
     {
-      title: <span><Button><RetweetOutlined /></Button> </span>, // Use RetweetOutlined icon as title
+      title: <span><Button onClick={handleReload}><RetweetOutlined /></Button> </span>, // Use RetweetOutlined icon as title
       render: (record) => (
         <div style={{ display: 'flex' }}>
           <Button type="primary" onClick={() => showDrawer(record)}>

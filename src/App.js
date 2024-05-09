@@ -33,6 +33,7 @@ import QRScanner from "./QRScanner/QRScanner";
 import PurchaseHistory from "./Home/Tickets/PurchaseHistory";
 import AddShowTime from "./dashboard/AddShowTime";
 import UpdateTicketById from "./dashboard/UpdateTicketById";
+import UpdateShowTimeById from "./dashboard/UpdateShowTimeById";
 
 export default function App() {
   return (
@@ -80,7 +81,8 @@ export default function App() {
       {/* <PurchaseHistory email={'thuynguyen151387@gmail.com'}/> */}
       {/* <AddShowTime ticketId={3462449}/> */}
       {/* <UpdateTicketById ticketId={1357952}/> */}
-      <HomeaAdmin />
+      {/* <HomeaAdmin /> */}
+      <UpdateShowTimeById show_time_id={6593258}/>
     </div>
   );
 }

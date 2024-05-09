@@ -74,7 +74,6 @@ export default function AddShowTime({ ticketId }) {
       label: cinemas[index].cinema_name,
       value: cinemas[index].cinema_name,
     })
-
   }
 
   const layout = {
