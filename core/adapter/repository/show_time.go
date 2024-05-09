@@ -134,3 +134,25 @@ func (c *CollectionShowTime) GetShowTimeById(ctx context.Context, show_time_id i
 	}
 	return showTime, result.Error
 }
+func (c *CollectionShowTime) UpdateShowTimeById(ctx context.Context, req *domain.ShowTimeUpdateReq) error {
+	result := c.collection.Model(&domain.ShowTime{}).Where("id  =?", req.ID).Updates(&req)
+	return result.Error
+}
+
+// FindDuplicateShowTime tìm các lịch chiếu trùng lặp dựa trên thời gian phim và tên rạp.
+func (c *CollectionShowTime) FindDuplicateShowTimeUseUpdate(ctx context.Context, movieTime int, cinemaName string) ([]*domain.ShowTime, error) {
+	var result []*domain.ShowTime
+
+	err := c.collection.Table("show_times").
+		Select("movie_time, cinema_name, COUNT(*) AS record_count").
+		Where("cinema_name = ?", cinemaName).
+		Where("movie_time = ?", movieTime).
+		Group("movie_time, cinema_name").
+		Find(&result).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

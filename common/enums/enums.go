@@ -67,7 +67,7 @@ const (
 	CACHE_ERR_MESS = "error set cache"
 
 	SHOW_TIME_CODE = 26
-	SHOW_TIME_MESS = "error show existing"
+	SHOW_TIME_MESS = "error show time existing"
 
 	CLIENT_ERROR_CODE = 28
 	CLIENT_ERROR_MESS = "error client"
@@ -94,7 +94,7 @@ const (
 	TICKET_OPEN_SALE_MESS = "ticket open sale"
 
 	SHOW_TIME_ORDER_CODE = 44
-	SHOW_TIME_ORDER_MESS = ""
+	SHOW_TIME_ORDER_MESS = "Ghế này đã được người mua trước vui lòng chọn lại"
 )
 const (
 	ROLE_ADMIN     = 1

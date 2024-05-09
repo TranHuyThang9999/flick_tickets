@@ -100,6 +100,7 @@ func NewApiRouter(
 	r.GET("/customer/detail/showtime", showTime.DetailShowTime)
 	r.DELETE("use/delete/byid", showTime.DeleteShowTimeById)
 	r.GET("/use/showtime", showTime.GetShowTimeById)
+	r.PUT("/user/showtime/update", showTime.UpdateShowTimeById)
 	//r.Use(middlewares.Authenticate())
 
 	//address public

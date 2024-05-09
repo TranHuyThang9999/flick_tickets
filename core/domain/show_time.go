@@ -28,12 +28,21 @@ type ShowTimeCheckList struct {
 	CinemaName string `form:"cinema_name"`
 	MovieTime  int    `form:"movie_time"`
 }
+type ShowTimeUpdateReq struct {
+	ID             int64   `json:"id"`
+	TicketID       int64   `json:"ticket_id"`
+	CinemaName     string  `json:"cinema_name"`
+	MovieTime      int     `json:"movie_time"` //string
+	Quantity       int     `json:"quantity"`
+	OriginalNumber int     `json:"original_number"`
+	Price          float64 `json:"price"`
+	UpdatedAt      int     `json:"updated_at"`
+}
 type RepositoryShowTime interface {
 	AddShowTime(ctx context.Context, req *ShowTime) error
 	AddListShowTime(ctx context.Context, tx *gorm.DB, req []*ShowTime) error
 	DeleteShowTimeByTicketId(ctx context.Context, req *ShowTimeDelete) error                   // ko dung
 	GetTimeUseCheckAddTicket(ctx context.Context, req *ShowTimeCheckList) ([]*ShowTime, error) //.ko dung
-
 	FindDuplicateShowTimes(ctx context.Context, movieTimes []int, cinemaName []string) ([]*ShowTime, error)
 	GetShowTimeByTicketId(ctx context.Context, ticketId int64) ([]*ShowTime, error)
 	GetAll(ctx context.Context) ([]*ShowTime, error)
@@ -45,4 +54,6 @@ type RepositoryShowTime interface {
 	UpsertListShowTime(ctx context.Context, req []*ShowTime) error
 	DeleteShowTimeByid(ctx context.Context, show_time_id int64) error
 	GetShowTimeById(ctx context.Context, show_time_id int64) (*ShowTime, error)
+	UpdateShowTimeById(ctx context.Context, req *ShowTimeUpdateReq) error
+	FindDuplicateShowTimeUseUpdate(ctx context.Context, movieTime int, cinemaName string) ([]*ShowTime, error)
 }

@@ -60,8 +60,7 @@ func (s *UseCaseShowTime) AddShowTime(ctx context.Context, req *entities.ShowTim
 			},
 		}, nil
 	}
-	log.Infof("req : ", req)
-	log.Infof("data : ", len(checkTime))
+
 	if len(checkTime) > 0 {
 		return &entities.ShowTimeAddResponse{
 			Result: entities.Result{
@@ -89,7 +88,6 @@ func (s *UseCaseShowTime) AddShowTime(ctx context.Context, req *entities.ShowTim
 			})
 		}
 	}
-	log.Infof("list insert : ", reqListShowTime)
 	err = s.st.UpsertListShowTime(ctx, reqListShowTime)
 	if err != nil {
 		return &entities.ShowTimeAddResponse{
@@ -312,6 +310,50 @@ func (s *UseCaseShowTime) GetShowTimeById(ctx context.Context, id string) (*enti
 			OriginalNumber: showTime.OriginalNumber,
 			CreatedAt:      showTime.CreatedAt,
 			UpdatedAt:      showTime.UpdatedAt,
+		},
+	}, nil
+}
+func (s *UseCaseShowTime) UpdateShowTimeById(ctx context.Context, req *entities.ShowTimeUpdateByIdReq) (*entities.ShowTimeUpdateByIdResp, error) {
+
+	listShowTime, err := s.st.FindDuplicateShowTimeUseUpdate(ctx, req.MovieTime, req.CinemaName)
+	if err != nil {
+		return &entities.ShowTimeUpdateByIdResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(listShowTime) > 0 {
+		return &entities.ShowTimeUpdateByIdResp{
+			Result: entities.Result{
+				Code:    enums.SHOW_TIME_CODE,
+				Message: enums.SHOW_TIME_MESS,
+			},
+		}, nil
+	}
+	err = s.st.UpdateShowTimeById(ctx, &domain.ShowTimeUpdateReq{
+		ID:             req.ID,
+		TicketID:       req.TicketID,
+		CinemaName:     req.CinemaName,
+		MovieTime:      req.MovieTime,
+		Quantity:       req.Quantity,
+		OriginalNumber: req.Quantity,
+		Price:          req.Price,
+		UpdatedAt:      utils.GenerateTimestamp(),
+	})
+	if err != nil {
+		return &entities.ShowTimeUpdateByIdResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.ShowTimeUpdateByIdResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
 		},
 	}, nil
 }
