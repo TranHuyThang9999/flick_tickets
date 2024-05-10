@@ -1,19 +1,22 @@
 import { Button, Drawer, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { showError, showWarning } from '../log/log';
-import { EditFilled, UnorderedListOutlined ,RetweetOutlined} from '@ant-design/icons';
+import { EditFilled, UnorderedListOutlined, RetweetOutlined } from '@ant-design/icons';
 import SelectedSeatForAdmin from '../../dashboard/SelectedSeatForAdmin';
 import DeleteShowTimeById from '../../dashboard/DeleteShowTimeById';
+import UpdateShowTimeById from '../../dashboard/UpdateShowTimeById';
 
-export default function DetailedShowSchedule({ id }) {// display for admin
+export default function DetailedShowSchedule({ id }) {// display for admin ShowTime
   const [showTimeTicket, setShowTimeTicket] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [selectPopChid, setSelectPopChid] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [openUpdateShowTime, setopenUpdateShowTime] = useState(false);
+  const [selectedRecordId, setSelectedRecordId] = useState(null);
 
   const showDrawer = (record) => {
-    const { id } = record; // Extract the id from the record
+    // const { id } = record; // Extract the id from the record
     setSelectedRecord(record); // Pass the entire record
     setOpen(true);
   };
@@ -61,6 +64,15 @@ export default function DetailedShowSchedule({ id }) {// display for admin
     fetchData(); // Reload data when reload button is clicked
   };
 
+  const showDrawerUpdateShowTime = (record) => {
+    setopenUpdateShowTime(true);
+    setSelectedRecordId(record.id); // Lưu ID của bản ghi được chọn
+  };
+
+  const onCloseDrawreUpdateShowTime = () => {
+    setopenUpdateShowTime(false);
+  };
+
   function formatTimestamp(timestamp) {
     const date = new Date(timestamp * 1000);
 
@@ -100,10 +112,11 @@ export default function DetailedShowSchedule({ id }) {// display for admin
       render: (record) => (
         <div style={{ display: 'flex' }}>
           <Button type="primary" onClick={() => showDrawer(record)}>
-            <UnorderedListOutlined />
+            <UnorderedListOutlined />9
           </Button>
           <DeleteShowTimeById onDelete={() => handleDelete(record.id)} showTimeId={record.id} />
-          <Button><EditFilled /></Button>
+          <Button onClick={() => showDrawerUpdateShowTime(record)}><EditFilled /></Button>
+
           <Drawer
             title="Phòng"
             width={1000}
@@ -124,6 +137,17 @@ export default function DetailedShowSchedule({ id }) {// display for admin
                 />
               </div>
             )}
+          </Drawer>
+          <Drawer
+            title='Cập nhật suất chiếu'
+            width='800'
+            onClose={onCloseDrawreUpdateShowTime}
+            visible={openUpdateShowTime}
+            bodyStyle={{
+              paddingBottom: 80,
+            }}
+          >
+            <UpdateShowTimeById show_time_id={selectedRecordId} />
           </Drawer>
         </div>
       ),
