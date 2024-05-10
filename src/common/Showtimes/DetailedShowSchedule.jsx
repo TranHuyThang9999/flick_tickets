@@ -115,7 +115,8 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
             <UnorderedListOutlined />
           </Button>
           <DeleteShowTimeById onDelete={() => handleDelete(record.id)} showTimeId={record.id} />
-          <Button onClick={() => showDrawerUpdateShowTime(record)}><EditFilled /></Button>
+          {/* <Button onClick={() => showDrawerUpdateShowTime(record)}><EditFilled /></Button> */}
+          <UpdateShowTimeById show_time_id={record.id}/>
 
           <Drawer
             title="Phòng"
@@ -137,17 +138,6 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
                 />
               </div>
             )}
-          </Drawer>
-          <Drawer
-            title='Cập nhật suất chiếu'
-            width='500'
-            onClose={onCloseDrawreUpdateShowTime}
-            visible={openUpdateShowTime}
-            bodyStyle={{
-              paddingBottom: 80,
-            }}
-          >
-            <UpdateShowTimeById show_time_id={selectedRecordId} />
           </Drawer>
         </div>
       ),

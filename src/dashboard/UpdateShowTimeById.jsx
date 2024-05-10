@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { showError, showSuccess, showWarning } from '../common/log/log';
-import { Button, DatePicker, Form, InputNumber, Select } from 'antd';
+import { Button, DatePicker, Drawer, Form, InputNumber, Select } from 'antd';
 import moment from 'moment';
 import CinemasGetAll from '../common/cinemas/CinemasGetAll';
 import './index.css';
@@ -10,6 +10,7 @@ export default function UpdateShowTimeById({ show_time_id }) {
     const [showTime, setShowTime] = useState(null);
     const [cinemaName, setCinemaName] = useState('');
     const [form] = Form.useForm();
+    const [visible, setVisible] = useState(false); // State để kiểm soát trạng thái mở của Drawer
 
 
     useEffect(() => {
@@ -92,51 +93,67 @@ export default function UpdateShowTimeById({ show_time_id }) {
     if (!showTime) {
         return null;
     }
+    const handleUpdateClick = () => {
+        setVisible(true); // Mở Drawer khi nhấn nút cập nhật
+    };
 
+    const handleCloseDrawer = () => {
+        setVisible(false); // Đóng Drawer khi cần
+    };
     return (
         <div>
-            <Form style={{width:'600px'}} {...layout} form={form} className="form-container-update-show-time" onFinish={handleFormSubmit}>
-                <Form.Item
-                    initialValue={showTime.price}
-                    label="Nhập giá vé"
-                    className="form-row"
-                    name="price"
-                >
-                    <InputNumber />
-                </Form.Item>
+            <Button onClick={handleUpdateClick}>Cập nhật</Button>
+            <Drawer
+                title="Cập nhật suất chiếu"
+                width={500}
+                onClose={handleCloseDrawer}
+                visible={visible} // Trạng thái mở của Drawer được kết nối với state
+                bodyStyle={{ paddingBottom: 80 }}
+            >
+                <Form style={{ width: '600px' }} {...layout} form={form} className="form-container-update-show-time" onFinish={handleFormSubmit}>
+                    <Form.Item
+                        initialValue={showTime.price}
+                        label="Nhập giá vé"
+                        className="form-row"
+                        name="price"
+                    >
+                        <InputNumber />
+                    </Form.Item>
 
-                <Form.Item
-                    initialValue={showTime.quantity}
-                    label="Nhập số lượng vé trên 1 phòng"
-                    className="form-row"
-                    name="quantity"
-                >
-                    <InputNumber />
-                </Form.Item>
-                <Form.Item
-                    label="Chọn phòng để chiếu phim"
-                    className="form-row"
-                    name="cinema_name"
-                >
-                    <Select
-                        defaultValue={showTime.cinema_name}
-                        allowClear
-                        options={options}
-                        onChange={(value) => setCinemaName(value)}
-                    />
-                </Form.Item>
-                <Form.Item
-                    label="Thời gian chiếu"
-                    name="movie_time"
-                >
-                    <DatePicker
-                        allowClear
-                        defaultValue={moment.unix(showTime.movie_time)}
-                        showTime
-                    />
-                </Form.Item>
-                <Button type="primary" htmlType="submit">Cập nhật lại suất chiếu</Button>
-            </Form>
+                    <Form.Item
+                        initialValue={showTime.quantity}
+                        label="Nhập số lượng vé trên 1 phòng"
+                        className="form-row"
+                        name="quantity"
+                    >
+                        <InputNumber />
+                    </Form.Item>
+                    <Form.Item
+                        label="Chọn phòng để chiếu phim"
+                        className="form-row"
+                        name="cinema_name"
+                    >
+                        <Select
+                            defaultValue={showTime.cinema_name}
+                            allowClear
+                            options={options}
+                            onChange={(value) => setCinemaName(value)}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        label="Thời gian chiếu"
+                        name="movie_time"
+                    >
+                        <DatePicker
+                            allowClear
+                            defaultValue={moment.unix(showTime.movie_time)}
+                            showTime
+                        />
+                    </Form.Item>
+                    <Button type="primary" htmlType="submit">Cập nhật lại suất chiếu</Button>
+                </Form>
+            </Drawer>
+
         </div>
     )
 }
