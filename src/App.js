@@ -21,7 +21,6 @@ import MovieAdd from "./common/MovieTypes/MovieUpload";
 import GetAllTicketsForAdmin from "./dashboard/GetAllTickets";
 import TestGetAllSelect from "./common/test/test";
 import FormLogin from "./dashboard/FormLogin";
-import CheckLogin from "./Routers/CheckLogin";
 import UseContextToken from "./Routers/UseContextToken";
 import FormRegisterCustomer from "./common/customers/FormRegisterCustomer";
 import UpdateProfile from "./common/customers/UpdateProfile";
@@ -75,17 +74,17 @@ export default function App() {
       {/* <GetTicketById id={1485296}/> */}
       {/* <TestDisPlayTicket/> */}
       {/* <GetListCart/> */}
-      {/* <PageForUser/> */}
       {/* <QRScanner/> */}
-      <FormLogin/>
+      {/* <FormLogin/> */}
       {/* <GetOrderById/> */}
       {/* <PurchaseHistory email={'thuynguyen151387@gmail.com'}/> */}
       {/* <AddShowTime ticketId={3462449}/> */}
       {/* <UpdateTicketById ticketId={1357952}/> */}
-      {/* <HomeaAdmin /> */}
       {/* <UpdateShowTimeById show_time_id={3169598}/> */}
-
       {/* <TestCheckBox/> */}
+
+      <PageForUser/>
+      {/* <HomeaAdmin /> */}
     </div>
   );
 }

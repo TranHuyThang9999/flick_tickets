@@ -29,6 +29,7 @@ export default function PageForUser() {
   const [openCheck, setOpenCheck] = useState(false);
   const [openHistoryOrder, setOpenHistoryOrder] = useState(false);
   const [openLogin, setOpenLogin] = useState(false);
+  const [isloginAdmin,setIsLoginAdmin] =useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,7 +82,7 @@ export default function PageForUser() {
   }
   const conhandlerLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('email');
     localStorage.removeItem('user_name');
     window.location.reload();
   }
@@ -107,7 +108,7 @@ export default function PageForUser() {
     setOpenHistoryOrder(false);
   };
   const showModalFornLogin = () => {
-    setOpenLogin(true);
+    setIsLoginAdmin(true);
   };
   const hideModal = () => {
     setOpenLogin(false);
@@ -138,7 +139,11 @@ export default function PageForUser() {
       <Profile />
     );
   }
-
+  if(isloginAdmin){
+    return(
+      <FormLogin/>
+    )
+  }
 
   return (
     <div>
@@ -153,14 +158,14 @@ export default function PageForUser() {
                 <Button className='layout-header-start-button-login' onClick={showModalFornLogin}>
                   Đăng nhập <InteractionFilled />
                 </Button>
-                <Modal
+                {/* <Modal
                   open={openLogin}
                   footer
                   onCancel={hideModal}
                   width={420}
                 >
                   <FormLogin />
-                </Modal>
+                </Modal> */}
               </div>
             )}
           </div>

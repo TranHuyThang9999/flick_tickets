@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './index.css';
 import {
   MenuFoldOutlined,
@@ -7,7 +7,8 @@ import {
   LineChartOutlined,
   VideoCameraOutlined,
   UsergroupAddOutlined,
-  SolutionOutlined
+  SolutionOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
 import { Layout, Button, Tabs } from 'antd';
 import QRScanner from '../QRScanner/QRScanner';
@@ -17,6 +18,7 @@ import GetAllStaff from './GetAllStaff';
 import AdminUploadTickets from './AdminUploadTickets';
 import GetAllTickets from './GetAllTickets';
 import MovieAdd from '../common/MovieTypes/MovieUpload';
+import PageForUser from '../Home/Page/PageForUser';
 
 const { Header, Sider, Content } = Layout;
 
@@ -58,22 +60,23 @@ const items = [
     children: <GetAllStaff />
   },
   {
-    key:'7',
+    key: '7',
     icon: <SolutionOutlined />,
-    label:'Quản lý vé',
-    children:<GetAllTickets/>
+    label: 'Quản lý vé',
+    children: <GetAllTickets />
   },
   {
-    key:'8',
+    key: '8',
     icon: <SolutionOutlined />,
-    label:'Thêm loại phim',
-    children:<MovieAdd/>
+    label: 'Thêm loại phim',
+    children: <MovieAdd />
   },
 ];
 
 const HomeAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('7');
+  const[logout,setLogout] = useState(false);
 
   const handleTabChange = (key) => {
     setActiveTab(key);
@@ -83,6 +86,18 @@ const HomeAdmin = () => {
     setCollapsed(!collapsed);
   };
 
+  const handleLogout = ()=>{
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    localStorage.removeItem('user_name');
+
+    setLogout(true);
+  }
+  if(logout){
+    return(
+      <PageForUser/>
+    )
+  }
 
   return (
     <Layout>
@@ -140,11 +155,24 @@ const HomeAdmin = () => {
                   width: 70,
                   height: 73,
                   backgroundColor: 'white',
-                  marginLeft:'-50px',
-                  borderBottomLeftRadius:0,
-                  borderBottomRightRadius:0,
+                  marginLeft: '-50px',
+                  borderBottomLeftRadius: 0,
+                  borderBottomRightRadius: 0,
                 }}
               />
+            </div>
+            <div style={{ display: 'flex' }}>
+              <Button
+                style={{
+                  height: '65px',
+                  borderRadius: 0,
+                  outline: 'none',
+                }}
+                onClick={handleLogout}
+              >
+                Đăng xuất<LogoutOutlined />
+              </Button>
+
             </div>
           </Header>
 

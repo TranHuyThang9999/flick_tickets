@@ -1,11 +1,10 @@
 import { Button, Checkbox, Form, Input, message } from 'antd';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { LockOutlined, UserOutlined, LoginOutlined, WeiboCircleFilled, AndroidOutlined } from '@ant-design/icons';
 import './index.css';
 import { showError } from '../common/log/log';
-import HomeAdmin from './HomeaAdmin';
-import PageForUser from '../Home/Page/PageForUser';
+import HomeAdmin from './HomeaAdmin'; // Import HomeAdmin component
 
 export default function FormLogin() {
 
@@ -17,8 +16,8 @@ export default function FormLogin() {
     const handleCheckboxChange = (e) => {
         const newRole = e.target.checked ? 1 : 13; // Set role to 1 if checkbox is checked, otherwise 13
         setRole(newRole);
-      };
-    
+    };
+
 
     const errorMessage = () => {
         message.error('Lỗi hệ thống vui lòng thử lại');
@@ -38,43 +37,35 @@ export default function FormLogin() {
                 localStorage.setItem('email', response.data.email);
                 localStorage.setItem('token', response.data.jwt_token.refresh_token);
 
-                
-                if (role===1) {
+
+                if (role === 1) {
                     setIsloginAdmin(true);
-                    return;
                 } else {
                     setIsLoginCustomer(true);
-                    return;
                 }
 
             } else if (response.data.result.code === 24) {
                 alert('Thông tin tài khoản hoặc mật khẩu không chính xác. Vui lòng thử lại.');
-                return;
             } else {
                 showError("error server");
-                return;
             }
         } catch (error) {
             console.error(error);
             errorMessage();
             showError("error server");
-            return;
         }
     };
 
-    if (isLoginAdmin) {
-        return (
-            <HomeAdmin />
-        )
-    }
     if (isLoginCustomer) {
-        return (
-            <PageForUser />
-        )
+        window.location.reload();
     }
 
+    // Trả về HomeAdmin component nếu đăng nhập là admin
+    if (isLoginAdmin) {
+        return <HomeAdmin />;
+    }
 
-
+    // Phần còn lại của mã để hiển thị biểu mẫu đăng nhập
     return (
         <div className="container-login-user">
             <div className='form-login'>
@@ -119,7 +110,7 @@ export default function FormLogin() {
                     <Form.Item>
                         <div className="login-form-forgot" href="/">
                             <div>
-                                <Checkbox  onChange={handleCheckboxChange}>Quản trị viên <AndroidOutlined /></Checkbox>
+                                <Checkbox onChange={handleCheckboxChange}>Quản trị viên <AndroidOutlined /></Checkbox>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <a>

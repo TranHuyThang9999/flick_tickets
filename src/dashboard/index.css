@@ -57,3 +57,6 @@
     width: 700px;
     margin: 50px auto;
 }
+:where(.css-dev-only-do-not-override-11xg00t).ant-layout .ant-layout-header, :where(.css-dev-only-do-not-override-11xg00t).ant-layout.ant-layout-footer{
+  justify-content: space-between;
+}
