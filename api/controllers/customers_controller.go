@@ -57,12 +57,12 @@ func (c *ControllerCustomer) RegisterCustomersManager(ctx *gin.Context) { // aco
 
 func (c *ControllerCustomer) Login(ctx *gin.Context) {
 
-	var req *entities.CustomerReqLogin
+	var req entities.CustomerReqLogin
 	if err := ctx.ShouldBind(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	resp, err := c.cus.Login(ctx, req)
+	resp, err := c.cus.Login(ctx, &req)
 	c.baseController.Response(ctx, resp, err)
 
 }

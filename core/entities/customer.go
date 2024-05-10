@@ -59,11 +59,13 @@ type CustomersRespVerifyOtp struct {
 type CustomerReqLogin struct {
 	UserName string `form:"user_name"`
 	Password string `form:"password"`
+	Role     int    `form:"role"`
 }
 type CustomerRespLogin struct {
 	Result    Result    `json:"result"`
 	JwtToken  *JwtToken `json:"jwt_token"`
 	Email     string    `json:"email"`
+	UserName  string    `json:"user_name"`
 	CreatedAt int       `json:"created_at"`
 }
 type CustomersReqRegisterAdminForStaff struct {

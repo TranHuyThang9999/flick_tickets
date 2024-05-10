@@ -146,7 +146,7 @@ func (u *UseCaseCart) FindCartByForm(ctx context.Context, req *domain.CartFindBy
 			CinemaName:     cinema.CinemaName,
 			Description:    cinema.Description,
 			Conscious:      cinema.Conscious,
-			District:       cinema.Description,
+			District:       cinema.District,
 			Commune:        cinema.Commune,
 			AddressDetails: cinema.AddressDetails,
 			MovieName:      ticket.Name,

@@ -56,4 +56,5 @@ type RepositoryCustomers interface {
 	GetCustomerByEmail(ctx context.Context, email string) (*Customers, error)
 	DeleteStaffByName(ctx context.Context, name string) error
 	FindCustomersByUsename(ctx context.Context, name string) (*CustomerFindByUseName, error)
+	FindCustomersByRole(ctx context.Context, user_name string, password string, role int) (*CustomerFindByUseName, error)
 }

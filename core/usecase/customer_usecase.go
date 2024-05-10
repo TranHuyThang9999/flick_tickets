@@ -245,13 +245,7 @@ func (e *UseCaseCustomer) RegisterManager(ctx context.Context, req *entities.Cus
 }
 func (e *UseCaseCustomer) Login(ctx context.Context, req *entities.CustomerReqLogin) (*entities.CustomerRespLogin, error) {
 
-	// keyAes := e.config.KeyAES128
-
-	listCustomers, err := e.cus.FindCustomers(ctx, &domain.CustomersFindByForm{
-		UserName: req.UserName,
-		Password: req.Password,
-	})
-
+	customer, err := e.cus.FindCustomersByRole(ctx, req.UserName, req.Password, req.Role)
 	if err != nil {
 		return &entities.CustomerRespLogin{
 			Result: entities.Result{
@@ -260,88 +254,33 @@ func (e *UseCaseCustomer) Login(ctx context.Context, req *entities.CustomerReqLo
 			},
 		}, nil
 	}
-	if len(listCustomers) == 0 {
+	if customer == nil {
 		return &entities.CustomerRespLogin{
 			Result: entities.Result{
-				Code:    enums.DATA_EMPTY_ERR_CODE,
-				Message: enums.DATA_EMPTY_ERR_MESS,
+				Code:    enums.USER_NOT_EXIST_CODE,
+				Message: enums.USER_NOT_EXIST_MESS,
 			},
 		}, nil
 	}
-
-	if listCustomers[0].Role == enums.ROLE_ADMIN {
-
-		respToken, err := e.jwt.generateToken(listCustomers[0].ID, enums.ROLE_ADMIN, req.UserName)
-		if err != nil {
-			return &entities.CustomerRespLogin{
-				Result: entities.Result{
-					Code:    enums.CREATE_TOKEN,
-					Message: enums.CREATE_TOKEN_MESS,
-				},
-			}, nil
-		}
-
+	respToken, err := e.jwt.generateToken(customer.ID, req.Role, req.UserName)
+	if err != nil {
 		return &entities.CustomerRespLogin{
 			Result: entities.Result{
-				Code:    enums.SUCCESS_CODE,
-				Message: enums.SUCCESS_MESS,
+				Code:    enums.CREATE_TOKEN,
+				Message: enums.CREATE_TOKEN_MESS,
 			},
-			JwtToken: respToken,
-		}, nil
-	} else if listCustomers[0].Role == enums.ROLE_STAFF {
-		if !listCustomers[0].IsActive {
-			return &entities.CustomerRespLogin{
-				Result: entities.Result{
-					Code:    enums.ACCOUNT_STAFF_LOCK_CODE,
-					Message: enums.ACCOUNT_STAFF_LOCK_MESS,
-				},
-			}, nil
-		}
-		respToken, err := e.jwt.generateToken(listCustomers[0].ID, enums.ROLE_STAFF, req.UserName)
-		if err != nil {
-			return &entities.CustomerRespLogin{
-				Result: entities.Result{
-					Code:    enums.CREATE_TOKEN,
-					Message: enums.CREATE_TOKEN_MESS,
-				},
-			}, nil
-		}
-
-		return &entities.CustomerRespLogin{
-			Result: entities.Result{
-				Code:    enums.SUCCESS_CODE,
-				Message: enums.SUCCESS_MESS,
-			},
-			JwtToken: respToken,
-		}, nil
-	} else {
-		if !listCustomers[0].IsActive {
-			return &entities.CustomerRespLogin{
-				Result: entities.Result{
-					Code:    enums.ACCOUNT_STAFF_LOCK_CODE,
-					Message: enums.ACCOUNT_STAFF_LOCK_MESS,
-				},
-			}, nil
-		}
-		respToken, err := e.jwt.generateToken(listCustomers[0].ID, enums.ROLE_CUSTOMER, req.UserName)
-		if err != nil {
-			return &entities.CustomerRespLogin{
-				Result: entities.Result{
-					Code:    enums.CREATE_TOKEN,
-					Message: enums.CREATE_TOKEN_MESS,
-				},
-			}, nil
-		}
-
-		return &entities.CustomerRespLogin{
-			Result: entities.Result{
-				Code:    enums.SUCCESS_CODE,
-				Message: enums.SUCCESS_MESS,
-			},
-			JwtToken: respToken,
 		}, nil
 	}
-
+	return &entities.CustomerRespLogin{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		JwtToken:  respToken,
+		Email:     customer.Email,
+		UserName:  customer.UserName,
+		CreatedAt: utils.GenerateTimestamp(),
+	}, nil
 }
 
 // tao tk cho nhan vien
