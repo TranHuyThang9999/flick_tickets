@@ -71,14 +71,6 @@ type ShowTimeResp struct {
 	CreatedAt      int     `json:"created_at"`
 	UpdatedAt      int     `json:"updated_at"`
 }
-type ShowTimeUpdateByIdReq struct {
-	ID         int64   `form:"id"`
-	TicketID   int64   `form:"ticket_id"`
-	CinemaName string  `form:"cinema_name"`
-	MovieTime  int     `form:"movie_time"` //string
-	Quantity   int     `form:"quantity"`
-	Price      float64 `form:"price"`
-}
 type ShowTimeUpdateByIdResp struct {
 	Result Result `json:"result"`
 }

@@ -37,9 +37,12 @@ func (c *CollectionShowTime) DeleteShowTimeByTicketId(ctx context.Context, req *
 	return result.Error
 }
 
-func (c *CollectionShowTime) GetTimeUseCheckAddTicket(ctx context.Context, req *domain.ShowTimeCheckList) ([]*domain.ShowTime, error) {
-	var ShowTimeList []*domain.ShowTime
-	result := c.collection.Where("cinema_name = ? and movie_time =? ", req.CinemaName, req.MovieTime).Find(&ShowTimeList)
+func (c *CollectionShowTime) GetTimeUseCheckAddTicket(ctx context.Context, req *domain.ShowTimeCheckList) (*domain.ShowTime, error) {
+	var ShowTimeList *domain.ShowTime
+	result := c.collection.Where("cinema_name = ? and movie_time = ? ", req.CinemaName, req.MovieTime).First(&ShowTimeList)
+	if result.RowsAffected == 0 {
+		return nil, nil
+	}
 	return ShowTimeList, result.Error
 }
 
@@ -96,7 +99,7 @@ func (c *CollectionShowTime) DeleteByTicketIdAndNameCinema(ctx context.Context, 
 	// Xóa các bản ghi trong bảng CollectionShowTime dựa trên ticketId và nameCinema
 	if err := tx.Table("CollectionShowTime").
 		Where("ticket_id = ?", ticketId).
-		Where("jname_cinema IN (?)", nameCinema).
+		Where("name_cinema IN (?)", nameCinema).
 		Delete(nil).Error; err != nil {
 		return err
 	}

@@ -314,8 +314,30 @@ func (s *UseCaseShowTime) GetShowTimeById(ctx context.Context, id string) (*enti
 	}, nil
 }
 func (s *UseCaseShowTime) UpdateShowTimeById(ctx context.Context, req *entities.ShowTimeUpdateByIdReq) (*entities.ShowTimeUpdateByIdResp, error) {
+	// Kiểm tra nếu CinemaName hoặc MovieTime không được truyền vào, lấy từ API theo ID
+	if req.CinemaName == "" || req.MovieTime == 0 {
+		showTime, err := s.st.GetShowTimeById(ctx, req.ID)
+		if err != nil {
+			return &entities.ShowTimeUpdateByIdResp{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, nil
+		}
+		if req.CinemaName == "" {
+			req.CinemaName = showTime.CinemaName
+		}
+		if req.MovieTime == 0 {
+			req.MovieTime = showTime.MovieTime
+		}
+	}
 
-	listShowTime, err := s.st.FindDuplicateShowTimeUseUpdate(ctx, req.MovieTime, req.CinemaName)
+	// Kiểm tra nếu không tìm thấy bản ghi để cập nhật, thêm mới
+	showTimeGetCheck, err := s.st.GetTimeUseCheckAddTicket(ctx, &domain.ShowTimeCheckList{
+		CinemaName: req.CinemaName,
+		MovieTime:  req.MovieTime,
+	})
 	if err != nil {
 		return &entities.ShowTimeUpdateByIdResp{
 			Result: entities.Result{
@@ -324,7 +346,35 @@ func (s *UseCaseShowTime) UpdateShowTimeById(ctx context.Context, req *entities.
 			},
 		}, nil
 	}
-	if len(listShowTime) > 0 {
+	if showTimeGetCheck == nil {
+		err = s.st.UpdateShowTimeById(ctx, &domain.ShowTimeUpdateReq{
+			ID:             req.ID,
+			TicketID:       req.TicketID,
+			CinemaName:     req.CinemaName,
+			MovieTime:      req.MovieTime,
+			Quantity:       req.Quantity,
+			OriginalNumber: req.Quantity,
+			Price:          req.Price,
+			UpdatedAt:      utils.GenerateTimestamp(),
+		})
+		if err != nil {
+			return &entities.ShowTimeUpdateByIdResp{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, nil
+		}
+		return &entities.ShowTimeUpdateByIdResp{
+			Result: entities.Result{
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
+			},
+		}, nil
+	}
+
+	// Kiểm tra nếu bản ghi tồn tại, nhưng không phải bản ghi cần cập nhật
+	if showTimeGetCheck.ID != req.ID {
 		return &entities.ShowTimeUpdateByIdResp{
 			Result: entities.Result{
 				Code:    enums.SHOW_TIME_CODE,
@@ -332,6 +382,8 @@ func (s *UseCaseShowTime) UpdateShowTimeById(ctx context.Context, req *entities.
 			},
 		}, nil
 	}
+
+	// Cập nhật bản ghi
 	err = s.st.UpdateShowTimeById(ctx, &domain.ShowTimeUpdateReq{
 		ID:             req.ID,
 		TicketID:       req.TicketID,
@@ -350,6 +402,7 @@ func (s *UseCaseShowTime) UpdateShowTimeById(ctx context.Context, req *entities.
 			},
 		}, nil
 	}
+
 	return &entities.ShowTimeUpdateByIdResp{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,

@@ -35,3 +35,12 @@ type LoginReq struct {
 	UserName string `form:"user_name" validate:"required"`
 	Password string `form:"password" validate:"required"`
 }
+
+type ShowTimeUpdateByIdReq struct {
+	ID         int64   `form:"id"`
+	TicketID   int64   `form:"ticket_id"`
+	CinemaName string  `form:"cinema_name"`
+	MovieTime  int     `form:"movie_time"` //string
+	Quantity   int     `form:"quantity"`
+	Price      float64 `form:"price"`
+}
