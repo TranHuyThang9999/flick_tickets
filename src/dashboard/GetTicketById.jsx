@@ -80,7 +80,7 @@ export default function GetTicketById({ id }) {
                 id={ticket.id}
             />{/*ci tiet phong*/}
 
-            <GetListFileByTicketId id={ticket.id} />
+            <GetListFileByTicketId id={ticket.id} />{/*listfile*/}
 
             <Space direction='vertical' style={{ marginLeft: '20px' }}>
 

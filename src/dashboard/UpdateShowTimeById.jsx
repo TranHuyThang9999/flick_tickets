@@ -4,7 +4,7 @@ import { showError, showSuccess, showWarning } from '../common/log/log';
 import { Button, DatePicker, Form, InputNumber, Select } from 'antd';
 import moment from 'moment';
 import CinemasGetAll from '../common/cinemas/CinemasGetAll';
-
+import './index.css';
 export default function UpdateShowTimeById({ show_time_id }) {
 
     const [showTime, setShowTime] = useState(null);
@@ -95,7 +95,7 @@ export default function UpdateShowTimeById({ show_time_id }) {
 
     return (
         <div>
-            <Form {...layout} form={form} onFinish={handleFormSubmit}>
+            <Form style={{width:'600px'}} {...layout} form={form} className="form-container-update-show-time" onFinish={handleFormSubmit}>
                 <Form.Item
                     initialValue={showTime.price}
                     label="Nhập giá vé"

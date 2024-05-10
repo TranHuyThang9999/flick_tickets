@@ -112,7 +112,7 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
       render: (record) => (
         <div style={{ display: 'flex' }}>
           <Button type="primary" onClick={() => showDrawer(record)}>
-            <UnorderedListOutlined />9
+            <UnorderedListOutlined />
           </Button>
           <DeleteShowTimeById onDelete={() => handleDelete(record.id)} showTimeId={record.id} />
           <Button onClick={() => showDrawerUpdateShowTime(record)}><EditFilled /></Button>
@@ -140,7 +140,7 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
           </Drawer>
           <Drawer
             title='Cập nhật suất chiếu'
-            width='800'
+            width='500'
             onClose={onCloseDrawreUpdateShowTime}
             visible={openUpdateShowTime}
             bodyStyle={{
@@ -164,7 +164,7 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
   return (
     <div>
       <Table
-        scroll={{ x: 90 }}
+        scroll={{ x: 120 }}
         dataSource={showTimeTicket}
         columns={columns}
         expandable={{
