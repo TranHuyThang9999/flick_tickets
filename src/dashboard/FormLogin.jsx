@@ -1,19 +1,24 @@
-import { Button, Form, Input, message } from 'antd';
+import { Button, Checkbox, Form, Input, message } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { LockOutlined, UserOutlined, LoginOutlined } from '@ant-design/icons';
+import { LockOutlined, UserOutlined, LoginOutlined, WeiboCircleFilled, AndroidOutlined } from '@ant-design/icons';
 import './index.css';
-
-import HomeAdmin from '../dashboard/HomeaAdmin';
+import { showError } from '../common/log/log';
+import HomeAdmin from './HomeaAdmin';
 import PageForUser from '../Home/Page/PageForUser';
 
 export default function FormLogin() {
-    
+
     const [form] = Form.useForm();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isLoginRole3, setIsLoginRole3] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const[nextFromHome,setNextFromHome] = useState(false);
+    const [isLoginAdmin, setIsloginAdmin] = useState(false);
+    const [isLoginCustomer, setIsLoginCustomer] = useState(false);
+    const [role, setRole] = useState(13); // Default role is 13
+
+    const handleCheckboxChange = (e) => {
+        const newRole = e.target.checked ? 1 : 13; // Set role to 1 if checkbox is checked, otherwise 13
+        setRole(newRole);
+      };
+    
 
     const errorMessage = () => {
         message.error('Lỗi hệ thống vui lòng thử lại');
@@ -24,27 +29,52 @@ export default function FormLogin() {
             const formData = new FormData();
             formData.append('user_name', values.user_name);
             formData.append('password', values.password);
+            formData.append('role', role); // Truyền role tương ứng
 
             const response = await axios.post('http://localhost:8080/manager/customer/manager/login', formData);
 
             if (response.data.result.code === 0) {
-                localStorage.setItem('user_name', values.user_name);
+                localStorage.setItem('user_name', response.data.user_name);
+                localStorage.setItem('email', response.data.email);
                 localStorage.setItem('token', response.data.jwt_token.refresh_token);
 
-                // Đăng nhập thành công, cập nhật trạng thái đăng nhập
-                setIsLoggedIn(true);
-            } else {
+                
+                if (role===1) {
+                    setIsloginAdmin(true);
+                    return;
+                } else {
+                    setIsLoginCustomer(true);
+                    return;
+                }
+
+            } else if (response.data.result.code === 24) {
                 alert('Thông tin tài khoản hoặc mật khẩu không chính xác. Vui lòng thử lại.');
+                return;
+            } else {
+                showError("error server");
+                return;
             }
         } catch (error) {
             console.error(error);
             errorMessage();
+            showError("error server");
+            return;
         }
     };
 
+    if (isLoginAdmin) {
+        return (
+            <HomeAdmin />
+        )
+    }
+    if (isLoginCustomer) {
+        return (
+            <PageForUser />
+        )
+    }
 
-   
-   
+
+
     return (
         <div className="container-login-user">
             <div className='form-login'>
@@ -60,7 +90,7 @@ export default function FormLogin() {
                         labelAlign='right'
                         className='form-login-user-label-header form-row'
                     >
-                        <h2>Classy Login Form</h2>
+                        <h2>Đăng nhập <WeiboCircleFilled /></h2>
                     </Form.Item>
 
                     <Form.Item
@@ -86,23 +116,25 @@ export default function FormLogin() {
                             placeholder="Password"
                         />
                     </Form.Item>
-
                     <Form.Item>
                         <div className="login-form-forgot" href="/">
-                            <a>
-                                Forgot password
-                            </a>
-                        </div>
-                        <div className="login-form-forgot" href="/">
-                            <a>
-                            Quay lại trang chủ
-                            </a>
+                            <div>
+                                <Checkbox  onChange={handleCheckboxChange}>Quản trị viên <AndroidOutlined /></Checkbox>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <a>
+                                    Quên mật khẩu
+                                </a>
+                                <a>
+                                    Đăng ký tài khoản
+                                </a>
+                            </div>
                         </div>
                     </Form.Item>
 
                     <Form.Item style={{ display: 'flex', justifyContent: 'center' }}>
                         <Button style={{ fontSize: '15px' }} type="primary" htmlType='submit'>
-                            Sign in
+                            Đăng nhập
                             <LoginOutlined />
                         </Button>
                     </Form.Item>

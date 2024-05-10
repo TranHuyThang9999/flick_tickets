@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './home.css';
-import { Avatar, Button, Col, Drawer, Menu, Row } from 'antd';
+import { Avatar, Button, Col, Drawer, Menu, Modal, Row } from 'antd';
 import {
   BellFilled, ShoppingCartOutlined, TwitterCircleFilled,
   InteractionFilled, WeiboCircleOutlined,
@@ -18,7 +18,6 @@ import PurchaseHistory from '../Tickets/PurchaseHistory';
 
 export default function PageForUser() {
 
-  const [islogin, setIslogin] = useState(false);
   const [personalPage, setPersonalPage] = useState(false);
   const username = localStorage.getItem('user_name');
   const [user, setUser] = useState(null);
@@ -28,7 +27,8 @@ export default function PageForUser() {
   const [movieTheaterName, setMovieTheaterName] = useState('');
   const [openCart, setOpencart] = useState(false);
   const [openCheck, setOpenCheck] = useState(false);
-  const [openHistoryOrder,setOpenHistoryOrder] = useState(false);
+  const [openHistoryOrder, setOpenHistoryOrder] = useState(false);
+  const [openLogin, setOpenLogin] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,9 +86,7 @@ export default function PageForUser() {
     window.location.reload();
   }
 
-  const handlerNextLogin = () => {
-    setIslogin(true);
-  }
+
 
   const showDrawer = () => {
     setOpencart(true);
@@ -105,8 +103,14 @@ export default function PageForUser() {
   const showDrawerHistoryOrder = () => {
     setOpenHistoryOrder(true);
   };
-  const onCloseCHistoryOrder= () => {
+  const onCloseCHistoryOrder = () => {
     setOpenHistoryOrder(false);
+  };
+  const showModalFornLogin = () => {
+    setOpenLogin(true);
+  };
+  const hideModal = () => {
+    setOpenLogin(false);
   };
   const listRoomCinema = CinemasGetAll();
 
@@ -134,11 +138,7 @@ export default function PageForUser() {
       <Profile />
     );
   }
-  if (islogin) {
-    return (
-      <FormLogin />
-    )
-  }
+
 
   return (
     <div>
@@ -149,9 +149,19 @@ export default function PageForUser() {
           )}
           <div>
             {!username && (
-              <Button className='layout-header-start-button-login' onClick={handlerNextLogin}>
-                Đăng nhập <InteractionFilled />
-              </Button>
+              <div>
+                <Button className='layout-header-start-button-login' onClick={showModalFornLogin}>
+                  Đăng nhập <InteractionFilled />
+                </Button>
+                <Modal
+                  open={openLogin}
+                  footer
+                  onCancel={hideModal}
+                  width={420}
+                >
+                  <FormLogin />
+                </Modal>
+              </div>
             )}
           </div>
         </div>
@@ -234,9 +244,9 @@ export default function PageForUser() {
               <GetListCart />
             </Drawer>
           </div>
-            <div>
-              <Button onClick={showDrawerHistoryOrder}>Lịch sử  mua hàng <MailFilled /></Button>
-              <Drawer
+          <div>
+            <Button onClick={showDrawerHistoryOrder}>Lịch sử  mua hàng <MailFilled /></Button>
+            <Drawer
               title="Lịch  sử mua hàng"
               width={1200}
               onClose={onCloseCHistoryOrder}
@@ -247,9 +257,9 @@ export default function PageForUser() {
                 },
               }}
             >
-              <PurchaseHistory/>
+              <PurchaseHistory />
             </Drawer>
-            </div>
+          </div>
           <div>
             <Button>Cộng đồng <TwitterCircleFilled /></Button>
           </div>

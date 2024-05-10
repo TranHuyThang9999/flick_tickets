@@ -44,7 +44,10 @@ export default function GetListCart() {
                 });
                 if (response.data.result.code === 0) {
                     setListCarts(response.data.carts);
-                } else {
+                } else if(response.data.result.code === 20){
+                    return;
+                }
+                else {
                     showError("Lỗi từ máy chủ");
                 }
             } catch (error) {

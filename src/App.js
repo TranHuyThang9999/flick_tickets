@@ -34,6 +34,7 @@ import PurchaseHistory from "./Home/Tickets/PurchaseHistory";
 import AddShowTime from "./dashboard/AddShowTime";
 import UpdateTicketById from "./dashboard/UpdateTicketById";
 import UpdateShowTimeById from "./dashboard/UpdateShowTimeById";
+import TestCheckBox from "./common/test/test";
 
 export default function App() {
   return (
@@ -76,13 +77,15 @@ export default function App() {
       {/* <GetListCart/> */}
       {/* <PageForUser/> */}
       {/* <QRScanner/> */}
-      {/* <FormLogin/> */}
+      <FormLogin/>
       {/* <GetOrderById/> */}
       {/* <PurchaseHistory email={'thuynguyen151387@gmail.com'}/> */}
       {/* <AddShowTime ticketId={3462449}/> */}
       {/* <UpdateTicketById ticketId={1357952}/> */}
-      <HomeaAdmin />
+      {/* <HomeaAdmin /> */}
       {/* <UpdateShowTimeById show_time_id={3169598}/> */}
+
+      {/* <TestCheckBox/> */}
     </div>
   );
 }
