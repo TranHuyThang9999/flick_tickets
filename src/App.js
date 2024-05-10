@@ -82,7 +82,7 @@ export default function App() {
       {/* <AddShowTime ticketId={3462449}/> */}
       {/* <UpdateTicketById ticketId={1357952}/> */}
       {/* <HomeaAdmin /> */}
-      <UpdateShowTimeById show_time_id={6593258}/>
+      <UpdateShowTimeById show_time_id={3169598}/>
     </div>
   );
 }

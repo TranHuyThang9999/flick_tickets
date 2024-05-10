@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { showError, showSuccess } from '../common/log/log';
+import { showError, showSuccess, showWarning } from '../common/log/log';
 import { Button, DatePicker, Form, InputNumber, Select } from 'antd';
 import moment from 'moment';
 import CinemasGetAll from '../common/cinemas/CinemasGetAll';
@@ -10,6 +10,7 @@ export default function UpdateShowTimeById({ show_time_id }) {
     const [showTime, setShowTime] = useState(null);
     const [cinemaName, setCinemaName] = useState('');
     const [form] = Form.useForm();
+
 
     useEffect(() => {
         const fetchdata = async () => {
@@ -42,15 +43,18 @@ export default function UpdateShowTimeById({ show_time_id }) {
 
     const handleFormSubmit = async (values) => {
         try {
+
+            const releaseDateTimestamp = moment(values.movie_time).unix();
+
             const formData = new FormData();
             formData.append('id', show_time_id);
             formData.append('cinema_name', cinemaName);
-            formData.append('price', values.price);
-            formData.append('movie_time', values.movie_time);
+            formData.append('movie_time', releaseDateTimestamp);
             formData.append('quantity', values.quantity);
+            formData.append('price', values.price);
 
             const response = await axios.put(
-                'http://localhost:8080/manager/use/ticket/updates',
+                'http://localhost:8080/manager/user/showtime/update',
                 formData,
                 {
                     headers: {
@@ -61,15 +65,21 @@ export default function UpdateShowTimeById({ show_time_id }) {
 
             if (response.data.result.code === 0) {
                 showSuccess('Cập nhật thành công');
+                return;
+            } else if (response.data.result.code === 26) {
+                showWarning("Suất chiếu đã tồn tại vui lòng chọn lại");
+                return;
             } else {
                 showError('Lỗi server, vui lòng thử lại');
+                return;
             }
         } catch (error) {
             console.log(error);
             showError('Lỗi server, vui lòng thử lại');
+            return;
         }
     };
-    
+
     const options = [];
     const cinemas = CinemasGetAll();
     for (let index = 0; index < cinemas.length; index++) {
@@ -111,10 +121,8 @@ export default function UpdateShowTimeById({ show_time_id }) {
                     <Select
                         defaultValue={showTime.cinema_name}
                         allowClear
-                        mode='multiple'
                         options={options}
                         onChange={(value) => setCinemaName(value)}
-                        maxCount={1}
                     />
                 </Form.Item>
                 <Form.Item
