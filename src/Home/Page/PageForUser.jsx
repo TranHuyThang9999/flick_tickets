@@ -5,7 +5,7 @@ import {
   BellFilled, ShoppingCartOutlined, TwitterCircleFilled,
   InteractionFilled, WeiboCircleOutlined,
   AppstoreOutlined, HomeFilled, RightOutlined, WeiboSquareFilled,
-  MailFilled
+  MailFilled, AliwangwangFilled, CustomerServiceFilled,
 } from '@ant-design/icons';
 import axios from 'axios';
 import FormLogin from '../../dashboard/FormLogin';
@@ -29,7 +29,7 @@ export default function PageForUser() {
   const [openCheck, setOpenCheck] = useState(false);
   const [openHistoryOrder, setOpenHistoryOrder] = useState(false);
   const [openLogin, setOpenLogin] = useState(false);
-  const [isloginAdmin,setIsLoginAdmin] =useState(false);
+  const [isloginAdmin, setIsLoginAdmin] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -139,9 +139,9 @@ export default function PageForUser() {
       <Profile />
     );
   }
-  if(isloginAdmin){
-    return(
-      <FormLogin/>
+  if (isloginAdmin) {
+    return (
+      <FormLogin />
     )
   }
 
@@ -297,7 +297,35 @@ export default function PageForUser() {
         </Row>
       </div>
       <div className='layout-footer'>
-        <GetTicketOncarousel status={statusTicketSale} name={nameCinema} movie_theater_name={movieTheaterName} />
+        <div>
+          <GetTicketOncarousel status={statusTicketSale} name={nameCinema} movie_theater_name={movieTheaterName} />
+        </div>
+        <div className='layout-footer-introduce'>
+          <Row style={{ paddingLeft: '20px', paddingTop: '40px', paddingBottom: '40px' }}>
+            <Col span={6}>
+
+            </Col>
+            <Col span={6}>
+              <div style={{ paddingBottom: '10px', fontSize: '17px' }}> Đóng góp í kiến trực tiếp <AliwangwangFilled /></div>
+              <div style={{ paddingBottom: '10px', fontSize: '17px' }}><a href="/">hdfilm@gmail.com</a></div>
+              <div style={{ paddingBottom: '10px', fontSize: '17px' }}>Hỗ trợ trực tiếp <CustomerServiceFilled /></div>
+              <div style={{ paddingBottom: '10px', fontSize: '17px' }}>
+                <a href="/">0981436092</a>
+              </div>
+              <div style={{ paddingBottom: '10px', fontSize: '17px' }}>
+              Trụ sở trung tâm rạp chiếu phim
+              </div>
+              <div style={{ paddingBottom: '10px',color:'green', fontSize: '17px' }}>
+                Tầng 99   tòa nhà Trần Huy Thắng 999 Hoàn Kiếm
+              </div>
+            </Col>
+            <Col span={6}>
+            </Col>
+            <Col span={6}>
+              col-6
+            </Col>
+          </Row>
+        </div>
       </div>
     </div>
   )
