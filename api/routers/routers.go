@@ -81,12 +81,12 @@ func NewApiRouter(
 	//customer
 	r.POST("/customer/send/:email", customer.SendOtptoEmail)
 	r.POST("/customer/verify/", customer.CheckOtpByEmail)
-	r.POST("/customer/manager/register", customer.RegisterCustomersManager) //account admin
+	r.POST("/customer/manager/register", customer.RegisterCustomersManager) //account admin => export include webhook
 	r.POST("/customer/manager/login", customer.Login)
 	r.POST("/customer/staff/register", customer.CreateAccountAdminManagerForStaff) // account staff
 	r.GET("customer/staff/getall", customer.GetAllStaff)
 	r.DELETE("/user/staff/delete", customer.DeleteStaffByName)
-	r.GET("/supper_admin/create", customer.CreateAccountAdmin)
+	r.GET("/supper_admin/create", customer.CreateAccountAdmin) // pessmiss super admin
 	r.POST("/customer/check", customer.CheckAccountAndSendOtp)
 	r.PUT("/customer/reset", customer.VerifyOtpByEmailAndResetPassword)
 	//

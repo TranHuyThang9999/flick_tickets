@@ -501,7 +501,14 @@ func (u *UseCaseOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReqByF
 			},
 		}, nil
 	}
-
+	if len(listTickets) == 0 {
+		return &entities.OrderGetAll{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
 	// Tạo map lưu trữ thông tin ticket theo ID
 	for _, ticket := range listTickets {
 		mapTicketByID[ticket.ID] = ticket
@@ -517,7 +524,14 @@ func (u *UseCaseOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReqByF
 			},
 		}, nil
 	}
-
+	if len(listShowTime) == 0 {
+		return &entities.OrderGetAll{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
 	// Tạo map lưu trữ thông tin show time theo ID
 	for _, showTime := range listShowTime {
 		mapShowTimeByID[showTime.ID] = showTime
@@ -527,22 +541,12 @@ func (u *UseCaseOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReqByF
 	for _, order := range resp {
 		showTime, ok := mapShowTimeByID[order.ShowTimeID]
 		if !ok {
-			return &entities.OrderGetAll{
-				Result: entities.Result{
-					Code:    enums.DB_ERR_CODE,
-					Message: enums.DB_ERR_MESS,
-				},
-			}, nil
+			return nil, nil
 		}
 
 		ticket, ok := mapTicketByID[showTime.TicketID]
 		if !ok {
-			return &entities.OrderGetAll{
-				Result: entities.Result{
-					Code:    enums.DB_ERR_CODE,
-					Message: enums.DB_ERR_MESS,
-				},
-			}, nil
+			return nil, nil
 		}
 
 		orderResp = append(orderResp, &entities.Orders{
@@ -566,6 +570,14 @@ func (u *UseCaseOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReqByF
 			Result: entities.Result{
 				Code:    enums.DB_ERR_CODE,
 				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if countOrder == 0 {
+		return &entities.OrderGetAll{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
 			},
 		}, nil
 	}
