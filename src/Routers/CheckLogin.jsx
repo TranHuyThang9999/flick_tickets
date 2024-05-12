@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import HomeAdmin from '../dashboard/HomeaAdmin';
-import FormLogin from '../dashboard/FormLogin';
 import PageForUser from '../Home/Page/PageForUser';
 
 export default function CheckLogin() {
@@ -25,7 +24,7 @@ export default function CheckLogin() {
                 setLoading(false);
             } else {
                 localStorage.setItem('user', JSON.stringify(response.data));
-                if (response.data.role === 3) {
+                if (response.data.role === 1) {
                     setIsLoggedIn(true);
                     setIsLoginRole3(false);
                 } else if (response.data.role === 13) {
@@ -53,7 +52,7 @@ export default function CheckLogin() {
                 return <HomeAdmin />;
             }
         } else {
-            return <FormLogin />;
+            return <PageForUser/>
         }
     }
 }
