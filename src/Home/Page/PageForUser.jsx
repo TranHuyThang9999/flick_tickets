@@ -303,10 +303,10 @@ export default function PageForUser() {
             </Col>
             <Col span={6}>
               <div style={{ paddingBottom: '10px', fontSize: '17px' }}> Đóng góp í kiến trực tiếp <AliwangwangFilled /></div>
-              <div style={{ paddingBottom: '10px', fontSize: '17px' }}><a href="#">hdfilm@gmail.com</a></div>
+              <div style={{ paddingBottom: '10px', fontSize: '17px' }}><a href="/#">HDfilm@gmail.com</a></div>
               <div style={{ paddingBottom: '10px', fontSize: '17px' }}>Hỗ trợ trực tiếp <CustomerServiceFilled /></div>
               <div style={{ paddingBottom: '10px', fontSize: '17px' }}>
-                <a href="/">0981436092</a>
+                <a href="/#">0981436092</a>
               </div>
               <div style={{ paddingBottom: '10px', fontSize: '17px' }}>
               Trụ sở trung tâm rạp chiếu phim

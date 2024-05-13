@@ -108,7 +108,7 @@ export default function FormLogin() {
                         />
                     </Form.Item>
                     <Form.Item>
-                        <div className="login-form-forgot" href="#">
+                        <div className="login-form-forgot" href="/#">
                             <div>
                                 <Checkbox onChange={handleCheckboxChange}>Quản trị viên <AndroidOutlined /></Checkbox>
                             </div>
