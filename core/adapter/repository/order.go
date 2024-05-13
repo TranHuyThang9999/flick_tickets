@@ -40,7 +40,7 @@ func (c *CollectionOrder) GetOrderById(ctx context.Context, id int64) (*domain.O
 }
 func (c *CollectionOrder) UpsertOrder(ctx context.Context, email string, orderId int64, status int) error {
 	err := c.collection.Model(&domain.Orders{}).
-		Where("id = ? OR email = ?", orderId, email).
+		Where("id = ? and email = ?", orderId, email).
 		UpdateColumn("status", status).Error
 	return err
 }

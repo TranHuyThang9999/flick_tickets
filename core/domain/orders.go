@@ -19,6 +19,8 @@ type Orders struct {
 	Sale           int     `json:"sale"`
 	MovieTime      int     `json:"movie_time"`
 	AddressDetails string  `json:"addressDetails"`
+	CinemaName     string  `json:"cinema_name"`
+	MovieName      string  `json:"movie_name"`
 	CreatedAt      int     `json:"created_at"`
 	UpdatedAt      int     `json:"updated_at"`
 }

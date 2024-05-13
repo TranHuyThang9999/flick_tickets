@@ -82,6 +82,7 @@ type OrderHistoryEntities struct {
 	Seats          string  `json:"seats"`
 	MovieTime      int     `json:"movie_time"`
 	AddressDetails string  `json:"address_details"`
+	CreatedAt      int     `json:"created_at"`
 }
 type OrderHistoryResp struct {
 	Result               Result                  `json:"result"`
