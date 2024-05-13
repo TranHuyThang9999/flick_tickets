@@ -77,7 +77,6 @@ export default function App() {
       {/* <GetListCart/> */}
       {/* <QRScanner/> */}
       {/* <FormLogin/> */}
-      {/* <GetOrderById/> */}
       {/* <PurchaseHistory email={'thuynguyen151387@gmail.com'}/> */}
       {/* <AddShowTime ticketId={3462449}/> */}
       {/* <UpdateTicketById ticketId={1357952}/> */}

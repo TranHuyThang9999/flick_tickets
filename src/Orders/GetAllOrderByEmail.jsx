@@ -17,10 +17,9 @@ export default function GetOrderById() {
   const fetchData = async () => {
     try {
       const offset = (currentPage - 1) * limit;
-      const response = await axios.get('http://localhost:8080/manager/user/order/getlist', {
+      const response = await axios.get('http://localhost:8080/manager/user/order/history', {
         params: {
-          offset: offset,
-          limit: limit,
+          email: offset,
         }
       });
 
@@ -117,7 +116,7 @@ export default function GetOrderById() {
       width: '20%'
     },
     {
-      title: 'Đã Tạo Lúc',
+      title: 'Thời gian mua',
       dataIndex: 'created_at',
       key: 'created_at',
       render: (timestamp) => moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss'),
