@@ -2,12 +2,14 @@ import { Button, Form, Input, Upload } from 'antd';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { showError, showSuccess, showWarning } from '../log/log';
+import { WeiboCircleFilled } from '@ant-design/icons';
 import './index.css';
+import FormLogin from '../../dashboard/FormLogin';
 
 export default function FormRegisterCustomer() {
     const [form] = Form.useForm();
     const [imageFile, setImageFile] = useState(null);
-
+    const [goBackFormLogin, setGoBackFormLogin] = useState(false);
     const handleFormSubmit = async (values) => {
         try {
             const formData = new FormData();
@@ -51,10 +53,18 @@ export default function FormRegisterCustomer() {
             span: 16,
         },
     };
-
+    const handlerGoback = () => {
+        setGoBackFormLogin(true);
+    }
+    if (goBackFormLogin) {
+        return (
+            <FormLogin />
+        )
+    }
     return (
         <div>
-            <Form {...layout} form={form} className="form-container" onFinish={handleFormSubmit}>
+            <div><WeiboCircleFilled /></div>
+            <Form {...layout} form={form} className="form-container-register-customer" onFinish={handleFormSubmit}>
                 <Form.Item
                     label="Tên tài khoản"
                     name="user_name"
@@ -100,6 +110,7 @@ export default function FormRegisterCustomer() {
                     name="email"
                     rules={[
                         {
+                            required: true,
                             type: 'email',
                             message: 'Email không hợp lệ!',
                         },
@@ -145,8 +156,9 @@ export default function FormRegisterCustomer() {
                 </Form.Item>
 
                 <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                    <Button onClick={handlerGoback} style={{ marginRight: '10px' }}>Quay lại</Button>
                     <Button type="primary" htmlType="submit">
-                        Submit
+                        Đăng ký
                     </Button>
                 </Form.Item>
             </Form>

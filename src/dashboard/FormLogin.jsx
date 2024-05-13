@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { LockOutlined, UserOutlined, LoginOutlined, WeiboCircleFilled, AndroidOutlined } from '@ant-design/icons';
 import './index.css';
 import { showError } from '../common/log/log';
+import FormRegisterCustomer from '../common/customers/FormRegisterCustomer';
 
 export default function FormLogin() {
 
@@ -11,13 +12,16 @@ export default function FormLogin() {
     const [isLoginAdmin, setIsloginAdmin] = useState(false);
     const [isLoginCustomer, setIsLoginCustomer] = useState(false);
     const [role, setRole] = useState(13); // Default role is 13
+    const [isNextRegister,setIsNextRegister] = useState(false);
 
     const handleCheckboxChange = (e) => {
         const newRole = e.target.checked ? 1 : 13; // Set role to 1 if checkbox is checked, otherwise 13
         setRole(newRole);
     };
 
-
+    const handlernextFormRegister = ()=>{
+        setIsNextRegister(true);
+    }
     const errorMessage = () => {
         message.error('Lỗi hệ thống vui lòng thử lại');
     };
@@ -64,7 +68,11 @@ export default function FormLogin() {
         // return <HomeAdmin />;
         window.location.reload();
     }
-
+    if(isNextRegister){
+        return(
+            <FormRegisterCustomer/>
+        )
+    }
     // Phần còn lại của mã để hiển thị biểu mẫu đăng nhập
     return (
         <div className="container-login-user">
@@ -116,7 +124,7 @@ export default function FormLogin() {
                                 <a>
                                     Quên mật khẩu
                                 </a>
-                                <a>
+                                <a onClick={handlernextFormRegister}>
                                     Đăng ký tài khoản
                                 </a>
                             </div>
