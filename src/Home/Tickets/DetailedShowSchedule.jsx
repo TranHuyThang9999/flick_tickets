@@ -159,7 +159,7 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
             />
           </div>
         )}
-        <div style={{ display: 'flex', padding: '10px', marginRight: '10px' }}>
+        <div style={{ display: 'flex', padding: '10px', marginRight: '10px',marginTop:'100px' }}>
           <Button style={{ width: '120px', marginRight: '10px' }} type="primary" onClick={() => setShowModal(true)} disabled={selectPopChid.length === 0 || loadingPayment}>
             {loadingPayment ? 'Đang xử lý...' : 'Mua'}
           </Button>

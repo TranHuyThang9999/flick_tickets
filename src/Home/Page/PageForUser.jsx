@@ -306,7 +306,7 @@ export default function PageForUser() {
               Địa chỉ
               <Input />
             </Col>
-            <Col  style={{paddingTop:'15px'}} span={6}>
+            <Col  style={{paddingTop:'16px'}} span={6}>
               <Button>Tìm kiếm</Button>
             </Col>
           </Row>
