@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './home.css';
-import { Avatar, Button, Col, Drawer, Menu, Modal, Row } from 'antd';
+import { Avatar, Button, Col, Drawer, Menu, Modal, Row, Input } from 'antd';
 import {
   BellFilled, ShoppingCartOutlined, TwitterCircleFilled,
   InteractionFilled, WeiboCircleOutlined,
@@ -107,7 +107,7 @@ export default function PageForUser() {
     setOpenHistoryOrder(false);
   };
 
-  const showModalFormLogin = ()=>{
+  const showModalFormLogin = () => {
     setOpenLogin(true);
   }
   const hideModalFormLogin = () => {
@@ -276,6 +276,7 @@ export default function PageForUser() {
       </div>
       <div className='layout-content'>
         <div className='layout-content-header'><HomeFilled /><RightOutlined /> Cinema</div>
+
         <Row className='layout-content-body'>
           <Col className='layout-content-descript'>
             <ul>
@@ -291,6 +292,26 @@ export default function PageForUser() {
             <img width='600px' Height='400px' src='http://localhost:1234/manager/shader/huythang/daidien.png' alt="Avatar" />
           </Col>
         </Row>
+        <div className='layout-content-search'>
+          <Row>
+            <Col style={{ fontSize: '15px' }} span={6}>
+              Tên phim
+              <Input />
+            </Col>
+            <Col span={6}>
+              Thời gian chiếu
+              <Input />
+            </Col>
+            <Col span={6}>
+              Địa chỉ
+              <Input />
+            </Col>
+            <Col  style={{paddingTop:'15px'}} span={6}>
+              <Button>Tìm kiếm</Button>
+            </Col>
+          </Row>
+        </div>
+
       </div>
       <div className='layout-footer'>
         <div>
@@ -309,9 +330,9 @@ export default function PageForUser() {
                 <a href="/#">0981436092</a>
               </div>
               <div style={{ paddingBottom: '10px', fontSize: '17px' }}>
-              Trụ sở trung tâm rạp chiếu phim
+                Trụ sở trung tâm rạp chiếu phim
               </div>
-              <div style={{ paddingBottom: '10px',color:'green', fontSize: '17px' }}>
+              <div style={{ paddingBottom: '10px', color: 'green', fontSize: '17px' }}>
                 Tầng 99   tòa nhà Trần Huy Thắng 999 Hoàn Kiếm
               </div>
             </Col>

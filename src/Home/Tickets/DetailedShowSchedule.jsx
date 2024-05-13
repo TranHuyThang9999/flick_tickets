@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Drawer, Table, Modal, Input, Popconfirm } from 'antd'; // Thêm Modal và Input từ antd để hiển thị form và ô input
+import { Button, Drawer, Table, Modal, Input, Popconfirm, Form } from 'antd';
 import { showWarning, showError } from '../../common/log/log';
 import SelectedSeat from '../../common/cinemas/SelectedSeat';
 import axios from 'axios';
-import Cookies from 'js-cookie'; // Import thư viện js-cookie
+import Cookies from 'js-cookie';
 import Addcart from '../../cart/Addcart';
 
 export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
@@ -12,14 +12,15 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [fetchingData, setFetchingData] = useState(false);
   const [selectPopChid, setSelectPopChid] = useState([]);
-  const [loadingPayment, setLoadingPayment] = useState(false); // Trạng thái loading cho phần thanh toán
-  const [showModal, setShowModal] = useState(false); // Trạng thái hiển thị modal
-  const [phoneNumber, setPhoneNumber] = useState(''); // Trạng thái để lưu số điện thoại nhập vào
-  const [email, setEmail] = useState(''); // Trạng thái để lưu email nhập vào
+  const [loadingPayment, setLoadingPayment] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
+  const [form] = Form.useForm();
 
   const showDrawer = (record) => {
-    const { show_time_id } = record; // Extract the show_time_id from the record
-    setSelectedRecord({ ...record, show_time_id }); // Pass the show_time_id along with the record
+    const { show_time_id } = record;
+    setSelectedRecord({ ...record, show_time_id });
     setOpen(true);
   };
 
@@ -31,8 +32,8 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
   const fetchData = async () => {
     setFetchingData(true);
     try {
-      const response = await axios.get(`http://localhost:8080/manager/user/getlist/time?id=${id}`);// lay ve theo ticket id
-      const data = response.data; // Truy cập dữ liệu từ response.data
+      const response = await axios.get(`http://localhost:8080/manager/user/getlist/time?id=${id}`);
+      const data = response.data;
       setShowTimeTicket(data.showtimes);
       if (data.result.code === 20) {
         showWarning("Không tìm thấy bản ghi nào");
@@ -46,7 +47,6 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
       setFetchingData(false);
     }
   };
-
 
   useEffect(() => {
     fetchData();
@@ -63,80 +63,37 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
   }
 
   const columns = [
-    {
-      title: 'Code',
-      dataIndex: 'id',
-      key: 'id',
-    },
-    {
-      title: 'Phòng để chiếu',
-      dataIndex: 'cinema_name',
-      key: 'cinema_name',
-    },
-    {
-      title: 'Thời gian chiếu phim',
-      dataIndex: 'movie_time',
-      key: 'movie_time',
-      render: (movie_time) => formatTimestamp(movie_time),
-    },
-    {
-      title: 'Mô tả',
-      dataIndex: 'description',
-      key: 'description',
-    },
-    {
-      title: 'Tỉnh',
-      dataIndex: 'conscious',
-      key: 'conscious',
-    },
-    {
-      title: 'Huyện',
-      dataIndex: 'district',
-      key: 'district',
-    },
-    {
-      title: 'Xã/Phường',
-      dataIndex: 'commune',
-      key: 'commune',
-    },
-    {
-      title: 'Địa chỉ Chi tiết',
-      dataIndex: 'address_details',
-      key: 'address_details',
-    },
-    {
-      title: 'Giá tiền',
-      dataIndex: 'price',
-      key: 'price',
-    },
+    { title: 'Code', dataIndex: 'id', key: 'id' },
+    { title: 'Phòng để chiếu', dataIndex: 'cinema_name', key: 'cinema_name' },
+    { title: 'Thời gian chiếu phim', dataIndex: 'movie_time', key: 'movie_time', render: (movie_time) => formatTimestamp(movie_time) },
+    { title: 'Mô tả', dataIndex: 'description', key: 'description' },
+    { title: 'Tỉnh', dataIndex: 'conscious', key: 'conscious' },
+    { title: 'Huyện', dataIndex: 'district', key: 'district' },
+    { title: 'Xã/Phường', dataIndex: 'commune', key: 'commune' },
+    { title: 'Địa chỉ Chi tiết', dataIndex: 'address_details', key: 'address_details' },
+    { title: 'Giá tiền', dataIndex: 'price', key: 'price' },
     {
       title: '',
       render: (record) => (
         <div>
-          <Button type="primary" onClick={() => showDrawer(record)}>
-            Chọn ghế xem phim
-          </Button>
+          <Button type="primary" onClick={() => showDrawer(record)}>Chọn ghế xem phim</Button>
         </div>
       ),
     },
   ];
-  console.log(selectedRecord);
-  console.log("pop : ", selectPopChid);
 
-  const pagination = {
-    pageSize: 4,
-    position: ['bottomLeft'],
-  };
+  const pagination = { pageSize: 4, position: ['bottomLeft'] };
 
-  const item = selectPopChid
+  const item = selectPopChid;
   const items = item.map((item) => ({
     name: "Vị trí ghế : " + item,
     quantity: 1,
     price: selectedRecord && selectedRecord.price
   }));
+  const amountTitile = selectedRecord && selectedRecord.price * selectPopChid.length + 'VND';
 
   const handleCreatePayment = async () => {
-    setLoadingPayment(true); // Bắt đầu loading khi bắt đầu thanh toán
+    setLoadingPayment(true);
     try {
       const amount = selectedRecord.price * selectPopChid.length;
 
@@ -149,8 +106,8 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
         cancelUrl: "http://localhost:8080/manager/public/customer/payment/calcel",
         returnUrl: "http://localhost:8080/manager/public/customer/payment/return",
         buyerName: "John Doe",
-        buyerEmail: email, // Sử dụng email đã nhập vào
-        buyerPhone: phoneNumber, // Sử dụng số điện thoại đã nhập vào
+        buyerEmail: email,
+        buyerPhone: phoneNumber,
         buyerAddress: "123 Main St"
       };
 
@@ -161,25 +118,23 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
       });
 
       localStorage.setItem("order_id", response.data.orderCode);
-      Cookies.set("order_id", response.data.orderCode, { expires: 30 }); // Đặt cookie với thời gian sống là 1 tháng (30 ngày)
-      
+      Cookies.set("order_id", response.data.orderCode, { expires: 30 });
+
       const paymentResult = response.data;
-      if(paymentResult.resp_order === 44){
-        setLoadingPayment(false); // Kết thúc loading nếu có lỗi
-          showWarning("Ghế này đã được người mua trước vui lòng chọn lại");
-          return
+      if (paymentResult.resp_order === 44) {
+        setLoadingPayment(false);
+        showWarning("Ghế này đã được người mua trước vui lòng chọn lại");
+        return;
       }
       if (paymentResult && paymentResult.checkoutUrl) {
-        // Chuyển hướng người dùng đến trang thanh toán
         window.location.href = paymentResult.checkoutUrl;
       }
     } catch (error) {
       console.log(error);
       showError('Error server 1');
     }
-    setLoadingPayment(false); // Kết thúc loading sau khi hoàn thành hoặc gặp lỗi
+    setLoadingPayment(false);
   };
-
 
   return (
     <div>
@@ -189,12 +144,8 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
         width={1000}
         onClose={onClose}
         visible={open}
-        bodyStyle={{
-          paddingBottom: 80,
-        }}
-        style={{
-          background: 'linear-gradient(90deg, rgba(102, 153, 204, 1) 0%, rgba(102, 204, 102, 1) 100%)',
-        }}
+        bodyStyle={{ paddingBottom: 80 }}
+        style={{ background: 'linear-gradient(90deg, rgba(102, 153, 204, 1) 0%, rgba(102, 204, 102, 1) 100%)' }}
       >
         {selectedRecord && (
           <div style={{ padding: '10px 16px' }}>
@@ -208,51 +159,57 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
             />
           </div>
         )}
-
-        <Button type="primary" onClick={() => setShowModal(true)} disabled={selectPopChid.length === 0 || loadingPayment}> {/* Sử dụng điều kiện để vô hiệu hóa nút khi selectPopChid rỗng hoặc loadingPayment đang true */}
-          {loadingPayment ? 'Đang xử lý...' : 'Mua'}
-        </Button>
-
-
-        {selectPopChid.length > 0 && (
-          < Addcart
-            show_time_id={selectedRecord ? selectedRecord.id : null}
-            seats_position={item}
-            price={selectedRecord ? selectedRecord.price * item.length : 0}
-          />
-        )}
-
-  
-
+        <div style={{ display: 'flex', padding: '10px', marginRight: '10px' }}>
+          <Button style={{ width: '120px', marginRight: '10px' }} type="primary" onClick={() => setShowModal(true)} disabled={selectPopChid.length === 0 || loadingPayment}>
+            {loadingPayment ? 'Đang xử lý...' : 'Mua'}
+          </Button>
+          {selectPopChid.length > 0 && (
+            <Addcart
+              show_time_id={selectedRecord ? selectedRecord.id : null}
+              seats_position={item}
+              price={selectedRecord ? selectedRecord.price * item.length : 0}
+            />
+          )}
+        </div>
       </Drawer>
-      {/* Modal */}
       <Modal
-        title="Thông tin thanh toán"
-        visible={showModal} // Sử dụng trạng thái showModal để điều khiển sự hiển thị của modal
+        title="Nhập thông tin để nhận vé"
+        visible={showModal}
         onCancel={() => setShowModal(false)}
         footer={[
-          <Button key="back" onClick={() => setShowModal(false)}>
-            Quay lại
-          </Button>,
-          //
+          <Button key="back" onClick={() => setShowModal(false)}>Quay lại</Button>,
           <Popconfirm
             title="Xác nhận thanh toán?"
             okText="Xác nhận"
             cancelText="Hủy"
-            onConfirm={handleCreatePayment}
+            onConfirm={form.submit}
           >
-            <Button key="submit" type="primary" loading={loadingPayment}>
-              {loadingPayment ? 'Đang xử lý...' : 'Thanh toán'}
-            </Button>
+            <Button key="submit" type="primary" loading={loadingPayment}>{loadingPayment ? 'Đang xử lý...' : 'Thanh toán'}</Button>
           </Popconfirm>,
         ]}
       >
-        <div style={{ padding: '0 10px' }}>
-          <label>Nhập số điện thoại</label>
-          <Input onChange={(e) => setPhoneNumber(e.target.value)} />
-          <label>Nhập email để nhận vé</label>
-          <Input type='email' onChange={(e) => setEmail(e.target.value)} />
-        </div>
+        <Form form={form} onFinish={handleCreatePayment}>
+          <Form.Item label='Tổng số tiền'>
+            <Input disabled value={amountTitile} />
+          </Form.Item>
+          <Form.Item
+            label='Nhập số điện thoại'
+            name='phoneNumber'
+            rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+          >
+            <Input onChange={(e) => setPhoneNumber(e.target.value)} />
+          </Form.Item>
+          <Form.Item
+            label='Nhập email để nhận vé'
+            name='email'
+            rules={[
+              { required: true, message: 'Vui lòng nhập email để nhận vé!' },
+              { type: 'email', message: 'Vui lòng nhập email hợp lệ!' }
+            ]}
+          >
+            <Input type='email' onChange={(e) => setEmail(e.target.value)} />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );

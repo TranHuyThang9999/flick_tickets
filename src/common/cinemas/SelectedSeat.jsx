@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Col, Row, Space } from 'antd';
 import { HourglassFilled } from '@ant-design/icons';
 
-function Square({ size = 30, index, onClick, disabled, selected, inSelectedSeatGetFormApi }) {
+function Square({ size = 45, index, onClick, disabled, selected, inSelectedSeatGetFormApi }) {
   const style = {
     width: `${size}px`,
     height: `${size}px`,
@@ -48,8 +48,8 @@ export default function SelectedSeat({
   onCreate, // Hàm callback để truyền danh sách ghế đã chọn
   statusSale,
 }) {
-  const [containerWidth, setContainerWidth] = useState(widthContainerUseSavedate || 400);
-  const [containerHeight, setContainerHeight] = useState(heightContainerUseSaveData || 400);
+  const [containerWidth, setContainerWidth] = useState(widthContainerUseSavedate || 600);
+  const [containerHeight, setContainerHeight] = useState(heightContainerUseSaveData || 600);
   const [disabledSquares, setDisabledSquares] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]); // Thêm state mới để lưu trữ vị trí các ghế đã chọn
 
@@ -83,7 +83,7 @@ export default function SelectedSeat({
   }, [selectedSeats, onCreate]);
   if (statusSale === 17) {
     return (
-      <div>Vé chưa mở bán , vui lòng chờ <HourglassFilled style={{color:'dodgerblue'}} /></div>
+      <div>Vé chưa mở bán , vui lòng chờ <HourglassFilled style={{ color: 'dodgerblue' }} /></div>
     )
   }
   return (
@@ -105,10 +105,12 @@ export default function SelectedSeat({
           </Col>
           <Col style={{ display: 'flex', marginTop: '-18px' }}>
             <div>
-              <h2>Selected Squares:</h2>
+              <h2>Chọn ghế:</h2>
               <ul>
                 {selectedSeats.map((seat, index) => ( // Hiển thị danh sách các ghế đã chọn
-                  <li key={index}>Square {seat}</li>
+                  <div>
+                    <li key={index}>Ghế {seat}</li>
+                  </div>
                 ))}
               </ul>
             </div>

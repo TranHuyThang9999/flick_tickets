@@ -22,7 +22,7 @@ export default function GetTicketOncarousel({ status ,name,movie_theater_name}) 
           params: {
             status: status,
             name:name,
-            movie_theater_name:movie_theater_name
+            movie_theater_name:movie_theater_name//PhimTên rạp chiếu phim
           },
         });
         if (response.data.result.code === 0) {

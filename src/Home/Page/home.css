@@ -118,3 +118,7 @@
   max-height: 400px; /* Chiều cao tối đa của ảnh */
   object-fit: cover; /* Hiển thị ảnh mà không biến dạng và điền đầy phần tử chứa */
 }
+.layout-content-search{
+  margin-top: 12px;
+  margin-left: 10px;
+}
