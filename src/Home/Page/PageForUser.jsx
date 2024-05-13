@@ -10,11 +10,11 @@ import {
 import axios from 'axios';
 import FormLogin from '../../dashboard/FormLogin';
 import CinemasGetAll from '../../common/cinemas/CinemasGetAll';
-import Profile from '../../common/customers/Profile';
 import GetTicketOncarousel from '../../common/ViewTicketsForSell/GetTicketOncarousel';
 import GetListCart from '../../cart/GetListCart';
 import QRScanner from '../../QRScanner/QRScanner';
 import PurchaseHistory from '../Tickets/PurchaseHistory';
+import Profile from '../../common/customers/Profile';
 
 export default function PageForUser() {
 
@@ -29,7 +29,6 @@ export default function PageForUser() {
   const [openCheck, setOpenCheck] = useState(false);
   const [openHistoryOrder, setOpenHistoryOrder] = useState(false);
   const [openLogin, setOpenLogin] = useState(false);
-  const [isloginAdmin, setIsLoginAdmin] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -107,10 +106,11 @@ export default function PageForUser() {
   const onCloseCHistoryOrder = () => {
     setOpenHistoryOrder(false);
   };
-  const showModalFornLogin = () => {
-    setIsLoginAdmin(true);
-  };
-  const hideModal = () => {
+
+  const showModalFormLogin = ()=>{
+    setOpenLogin(true);
+  }
+  const hideModalFormLogin = () => {
     setOpenLogin(false);
   };
   const listRoomCinema = CinemasGetAll();
@@ -139,11 +139,7 @@ export default function PageForUser() {
       <Profile />
     );
   }
-  if (isloginAdmin) {
-    return (
-      <FormLogin />
-    )
-  }
+
 
   return (
     <div>
@@ -155,17 +151,17 @@ export default function PageForUser() {
           <div>
             {!username && (
               <div>
-                <Button className='layout-header-start-button-login' onClick={showModalFornLogin}>
+                <Button className='layout-header-start-button-login' onClick={showModalFormLogin}>
                   Đăng nhập <InteractionFilled />
                 </Button>
-                {/* <Modal
-                  open={openLogin}
+                <Modal
+                  visible={openLogin}
                   footer
-                  onCancel={hideModal}
+                  onCancel={hideModalFormLogin}
                   width={420}
                 >
                   <FormLogin />
-                </Modal> */}
+                </Modal>
               </div>
             )}
           </div>
@@ -307,7 +303,7 @@ export default function PageForUser() {
             </Col>
             <Col span={6}>
               <div style={{ paddingBottom: '10px', fontSize: '17px' }}> Đóng góp í kiến trực tiếp <AliwangwangFilled /></div>
-              <div style={{ paddingBottom: '10px', fontSize: '17px' }}><a href="/">hdfilm@gmail.com</a></div>
+              <div style={{ paddingBottom: '10px', fontSize: '17px' }}><a href="#">hdfilm@gmail.com</a></div>
               <div style={{ paddingBottom: '10px', fontSize: '17px' }}>Hỗ trợ trực tiếp <CustomerServiceFilled /></div>
               <div style={{ paddingBottom: '10px', fontSize: '17px' }}>
                 <a href="/">0981436092</a>

@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { LockOutlined, UserOutlined, LoginOutlined, WeiboCircleFilled, AndroidOutlined } from '@ant-design/icons';
 import './index.css';
 import { showError } from '../common/log/log';
-import HomeAdmin from './HomeaAdmin'; // Import HomeAdmin component
 
 export default function FormLogin() {
 
@@ -62,7 +61,8 @@ export default function FormLogin() {
 
     // Trả về HomeAdmin component nếu đăng nhập là admin
     if (isLoginAdmin) {
-        return <HomeAdmin />;
+        // return <HomeAdmin />;
+        window.location.reload();
     }
 
     // Phần còn lại của mã để hiển thị biểu mẫu đăng nhập
@@ -108,7 +108,7 @@ export default function FormLogin() {
                         />
                     </Form.Item>
                     <Form.Item>
-                        <div className="login-form-forgot" href="/">
+                        <div className="login-form-forgot" href="#">
                             <div>
                                 <Checkbox onChange={handleCheckboxChange}>Quản trị viên <AndroidOutlined /></Checkbox>
                             </div>

@@ -1,4 +1,4 @@
-import { Table, Space } from 'antd';
+import { Table } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';

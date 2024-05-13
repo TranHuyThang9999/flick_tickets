@@ -56,14 +56,7 @@ export default function UpdateProfile() {
         }
     };
 
-    const layout = {
-        labelCol: {
-            span: 8,
-        },
-        wrapperCol: {
-            span: 16,
-        },
-    };
+   
 
     if (!user) {
         return null; // or loading indicator
@@ -71,7 +64,7 @@ export default function UpdateProfile() {
 
     return (
         <div>
-            <Form {...layout} form={form} className="form-container" onFinish={handleFormSubmit}>
+            <Form  form={form} className="form-container-update" onFinish={handleFormSubmit}>
 
                 <Form.Item
                     initialValue={user.address}

@@ -88,7 +88,7 @@ export default function Profile() {
             </div>
             <Drawer
                 title="Cập nhật thông tin"
-                width={400}
+                width={600}
                 onClose={onCloseDrawer}
                 visible={drawerVisible}
                 placement="right"
