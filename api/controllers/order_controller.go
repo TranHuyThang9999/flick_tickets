@@ -117,3 +117,13 @@ func (order *ControllerOrder) TriggerOrder(ctx *gin.Context) {
 	}
 	ctx.JSON(200, "trigger sucess")
 }
+func (order *ControllerOrder) GetOrderHistory(ctx *gin.Context) {
+	var req entities.OrderHistoryReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := order.order.OrderHistory(ctx, &req)
+
+	order.baseController.Response(ctx, resp, err)
+}

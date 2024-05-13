@@ -741,3 +741,101 @@ func (u *UseCaseOrder) TriggerOrder(ctx context.Context) error {
 	log.Infof("trigger ok")
 	return nil
 }
+func (u *UseCaseOrder) OrderHistory(ctx context.Context, req *entities.OrderHistoryReq) (*entities.OrderHistoryResp, error) {
+
+	var listOrdersResp = make([]*entities.OrderHistoryEntities, 0)
+	// var mapCinemaNameByShowTimeId = make(map[int64]*domain.ShowTime, 0)
+	// var mapMovieNameByTicketId = make(map[int64]*domain.Tickets, 0) // Sửa đổi đây để lưu tên phim
+	// var mapTicketIdByShowTimeId = make(map[int64]int64, 0)
+
+	listOrders, err := u.order.GetListOrderHistoeryByEmail(ctx, req.Email)
+	if err != nil {
+		return &entities.OrderHistoryResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(listOrders) == 0 {
+		return &entities.OrderHistoryResp{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
+
+	// listShowTime, err := u.showTime.GetAll(ctx)
+	// if err != nil {
+	// 	return &entities.OrderHistoryResp{
+	// 		Result: entities.Result{
+	// 			Code:    enums.DB_ERR_CODE,
+	// 			Message: enums.DB_ERR_MESS,
+	// 		},
+	// 	}, nil
+	// }
+	listTickets, err := u.tickets.GetAllTicket(ctx)
+	if err != nil {
+		return &entities.OrderHistoryResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(listTickets) == 0 {
+		return &entities.OrderHistoryResp{
+			Result: entities.Result{
+				Code:    enums.CLIENT_ERROR_CODE,
+				Message: enums.CLIENT_ERROR_MESS,
+			},
+		}, nil
+	}
+
+	for i := 0; i < len(listOrders); i++ {
+
+		//	ticketID := mapTicketIdByShowTimeId[listOrders[i].ShowTimeID]
+		showTime, err := u.showTime.GetShowTimeById(ctx, listOrders[i].ShowTimeID)
+		if err != nil {
+			return &entities.OrderHistoryResp{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, nil
+		}
+
+		ticket, err := u.tickets.GetTicketById(ctx, showTime.TicketID)
+		if err != nil {
+			return &entities.OrderHistoryResp{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, nil
+		}
+
+		listOrdersResp = append(listOrdersResp, &entities.OrderHistoryEntities{
+			ID:             listOrders[i].ID,
+			Email:          req.Email,
+			ReleaseDate:    listOrders[i].ReleaseDate,
+			Description:    listOrders[i].Description,
+			Status:         listOrders[i].Status,
+			Price:          listOrders[i].Price,
+			Seats:          listOrders[i].Seats,
+			MovieTime:      listOrders[i].MovieTime,
+			AddressDetails: listOrders[i].AddressDetails,
+			MovieName:      ticket.Name,         // ten phim
+			CinemaName:     showTime.CinemaName, // ten rap
+		})
+	}
+
+	return &entities.OrderHistoryResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		OrderHistoryEntities: listOrdersResp,
+	}, nil
+}

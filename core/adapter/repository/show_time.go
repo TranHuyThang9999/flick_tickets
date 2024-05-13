@@ -159,3 +159,8 @@ func (c *CollectionShowTime) FindDuplicateShowTimeUseUpdate(ctx context.Context,
 
 	return result, nil
 }
+func (c *CollectionShowTime) GetAllShowTime(ctx context.Context) ([]*domain.ShowTime, error) {
+	var listShowTime = make([]*domain.ShowTime, 0)
+	result := c.collection.Find(&listShowTime)
+	return listShowTime, result.Error
+}

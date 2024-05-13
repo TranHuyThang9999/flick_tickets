@@ -90,3 +90,8 @@ func (u *CollectionTickets) GetlistTicketByListTicketId(ctx context.Context, lis
 	result := u.collection.Where("id in (?)", listTicketId).Find(&tickets)
 	return tickets, result.Error
 }
+func (u *CollectionTickets) GetAllTicket(ctx context.Context) ([]*domain.Tickets, error) {
+	var listTickets = make([]*domain.Tickets, 0)
+	result := u.collection.Find(&listTickets)
+	return listTickets, result.Error
+}

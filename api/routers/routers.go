@@ -75,8 +75,9 @@ func NewApiRouter(
 	r.PUT("/customer/update/order", order.UpsertOrderById)
 	r.PUT("/customer/order/send", order.SubmitSendTicketByEmail) //webhook
 	r.PUT("/customer/order/calcel", order.UpdateOrderWhenCancel) // webhook
-	r.GET("/user/order/getlist", order.GetAllOrder)
+	r.GET("/user/order/getlist", order.GetAllOrder)              // ko dung
 	r.GET("/user/trigger", order.TriggerOrder)
+	r.GET("/user/order/history", order.GetOrderHistory)
 
 	//customer
 	r.POST("/customer/send/:email", customer.SendOtptoEmail)

@@ -104,3 +104,8 @@ func (c *CollectionOrder) GetTotalOrder(ctx context.Context, email string) (int6
 	result := c.collection.Model(&domain.Orders{}).Where("email = ?", email).Count(&count)
 	return count, result.Error
 }
+func (c *CollectionOrder) GetListOrderHistoeryByEmail(ctx context.Context, email string) ([]*domain.Orders, error) {
+	var listOrder = make([]*domain.Orders, 0)
+	result := c.collection.Where("email = ?", email).Find(&listOrder)
+	return listOrder, result.Error
+}

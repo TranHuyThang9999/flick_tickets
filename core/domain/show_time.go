@@ -56,4 +56,5 @@ type RepositoryShowTime interface {
 	GetShowTimeById(ctx context.Context, show_time_id int64) (*ShowTime, error)
 	UpdateShowTimeById(ctx context.Context, req *ShowTimeUpdateReq) error
 	FindDuplicateShowTimeUseUpdate(ctx context.Context, movieTime int, cinemaName string) ([]*ShowTime, error)
+	GetAllShowTime(ctx context.Context) ([]*ShowTime, error)
 }
