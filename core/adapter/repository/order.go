@@ -21,7 +21,7 @@ func NewCollectionOrder(cf *configs.Configs, order *adapter.PostGresql) domain.R
 }
 
 // CancelTicket implements domain.RepositoryOrder.
-func (c *CollectionOrder) CancelTicket(ctx context.Context, id int64) error {
+func (c *CollectionOrder) CancelTicket(ctx context.Context, id int64) error { //ko dung
 	panic("unimplemented")
 }
 
@@ -73,7 +73,7 @@ func (c *CollectionOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReq
 		AddressDetails: req.AddressDetails,
 		CreatedAt:      req.CreatedAt,
 		UpdatedAt:      req.UpdatedAt,
-	}).Order("created_at asc").Limit(req.Limit).Offset(req.Offset).Find(&listOrder)
+	}).Order("created_at asc").Find(&listOrder)
 	return listOrder, result.Error
 }
 func (c *CollectionOrder) TriggerOrder(ctx context.Context) ([]*domain.Orders, error) {
@@ -83,7 +83,7 @@ func (c *CollectionOrder) TriggerOrder(ctx context.Context) ([]*domain.Orders, e
 	currentTimeStamp := time.Now().Unix()
 
 	// Tính timestamp của thời điểm 15 phút trước đây
-	fifteenMinutesAgo := currentTimeStamp - (15 * 60)
+	fifteenMinutesAgo := currentTimeStamp - (15 * 60) //--
 
 	// Truy vấn các đơn hàng có status = 7 và created_at nhỏ hơn thời điểm 15 phút trước đó
 	result := c.collection.Where("status = ? AND created_at < ?", 7, fifteenMinutesAgo).Find(&orders)

@@ -40,8 +40,6 @@ type OrdersReqByForm struct {
 	AddressDetails string  `form:"addressDetails"`
 	CreatedAt      int     `form:"created_at"`
 	UpdatedAt      int     `form:"updated_at"`
-	Limit          int     `form:"limit"`
-	Offset         int     `form:"offset"`
 }
 
 type RepositoryOrder interface {

@@ -75,7 +75,7 @@ func NewApiRouter(
 	r.PUT("/customer/update/order", order.UpsertOrderById)
 	r.PUT("/customer/order/send", order.SubmitSendTicketByEmail) //webhook
 	r.PUT("/customer/order/calcel", order.UpdateOrderWhenCancel) // webhook
-	r.GET("/user/order/getlist", order.GetAllOrder)              // ko dung
+	r.GET("/user/order/getlist", order.GetAllOrder)              // thong ke co admin
 	r.GET("/user/trigger", order.TriggerOrder)
 	r.GET("/user/order/history", order.GetOrderHistory)
 
@@ -91,7 +91,7 @@ func NewApiRouter(
 	r.POST("/customer/check", customer.CheckAccountAndSendOtp)
 	r.PUT("/customer/reset", customer.VerifyOtpByEmailAndResetPassword)
 	//
-	r.POST("/customer/user/register", customer.RegisterAccountCustomer)
+	r.POST("/customer/user/register", customer.RegisterAccountCustomer) //create account customer
 	r.PUT("/customer/user/update", customer.UpdateProfileCustomerByUserName)
 	r.GET("/customer/user/profile", customer.FindCustomersByUsename)
 	//show time

@@ -49,24 +49,11 @@ type OrderCancelBtyIdresp struct {
 	Result Result `json:"result"`
 }
 type OrderGetAll struct {
-	Result Result    `json:"result"`
-	Total  int       `json:"total"`
-	Orders []*Orders `json:"orders"`
+	Result Result           `json:"result"`
+	Total  int              `json:"total"`
+	Orders []*domain.Orders `json:"orders"`
 }
-type Orders struct {
-	ID             int64   `json:"id"`
-	MovieName      string  `json:"movie_name"`
-	CinemaName     string  `json:"cinema_name"`
-	Email          string  `json:"email"`
-	ReleaseDate    int     `json:"release_date"`
-	Description    string  `json:"description"`
-	Status         int     `json:"status"`
-	Price          float64 `json:"price"`
-	Seats          string  `json:"seats"`
-	MovieTime      int     `json:"movie_time"`
-	AddressDetails string  `json:"addressDetails"`
-	CreatedAt      int     `json:"created_at"`
-}
+
 type OrderHistoryReq struct {
 	Email string `form:"email"`
 }
