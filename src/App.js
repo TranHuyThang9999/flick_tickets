@@ -35,6 +35,7 @@ import UpdateTicketById from "./dashboard/UpdateTicketById";
 import UpdateShowTimeById from "./dashboard/UpdateShowTimeById";
 import TestCheckBox from "./common/test/test";
 import CheckLogin from "./Routers/CheckLogin";
+import OrderStatistics from "./Orders/OrderStatistics";
 
 export default function App() {
   return (
@@ -86,6 +87,7 @@ export default function App() {
       {/* <PageForUser/> */}
       <CheckLogin/>
       {/* <HomeaAdmin /> */}
+      {/* <OrderStatistics/> */}
     </div>
   );
 }

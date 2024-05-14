@@ -19,6 +19,7 @@ import AdminUploadTickets from './AdminUploadTickets';
 import GetAllTickets from './GetAllTickets';
 import MovieAdd from '../common/MovieTypes/MovieUpload';
 import PageForUser from '../Home/Page/PageForUser';
+import OrderStatistics from '../Orders/OrderStatistics';
 
 const { Header, Sider, Content } = Layout;
 
@@ -27,7 +28,7 @@ const items = [
     key: '1',
     icon: <LineChartOutlined />,
     label: 'Thống kế', // login or logout
-    children: null,
+    children: <OrderStatistics/>,
   },
   {
     key: '2',

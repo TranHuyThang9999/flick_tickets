@@ -1,7 +1,11 @@
 import { Button, Checkbox, Form, Input, message } from 'antd';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { LockOutlined, UserOutlined, LoginOutlined, WeiboCircleFilled, AndroidOutlined } from '@ant-design/icons';
+import {
+    LockOutlined, UserOutlined, LoginOutlined,
+    WeiboCircleFilled, AndroidOutlined, GooglePlusCircleFilled
+}
+    from '@ant-design/icons';
 import './index.css';
 import { showError } from '../common/log/log';
 import FormRegisterCustomer from '../common/customers/FormRegisterCustomer';
@@ -12,14 +16,14 @@ export default function FormLogin() {
     const [isLoginAdmin, setIsloginAdmin] = useState(false);
     const [isLoginCustomer, setIsLoginCustomer] = useState(false);
     const [role, setRole] = useState(13); // Default role is 13
-    const [isNextRegister,setIsNextRegister] = useState(false);
+    const [isNextRegister, setIsNextRegister] = useState(false);
 
     const handleCheckboxChange = (e) => {
         const newRole = e.target.checked ? 1 : 13; // Set role to 1 if checkbox is checked, otherwise 13
         setRole(newRole);
     };
 
-    const handlernextFormRegister = ()=>{
+    const handlernextFormRegister = () => {
         setIsNextRegister(true);
     }
     const errorMessage = () => {
@@ -68,9 +72,9 @@ export default function FormLogin() {
         // return <HomeAdmin />;
         window.location.reload();
     }
-    if(isNextRegister){
-        return(
-            <FormRegisterCustomer/>
+    if (isNextRegister) {
+        return (
+            <FormRegisterCustomer />
         )
     }
     // Phần còn lại của mã để hiển thị biểu mẫu đăng nhập
@@ -134,8 +138,8 @@ export default function FormLogin() {
                     <Form.Item style={{ display: 'flex', justifyContent: 'center' }}>
                         <Button style={{ fontSize: '15px' }} type="primary" htmlType='submit'>
                             Đăng nhập
-                            <LoginOutlined />
                         </Button>
+                        <a href='/#' style={{marginLeft:'10px',color:'gray'}}>Đăng nhập với Gmail <GooglePlusCircleFilled style={{color:'gray'}} /></a>
                     </Form.Item>
 
                     <Form.Item>
