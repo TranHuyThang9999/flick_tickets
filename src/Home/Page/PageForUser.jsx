@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './home.css';
-import { Avatar, Button, Col, Drawer, Menu, Modal, Row, Input } from 'antd';
+import { Avatar, Button, Col, Drawer, Menu, Modal, Row, Input, Space } from 'antd';
 import {
   BellFilled, ShoppingCartOutlined, TwitterCircleFilled,
   InteractionFilled, WeiboCircleOutlined,
@@ -15,6 +15,8 @@ import GetListCart from '../../cart/GetListCart';
 import QRScanner from '../../QRScanner/QRScanner';
 import PurchaseHistory from '../Tickets/PurchaseHistory';
 import Profile from '../../common/customers/Profile';
+import { redirect } from 'react-router-dom';
+import Blogs from '../../dashboard/Blogs';
 
 export default function PageForUser() {
 
@@ -29,6 +31,7 @@ export default function PageForUser() {
   const [openCheck, setOpenCheck] = useState(false);
   const [openHistoryOrder, setOpenHistoryOrder] = useState(false);
   const [openLogin, setOpenLogin] = useState(false);
+  const [isNextBlog, setIsNextBlog] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,6 +116,9 @@ export default function PageForUser() {
   const hideModalFormLogin = () => {
     setOpenLogin(false);
   };
+  const handlerNextBlog = () => {
+    setIsNextBlog(true);
+  }
   const listRoomCinema = CinemasGetAll();
 
   useEffect(() => {
@@ -139,7 +145,11 @@ export default function PageForUser() {
       <Profile />
     );
   }
-
+  if (isNextBlog) {
+    return (
+      <Blogs />
+    )
+  }
 
   return (
     <div>
@@ -229,6 +239,7 @@ export default function PageForUser() {
           </div>
 
           <div>Thông báo <BellFilled /></div>
+
           <div>
             <Button onClick={showDrawer}> Giỏ hàng <ShoppingCartOutlined /> </Button>
             <Drawer
@@ -262,7 +273,7 @@ export default function PageForUser() {
             </Drawer>
           </div>
           <div>
-            <Button>Cộng đồng <TwitterCircleFilled /></Button>
+            <Button onClick={handlerNextBlog}>Cộng đồng <TwitterCircleFilled /></Button>
           </div>
 
           <div>
@@ -272,6 +283,14 @@ export default function PageForUser() {
               </Button>
             )}
           </div>
+        </div>
+        <div className='layout-content-search'>
+          <Space direction="vertical" size="middle">
+            <Space.Compact>
+              <Input placeholder='Tìm kiếm tên phim' />
+              <Button>Tìm kiếm</Button>
+            </Space.Compact>
+          </Space>
         </div>
       </div>
       <div className='layout-content'>
@@ -292,25 +311,7 @@ export default function PageForUser() {
             <img width='600px' Height='400px' src='http://localhost:1234/manager/shader/huythang/daidien.png' alt="Avatar" />
           </Col>
         </Row>
-        <div className='layout-content-search'>
-          <Row>
-            <Col style={{ fontSize: '15px' }} span={6}>
-              Tên phim
-              <Input />
-            </Col>
-            <Col span={6}>
-              Thời gian chiếu
-              <Input />
-            </Col>
-            <Col span={6}>
-              Địa chỉ
-              <Input />
-            </Col>
-            <Col  style={{paddingTop:'16px'}} span={6}>
-              <Button>Tìm kiếm</Button>
-            </Col>
-          </Row>
-        </div>
+
 
       </div>
       <div className='layout-footer'>
@@ -318,7 +319,7 @@ export default function PageForUser() {
           <GetTicketOncarousel status={statusTicketSale} name={nameCinema} movie_theater_name={movieTheaterName} />
         </div>
         <div className='layout-footer-introduce'>
-          <Row style={{ paddingLeft: '20px', paddingTop: '40px', paddingBottom: '40px' }}>
+          <Row style={{ paddingLeft: '20px', paddingTop: '40px', paddingBottom: '40px',backgroundColor:'black' ,color:'white'}}>
             <Col span={6}>
 
             </Col>
@@ -332,15 +333,22 @@ export default function PageForUser() {
               <div style={{ paddingBottom: '10px', fontSize: '17px' }}>
                 Trụ sở trung tâm rạp chiếu phim
               </div>
-              <div style={{ paddingBottom: '10px', color: 'green', fontSize: '17px' }}>
+              <div style={{ paddingBottom: '10px', color: 'white', fontSize: '17px' }}>
                 Tầng 99   tòa nhà Trần Huy Thắng 999 Hoàn Kiếm
               </div>
             </Col>
             <Col span={6}>
             </Col>
             <Col span={6}>
-              col-6
+              <p>MUA VÉ XEM PHIM</p>
+              <p>Lịch chiếu phim</p>
+              <p>Rạp chiếu phim</p>
+              <p>Phim chiếu rạp</p>
+              <p>Review phim</p>
+              <p>Top phim</p>
+              <p>Blog phim</p>
             </Col>
+
           </Row>
         </div>
       </div>
