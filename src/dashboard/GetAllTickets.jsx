@@ -1,4 +1,4 @@
-import { Button, Drawer, Table } from 'antd';
+import { Button, Drawer, Space, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import GetTicketById from './GetTicketById';
@@ -78,12 +78,17 @@ export default function GetAllTicketsForAdmin() {
                     key='operation'
                     render={(_, record, index) => (
                         <>
-                            <Button
-                                style={{ width: '160px' }}
-                                onClick={() => showDrawerUpdate(index)} // Truyền index vào showDrawerUpdate
-                            >
-                                Chỉnh sửa thông tin vé
-                            </Button>
+                            <Space direction="horizontal" size="middle">
+                                <Button
+                                    style={{ width: '160px' }}
+                                    onClick={() => showDrawerUpdate(index)} // Truyền index vào showDrawerUpdate
+                                >
+                                    Chỉnh sửa thông tin vé
+                                </Button>
+                                <DeleteTicketById ticketId={record.id} onDelete={() => handleDeleteTicketById(record.id)} />
+
+                            </Space>
+
                             <Drawer
                                 width={800}
                                 onClose={() => onCloseUpdate(index)} // Truyền index vào onCloseUpdate
@@ -91,7 +96,6 @@ export default function GetAllTicketsForAdmin() {
                             >
                                 <UpdateTicketById ticketId={record.id} />
                             </Drawer>
-                            <DeleteTicketById ticketId={record.id} onDelete={() => handleDeleteTicketById(record.id)} />
                         </>
                     )}
                 />

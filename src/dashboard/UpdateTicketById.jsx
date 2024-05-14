@@ -161,11 +161,11 @@ export default function UpdateTicketById({ ticketId }) {
                         }}
                         options={[
                             {
-                                value: '15',
+                                value: 15,
                                 label: 'Mở bán',
                             },
                             {
-                                value: '17',
+                                value: 17,
                                 label: 'Đóng bán',
                             },
                         ]}
