@@ -1,0 +1,9 @@
+.form-container-reset-with-email{
+    background-color: white;
+    padding: 10px;
+    border-radius: 0;
+    max-width: 650px;
+    /* height: 550px; */
+    margin: 50px auto;
+    /* Cách top 50px */
+}

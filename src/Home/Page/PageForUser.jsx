@@ -15,7 +15,6 @@ import GetListCart from '../../cart/GetListCart';
 import QRScanner from '../../QRScanner/QRScanner';
 import PurchaseHistory from '../Tickets/PurchaseHistory';
 import Profile from '../../common/customers/Profile';
-import { redirect } from 'react-router-dom';
 import Blogs from '../../dashboard/Blogs';
 
 export default function PageForUser() {

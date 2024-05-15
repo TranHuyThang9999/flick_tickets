@@ -92,6 +92,7 @@ export default function App() {
       {/* <OrderStatistics/> */}
       {/* <Blogs/> */}
       {/* <LoginWithEmail/> */}
+      {/* <PasswordRetrieval/> */}
     </div>
   );
 }

@@ -10,6 +10,7 @@ import './index.css';
 import { showError } from '../common/log/log';
 import FormRegisterCustomer from '../common/customers/FormRegisterCustomer';
 import LoginWithEmail from '../common/customers/LoginWithEmail';
+import PasswordRetrieval from '../PasswordRetrieval/PasswordRetrieval';
 
 export default function FormLogin() {
 
@@ -19,7 +20,7 @@ export default function FormLogin() {
     const [role, setRole] = useState(13); // Default role is 13
     const [isNextRegister, setIsNextRegister] = useState(false);
     const [isLoginEmail,setIsLoginEmail] = useState(false);
-
+    const [isResetPassword,setIsResetPassword] =useState(false);
     const handleCheckboxChange = (e) => {
         const newRole = e.target.checked ? 1 : 13; // Set role to 1 if checkbox is checked, otherwise 13
         setRole(newRole);
@@ -72,7 +73,9 @@ export default function FormLogin() {
     const handlerLoginWithEmail =()=>{
         setIsLoginEmail(true);
     }
-
+    const handlerResetPassword =()=>{
+        setIsResetPassword(true);
+    }
     // Trả về HomeAdmin component nếu đăng nhập là admin
     if (isLoginAdmin) {
         // return <HomeAdmin />;
@@ -86,6 +89,11 @@ export default function FormLogin() {
     if (isNextRegister) {
         return (
             <FormRegisterCustomer />
+        )
+    }
+    if(isResetPassword){
+        return(
+            <PasswordRetrieval/>
         )
     }
     // Phần còn lại của mã để hiển thị biểu mẫu đăng nhập
@@ -136,10 +144,10 @@ export default function FormLogin() {
                                 <Checkbox onChange={handleCheckboxChange}>Quản trị viên <AndroidOutlined /></Checkbox>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <a>
+                                <a href='/##' onClick={handlerResetPassword}>
                                     Quên mật khẩu
                                 </a>
-                                <a onClick={handlernextFormRegister}>
+                                <a href='/#' onClick={handlernextFormRegister}>
                                     Đăng ký tài khoản
                                 </a>
                             </div>
