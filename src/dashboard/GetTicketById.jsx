@@ -4,15 +4,21 @@ import { PlusCircleFilled } from '@ant-design/icons';
 import DetailedShowSchedule from '../common/Showtimes/DetailedShowSchedule';
 import GetListFileByTicketId from './GetListFileByTicketId';
 import AddShowTime from './AddShowTime';
+import UpSertFileByTicketId from './UpSertFileByTicketId';
 
 
 export default function GetTicketById({ id }) {
 
     const [ticket, setTicket] = useState([]);
     const [showAddShowTimeModal, setShowAddShowTimeModal] = useState(false);
+    const [showAddFileModal, setShowAddFileModal] = useState(false);
 
     const toggleAddShowTimeModal = () => {
         setShowAddShowTimeModal(!showAddShowTimeModal);
+    };
+
+    const toggleAddFileModal = () => {
+        setShowAddFileModal(!showAddFileModal);
     };
 
     useEffect(() => {
@@ -50,6 +56,7 @@ export default function GetTicketById({ id }) {
             <Button onClick={toggleAddShowTimeModal}>
                 Thêm xuất chiếu <PlusCircleFilled />
             </Button>
+            <Button onClick={toggleAddFileModal}>Thêm ảnh mô tả <PlusCircleFilled /></Button>
             <Modal
                 width={800}
                 visible={showAddShowTimeModal}
@@ -58,12 +65,20 @@ export default function GetTicketById({ id }) {
             >
                 <AddShowTime ticketId={ticket.id} />
             </Modal>
+            <Modal
+                width={800}
+                visible={showAddFileModal}
+                onCancel={toggleAddFileModal}
+                footer={null}
+            >
+                <UpSertFileByTicketId ticketId={id} />
+            </Modal>
             {ticket && (
                 <Table scroll={{ x: 190 }} dataSource={[ticket]} pagination={false}>
                     <Table.Column title="Tên phim" dataIndex="name" key="name" />
                     <Table.Column title="Mô tả" dataIndex="description" key="description" />
                     <Table.Column title="Giảm giá" dataIndex="sale" key="sale" />
-                    <Table.Column title="Ngày phát hành" dataIndex="release_date" key="release_date" render={formatTimestamp}  />
+                    <Table.Column title="Ngày phát hành" dataIndex="release_date" key="release_date" render={formatTimestamp} />
                     <Table.Column title="Trạng thái" dataIndex="status" key="status" />
                     <Table.Column title="Ghế đã chọn" dataIndex="selected_seat" key="selected_seat" />
                     <Table.Column title="Thời lượng phim" dataIndex="movieDuration" key="movieDuration" />

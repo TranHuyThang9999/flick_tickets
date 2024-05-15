@@ -38,6 +38,7 @@ import CheckLogin from "./Routers/CheckLogin";
 import OrderStatistics from "./Orders/OrderStatistics";
 import Blogs from './dashboard/Blogs';
 import LoginWithEmail from "./common/customers/LoginWithEmail";
+import UpSertFileByTicketId from "./dashboard/UpSertFileByTicketId";
 
 export default function App() {
   return (
@@ -93,6 +94,7 @@ export default function App() {
       {/* <Blogs/> */}
       {/* <LoginWithEmail/> */}
       {/* <PasswordRetrieval/> */}
+      {/* <UpSertFileByTicketId ticketId={2528471}/> */}
     </div>
   );
 }
