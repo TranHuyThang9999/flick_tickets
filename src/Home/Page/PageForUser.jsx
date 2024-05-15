@@ -162,7 +162,7 @@ export default function PageForUser() {
             {!username && (
               <div>
                 <Button className='layout-header-start-button-login' onClick={showModalFormLogin}>
-                  Đăng nhập <InteractionFilled />
+                <InteractionFilled />  Đăng nhập
                 </Button>
                 <Modal
                   visible={openLogin}
@@ -220,8 +220,7 @@ export default function PageForUser() {
         <div className='layout-header-end'>
 
           <div style={{ paddingRight: '10px' }}>
-            <Button onClick={showDrawerCheck}><WeiboSquareFilled /> Kiểm tra vé</Button>
-            <WeiboSquareFilled />
+            <Button onClick={showDrawerCheck}> Kiểm tra vé<WeiboSquareFilled /></Button>
 
             <Drawer
               title="Create a new account"

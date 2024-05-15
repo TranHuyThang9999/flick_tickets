@@ -19,3 +19,21 @@ body {
     border: none;
     background-color: beige;
 }
+.form-container-register-with-email{
+    background-color: white;
+    padding: 10px;
+    border-radius: 0;
+    max-width: 400px;
+    /* height: 550px; */
+    margin: 50px auto;
+    /* Cách top 50px */
+}
+.form-container-register-with-otp{
+    background-color: white;
+    padding: 10px;
+    border-radius: 0;
+    max-width: 400px;
+    /* height: 550px; */
+    margin: 50px auto;
+    /* Cách top 50px */
+}

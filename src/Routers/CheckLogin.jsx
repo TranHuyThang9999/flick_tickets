@@ -14,45 +14,61 @@ export default function CheckLogin() {
             checkToken(token);
         } else {
             setLoading(false);
+            localStorage.removeItem('email');
+            localStorage.removeItem('user');
+            localStorage.removeItem('user_name');
         }
     }, []);
 
     const checkToken = async (token) => {
         try {
             const response = await axios.get(`http://localhost:8080/manager/customer/${token}`);
-            if (response.data.Errors === 4) {
+            const { exp, id, user_name, role } = response.data;
+
+            if (typeof exp !== 'number' || typeof id !== 'number' || typeof user_name !== 'string' || typeof role !== 'number') {
+                clearLocalStorage();
                 setLoading(false);
-            } else {
-                localStorage.setItem('user', JSON.stringify(response.data));
-                if (response.data.role === 1) {
-                    setIsLoggedIn(true);
-                    setIsLoginRole3(false);
-                } else if (response.data.role === 13) {
-                    setIsLoggedIn(true);
-                    setIsLoginRole3(true);
-                } else {
-                    setIsLoggedIn(false);
-                    setIsLoginRole3(false);
-                }
-                setLoading(false);
+                return;
             }
+
+            localStorage.setItem('user', JSON.stringify(response.data));
+
+            if (role === 1) {
+                setIsLoggedIn(true);
+                setIsLoginRole3(false);
+            } else if (role === 13) {
+                setIsLoggedIn(true);
+                setIsLoginRole3(true);
+            } else {
+                setIsLoggedIn(false);
+                setIsLoginRole3(false);
+            }
+            setLoading(false);
         } catch (error) {
             console.error(error);
+            clearLocalStorage();
             setLoading(false);
         }
-    }
+    };
+
+    const clearLocalStorage = () => {
+        localStorage.removeItem('email');
+        localStorage.removeItem('user');
+        localStorage.removeItem('user_name');
+        localStorage.removeItem('token');
+    };
 
     if (loading) {
         return <div>Loading...</div>;
     } else {
         if (isLoggedIn) {
             if (isLoginRole3) {
-                return <PageForUser/>
+                return <PageForUser />;
             } else {
                 return <HomeAdmin />;
             }
         } else {
-            return <PageForUser/>
+            return <PageForUser />;
         }
     }
 }

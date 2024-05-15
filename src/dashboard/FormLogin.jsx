@@ -2,13 +2,14 @@ import { Button, Checkbox, Form, Input, message } from 'antd';
 import axios from 'axios';
 import React, { useState } from 'react';
 import {
-    LockOutlined, UserOutlined, LoginOutlined,
+    LockOutlined, UserOutlined,
     WeiboCircleFilled, AndroidOutlined, GooglePlusCircleFilled
 }
     from '@ant-design/icons';
 import './index.css';
 import { showError } from '../common/log/log';
 import FormRegisterCustomer from '../common/customers/FormRegisterCustomer';
+import LoginWithEmail from '../common/customers/LoginWithEmail';
 
 export default function FormLogin() {
 
@@ -17,6 +18,7 @@ export default function FormLogin() {
     const [isLoginCustomer, setIsLoginCustomer] = useState(false);
     const [role, setRole] = useState(13); // Default role is 13
     const [isNextRegister, setIsNextRegister] = useState(false);
+    const [isLoginEmail,setIsLoginEmail] = useState(false);
 
     const handleCheckboxChange = (e) => {
         const newRole = e.target.checked ? 1 : 13; // Set role to 1 if checkbox is checked, otherwise 13
@@ -67,10 +69,19 @@ export default function FormLogin() {
         window.location.reload();
     }
 
+    const handlerLoginWithEmail =()=>{
+        setIsLoginEmail(true);
+    }
+
     // Trả về HomeAdmin component nếu đăng nhập là admin
     if (isLoginAdmin) {
         // return <HomeAdmin />;
         window.location.reload();
+    }
+    if(isLoginEmail){
+        return(
+            <LoginWithEmail/>
+        )
     }
     if (isNextRegister) {
         return (
@@ -139,7 +150,9 @@ export default function FormLogin() {
                         <Button style={{ fontSize: '15px' }} type="primary" htmlType='submit'>
                             Đăng nhập
                         </Button>
-                        <a href='/#' style={{marginLeft:'10px',color:'gray'}}>Đăng nhập với Gmail <GooglePlusCircleFilled style={{color:'gray'}} /></a>
+                        <a onClick={handlerLoginWithEmail} href='/#' style={{ marginLeft: '10px', color: 'gray' }}>
+                            Đăng nhập với Gmail <GooglePlusCircleFilled style={{ color: 'gray' }} />
+                        </a>
                     </Form.Item>
 
                     <Form.Item>
