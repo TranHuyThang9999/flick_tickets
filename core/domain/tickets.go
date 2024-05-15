@@ -70,4 +70,5 @@ type RepositoryTickets interface {
 	GetListTicketWithSatus(ctx context.Context, staus_sale int) ([]*Tickets, error)
 	GetlistTicketByListTicketId(ctx context.Context, listTicketId []int64) ([]*Tickets, error)
 	GetAllTicket(ctx context.Context) ([]*Tickets, error)
+	GetAllTicketsByFilmName(ctx context.Context, name string) ([]*Tickets, error)
 }

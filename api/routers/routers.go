@@ -94,6 +94,7 @@ func NewApiRouter(
 	r.POST("/customer/user/register", customer.RegisterAccountCustomer) //create account customer
 	r.PUT("/customer/user/update", customer.UpdateProfileCustomerByUserName)
 	r.GET("/customer/user/profile", customer.FindCustomersByUsename)
+	r.GET("/customer/auth2", customer.CreateTokenRespWhenLoginWithEmail)
 	//show time
 	r.POST("/use/add/time", showTime.AddShowTime)
 	r.DELETE("/use/delete/time", showTime.DeleteShowTime)

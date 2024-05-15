@@ -472,3 +472,8 @@ func (c *UseCaseTicker) GetAllTicketsAttachSale(ctx context.Context, status stri
 		ListTickets: listTicket,
 	}, nil
 }
+func (c *UseCaseTicker) GetAllTicketsByFilmName(ctx context.Context, req *entities.TicketFindByMovieNameReq) (
+	*entities.TicketFindByMovieNameResp, error) {
+
+	return &entities.TicketFindByMovieNameResp{}, nil
+}

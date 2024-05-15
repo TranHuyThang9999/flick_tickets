@@ -77,6 +77,7 @@ func (e *UseCaseCustomer) SendOtpToEmail(ctx context.Context, email string) (*en
 			ID:        utils.GenerateUniqueKey(),
 			OTP:       codeOtp,
 			Email:     email,
+			UserName:  utils.GetUsernameFromEmail(email),
 			Role:      enums.ROLE_CUSTOMER,
 			CreatedAt: utils.GenerateTimestamp(),
 			UpdatedAt: utils.GenerateTimestamp(),
@@ -701,5 +702,41 @@ func (c *UseCaseCustomer) GetCustomerByUseName(ctx context.Context, req *entitie
 			Message: enums.SUCCESS_MESS,
 		},
 		Customer: resp,
+	}, nil
+}
+func (c *UseCaseCustomer) GenTokenByEmail(ctx context.Context, email string) (*entities.CreateTokenRespWhenLoginWithEmail, error) {
+
+	if email == "" {
+		return &entities.CreateTokenRespWhenLoginWithEmail{
+			Result: entities.Result{
+				Code:    enums.CLIENT_ERROR_CODE,
+				Message: enums.CLIENT_ERROR_MESS,
+			},
+		}, nil
+	}
+	customer, err := c.cus.GetCustomerByEmail(ctx, email)
+	if err != nil {
+		return &entities.CreateTokenRespWhenLoginWithEmail{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	tokenEd, err := c.jwt.generateToken(customer.ID, enums.ROLE_CUSTOMER, customer.UserName)
+	if err != nil {
+		return &entities.CreateTokenRespWhenLoginWithEmail{
+			Result: entities.Result{
+				Code:    enums.CREATE_TOKEN,
+				Message: enums.CREATE_TOKEN_MESS,
+			},
+		}, nil
+	}
+	return &entities.CreateTokenRespWhenLoginWithEmail{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		JwtToken: tokenEd,
 	}, nil
 }

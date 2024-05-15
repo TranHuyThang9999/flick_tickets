@@ -83,3 +83,10 @@ type TicketGetAllByStatusResp struct {
 	//Tickets []*Tickets `json:"tickets"`
 	ListTickets []*domain.Tickets `json:"list_tickets"`
 }
+type TicketFindByMovieNameReq struct {
+	MovieName string `form:"movie_name"`
+}
+type TicketFindByMovieNameResp struct {
+	Result  Result            `json:"result"`
+	Tickets []*domain.Tickets `json:"tickets"`
+}

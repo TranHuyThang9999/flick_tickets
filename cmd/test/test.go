@@ -30,6 +30,7 @@ func main() {
 	configs.LoadConfig("./configs/configs.json")
 	log.LoadLogger()
 	fmt.Println(utils.ConvertTimestampToDateTime(1715101200))
+	fmt.Println(utils.GetUsernameFromEmail("tranhuythang8@gmail.com"))
 }
 
 func LoadFileHtml(c *gin.Context) {

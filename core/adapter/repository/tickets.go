@@ -95,3 +95,8 @@ func (u *CollectionTickets) GetAllTicket(ctx context.Context) ([]*domain.Tickets
 	result := u.collection.Find(&listTickets)
 	return listTickets, result.Error
 }
+func (u *CollectionTickets) GetAllTicketsByFilmName(ctx context.Context, name string) ([]*domain.Tickets, error) {
+	var listTickets = make([]*domain.Tickets, 0)
+	result := u.collection.Where("name LIKE ?", "%"+name+"%").Find(&listTickets)
+	return listTickets, result.Error
+}

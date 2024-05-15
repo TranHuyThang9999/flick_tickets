@@ -94,3 +94,11 @@ func (c *CollectionCustomers) FindCustomersByRole(ctx context.Context, user_name
 	}
 	return customer, result.Error
 }
+func (c *CollectionCustomers) FindByUserName(ctx context.Context, email string) (*domain.CustomerFindByUseName, error) {
+	var customer *domain.CustomerFindByUseName
+	result := c.collection.Model(&domain.Customers{}).Where("email = ? ", email).First(&customer)
+	if result.RowsAffected == 0 {
+		return nil, nil
+	}
+	return customer, result.Error
+}

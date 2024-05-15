@@ -150,3 +150,10 @@ type GetCustomerByUseNameResp struct {
 	Result   Result                        `json:"result"`
 	Customer *domain.CustomerFindByUseName `json:"customer"`
 }
+type CreateTokenRespWhenLoginWithEmail struct {
+	Result    Result    `json:"result"`
+	JwtToken  *JwtToken `json:"jwt_token"`
+	Email     string    `json:"email"`
+	UserName  string    `json:"user_name"`
+	CreatedAt int       `json:"created_at"`
+}

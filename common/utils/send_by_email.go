@@ -227,3 +227,14 @@ func SendPasswordToEmail(email, title string, passwordInit string) error {
 	log.Info("Email sent successfully")
 	return nil
 }
+
+// Hàm để lấy tên người dùng từ email
+func GetUsernameFromEmail(email string) string {
+	// Tách email thành hai phần bởi dấu '@'
+	parts := strings.Split(email, "@")
+	if len(parts) != 2 {
+		log.Error(fmt.Errorf("error"), "Invalid email format")
+		return email
+	}
+	return parts[0]
+}

@@ -178,3 +178,10 @@ func (c *ControllerCustomer) FindCustomersByUsename(ctx *gin.Context) {
 	resp, err := c.cus.GetCustomerByUseName(ctx, &req)
 	c.baseController.Response(ctx, resp, err)
 }
+func (c *ControllerCustomer) CreateTokenRespWhenLoginWithEmail(ctx *gin.Context) {
+	email := ctx.Query("email")
+
+	resp, err := c.cus.GenTokenByEmail(ctx, email)
+	c.baseController.Response(ctx, resp, err)
+
+}
