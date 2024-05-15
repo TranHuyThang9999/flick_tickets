@@ -32,7 +32,7 @@ export default function CheckLogin() {
             }
 
             localStorage.setItem('user', JSON.stringify(response.data));
-
+            localStorage.setItem('user_name',response.data.user_name);
             if (role === 1) {
                 setIsLoggedIn(true);
                 setIsLoginRole3(false);

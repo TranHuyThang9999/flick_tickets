@@ -29,13 +29,23 @@ export default function FormReceiveOtp() {
             if (response.data.result.code === 0) {
                 localStorage.setItem('email',email);
                 showSuccess('Đăng nhập thành công');
-                return;
+
+                const responseAuth = await axios.get(`http://localhost:8080/manager/customer/auth2?email=${email}`)
+                if(responseAuth.data.result.code ===0){
+                    localStorage.setItem('token',responseAuth.data.jwt_token.refresh_token);
+                    window.location.reload();
+                    return;
+                }else{
+                    showWarning('error client');
+                    return;
+                }
             } else if (response.data.result.code === 22) {
                 showWarning('Mã OTP không hợp lệ');
                 return;
             }
             else {
                 showError('Lỗi từ máy chủ');
+                return;
             }
         } catch (error) {
             console.error(error);
