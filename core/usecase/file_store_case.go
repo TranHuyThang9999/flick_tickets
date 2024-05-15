@@ -6,6 +6,7 @@ import (
 	"flick_tickets/common/utils"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
+	"flick_tickets/core/mapper"
 	"strconv"
 )
 
@@ -109,6 +110,24 @@ func (u *UseCaseFileStore) UploadFileByTicketId(ctx context.Context, req *entiti
 
 	tx.Commit()
 	return &entities.UpSertFileDescriptResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
+}
+func (u *UseCaseFileStore) DeleteFileById(ctx context.Context, fileId string) (*entities.DeleteFileByIdResp, error) {
+
+	err := u.file.DeleteFileByIdNotTransaction(ctx, int64(mapper.ConvertStringToInt(fileId)))
+	if err != nil {
+		return &entities.DeleteFileByIdResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.DeleteFileByIdResp{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,

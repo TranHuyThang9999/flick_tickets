@@ -33,3 +33,6 @@ type UpSertFileDescriptReq struct {
 type UpSertFileDescriptResp struct {
 	Result Result `json:"result"`
 }
+type DeleteFileByIdResp struct {
+	Result Result `json:"result"`
+}

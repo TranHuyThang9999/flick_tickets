@@ -47,3 +47,9 @@ func (lc *ControllerFileLc) UpSertFileDescriptByTicketId(ctx *gin.Context) {
 	resp, err := lc.file.UploadFileByTicketId(ctx, &req)
 	lc.baseController.Response(ctx, resp, err)
 }
+func (lc *ControllerFileLc) DeleteFileById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	resp, err := lc.file.DeleteFileById(ctx, id)
+	lc.baseController.Response(ctx, resp, err)
+
+}

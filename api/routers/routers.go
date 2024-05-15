@@ -59,6 +59,7 @@ func NewApiRouter(
 	r.GET("customers/ticket", ticket.GetAllTickets)
 	r.GET("/user/load", file_lc.GetListFileById)
 	r.PUT("/user/upload", file_lc.UpSertFileDescriptByTicketId)
+	r.DELETE("/user/delete/file/:id", file_lc.DeleteFileById)
 	r.GET("/user/verify/aes", aes.VerifyTickets)
 	r.DELETE("/user/delete/ticket/:id", ticket.DeleteTicketsById)
 	r.GET("/customer/ticket/action", ticket.GetAllTicketsAttachSale) // ko dung

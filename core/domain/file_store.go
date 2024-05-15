@@ -20,4 +20,5 @@ type RepositoryFileStorages interface {
 	GetAll(ctx context.Context) ([]*FileStorages, error)
 	DeleteFileByAnyIdObject(ctx context.Context, tx *gorm.DB, anyId int64) error
 	AddListInformationFileStorages(ctx context.Context, tx *gorm.DB, req []*FileStorages) error
+	DeleteFileByIdNotTransaction(ctx context.Context, fileId int64) error
 }
