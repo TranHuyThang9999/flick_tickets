@@ -185,3 +185,13 @@ func (c *ControllerCustomer) CreateTokenRespWhenLoginWithEmail(ctx *gin.Context)
 	c.baseController.Response(ctx, resp, err)
 
 }
+func (c *ControllerCustomer) UpdatePassWord(ctx *gin.Context) {
+
+	var req entities.UpdatePassWordReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := c.cus.UpdatePassWordByUsername(ctx, &req)
+	c.baseController.Response(ctx, resp, err)
+}

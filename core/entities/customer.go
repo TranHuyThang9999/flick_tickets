@@ -157,3 +157,10 @@ type CreateTokenRespWhenLoginWithEmail struct {
 	UserName  string    `json:"user_name"`
 	CreatedAt int       `json:"created_at"`
 }
+type UpdatePassWordReq struct {
+	UserName    string `form:"user_name" `
+	NewPassword string `form:"new_password"`
+}
+type UpdatePassWordResp struct {
+	Result Result `json:"result"`
+}

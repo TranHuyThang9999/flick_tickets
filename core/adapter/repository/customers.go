@@ -102,3 +102,15 @@ func (c *CollectionCustomers) FindByUserName(ctx context.Context, email string) 
 	}
 	return customer, result.Error
 }
+func (c *CollectionCustomers) FindAccountResetPassWord(ctx context.Context, userName, email string, role int) (int64, error) {
+	var countResp int64
+	result := c.collection.Model(&domain.Customers{}).
+		Where("user_name = ? and email = ? and role = ? ", userName, email, role).Count(&countResp)
+
+	return countResp, result.Error
+}
+func (c *CollectionCustomers) UpdatePassWord(ctx context.Context, user_name, newPassword string) error {
+
+	result := c.collection.Model(&domain.Customers{}).Where("user_name = ?", user_name).UpdateColumn("password", newPassword)
+	return result.Error
+}

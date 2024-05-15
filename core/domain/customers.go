@@ -58,4 +58,6 @@ type RepositoryCustomers interface {
 	FindCustomersByUsename(ctx context.Context, name string) (*CustomerFindByUseName, error)
 	FindCustomersByRole(ctx context.Context, user_name string, password string, role int) (*CustomerFindByUseName, error)
 	FindByUserName(ctx context.Context, email string) (*CustomerFindByUseName, error)
+	FindAccountResetPassWord(ctx context.Context, userName, email string, role int) (int64, error)
+	UpdatePassWord(ctx context.Context, user_name, newPassword string) error
 }

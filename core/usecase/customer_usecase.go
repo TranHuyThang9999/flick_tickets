@@ -426,8 +426,18 @@ func (e *UseCaseCustomer) DeleteStaffByName(ctx context.Context, name string) (*
 		},
 	}, nil
 }
-func (e *UseCaseCustomer) CheckAccountAndSendOtp(ctx context.Context, req *entities.CheckAccountAndSendOtpReq) (*entities.CheckAccountAndSendOtpResp, error) {
+func (e *UseCaseCustomer) CheckAccountAndSendOtp(ctx context.Context, req *entities.CheckAccountAndSendOtpReq) (
+	*entities.CheckAccountAndSendOtpResp, error) {
 	otp := utils.GenerateOtp()
+
+	if req == nil {
+		return &entities.CheckAccountAndSendOtpResp{
+			Result: entities.Result{
+				Code:    enums.INVALID_REQUEST_CODE,
+				Message: enums.INVALID_REQUEST_MESS,
+			},
+		}, nil
+	}
 
 	tx, err := e.trans.BeginTransaction(ctx)
 	if err != nil {
@@ -438,10 +448,25 @@ func (e *UseCaseCustomer) CheckAccountAndSendOtp(ctx context.Context, req *entit
 			},
 		}, nil
 	}
-	listAccount, err := e.cus.FindCustomers(ctx, &domain.CustomersFindByForm{
-		UserName: req.UserName,
-		Email:    req.Email,
-	})
+	sumAcount, err := e.cus.FindAccountResetPassWord(ctx, req.UserName, req.Email, enums.ROLE_CUSTOMER)
+	log.Infof("data ", req, enums.ROLE_CUSTOMER)
+	if err != nil {
+		return &entities.CheckAccountAndSendOtpResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	if sumAcount == 0 {
+		return &entities.CheckAccountAndSendOtpResp{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
+	account, err := e.cus.FindByUserName(ctx, req.Email)
 
 	if err != nil {
 		return &entities.CheckAccountAndSendOtpResp{
@@ -451,19 +476,11 @@ func (e *UseCaseCustomer) CheckAccountAndSendOtp(ctx context.Context, req *entit
 			},
 		}, nil
 	}
-	if len(listAccount) == 0 {
-		return &entities.CheckAccountAndSendOtpResp{
-			Result: entities.Result{
-				Code:    enums.ADMIN_NOT_EXIST_CODE,
-				Message: enums.ADMIN_NOT_EXIST_MESS,
-			},
-		}, nil
-	}
-	log.Infof("user : ", otp)
 	err = e.cus.UpdateProfile(ctx, tx, &domain.Customers{
-		ID:       listAccount[0].ID,
-		UserName: req.UserName,
-		OTP:      otp,
+		ID:        account.ID,
+		UserName:  req.UserName,
+		OTP:       otp,
+		UpdatedAt: utils.GenerateTimestamp(),
 	})
 	if err != nil {
 		tx.Rollback()
@@ -738,5 +755,22 @@ func (c *UseCaseCustomer) GenTokenByEmail(ctx context.Context, email string) (*e
 			Message: enums.SUCCESS_MESS,
 		},
 		JwtToken: tokenEd,
+	}, nil
+}
+func (c *UseCaseCustomer) UpdatePassWordByUsername(ctx context.Context, req *entities.UpdatePassWordReq) (*entities.UpdatePassWordResp, error) {
+	err := c.cus.UpdatePassWord(ctx, req.UserName, req.NewPassword)
+	if err != nil {
+		return &entities.UpdatePassWordResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.UpdatePassWordResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
 	}, nil
 }
