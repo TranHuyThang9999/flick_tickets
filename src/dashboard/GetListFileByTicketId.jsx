@@ -4,6 +4,13 @@ import { showError, showSuccess, showWarning } from '../common/log/log';
 import { Image, Table, Button } from 'antd';
 import { RetweetOutlined, DeleteOutlined } from '@ant-design/icons';
 
+const dataForNotFoundInDB = [
+  {
+    "id": 0,
+    "url": "http://localhost:1234/manager/shader/huythang/empty_15187.png",
+  }
+];
+
 export default function GetListFileByTicketId({ id }) {
   const [listFile, setListFile] = useState([]);
 
@@ -14,7 +21,7 @@ export default function GetListFileByTicketId({ id }) {
       if (data.result.code === 0) {
         setListFile(data.files);
       } else if (data.result.code === 20) {
-        showWarning("Không tìm thấy bản ghi nào");
+        setListFile(dataForNotFoundInDB);
       } else if (data.result.code === 4) {
         showError("Lỗi server vui lòng thử lại");
       }
@@ -37,12 +44,14 @@ export default function GetListFileByTicketId({ id }) {
       console.error('Error:', error);
       showError("Lỗi server vui lòng thử lại");
     }
-  }
+  };
 
   useEffect(() => {
     fetchData();
   }, [id]);
-
+  const handleReload =()=>{
+    fetchData();
+  }
   return (
     <div>
       {listFile.length > 0 && (
@@ -55,15 +64,17 @@ export default function GetListFileByTicketId({ id }) {
             render={(url) => <Image width={100} src={url} />}
           />
           <Table.Column
-            title={<RetweetOutlined />}
-            render={(text, record) => (
-              <Button
-                icon={<DeleteOutlined />}
-                onClick={() => handlerDeleteFileById(record.id)}
-              >
-                Xóa
-              </Button>
-            )}
+            title={<Button onClick={handleReload}><RetweetOutlined /></Button>}
+            render={(text, record) =>
+              record.id !== 0 && (
+                <Button
+                  icon={<DeleteOutlined />}
+                  onClick={() => handlerDeleteFileById(record.id)}
+                >
+                  Xóa
+                </Button>
+              )
+            }
           />
         </Table>
       )}
