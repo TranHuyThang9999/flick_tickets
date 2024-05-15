@@ -3,20 +3,24 @@ package usecase
 import (
 	"context"
 	"flick_tickets/common/enums"
+	"flick_tickets/common/utils"
 	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
 	"strconv"
 )
 
 type UseCaseFileStore struct {
-	file domain.RepositoryFileStorages
+	file  domain.RepositoryFileStorages
+	trans domain.RepositoryTransaction
 }
 
 func NewUseCaseFile(
 	file domain.RepositoryFileStorages,
+	trans domain.RepositoryTransaction,
 ) *UseCaseFileStore {
 	return &UseCaseFileStore{
-		file: file,
+		file:  file,
+		trans: trans,
 	}
 }
 func (u *UseCaseFileStore) GetListFileByObjectId(ctx context.Context, id string) (*entities.ResponseGetListFileByObjetId, error) {
@@ -56,4 +60,58 @@ func (u *UseCaseFileStore) GetListFileByObjectId(ctx context.Context, id string)
 		Files: listFile,
 	}, nil
 
+}
+func (u *UseCaseFileStore) UploadFileByTicketId(ctx context.Context, req *entities.UpSertFileDescriptReq) (*entities.UpSertFileDescriptResp, error) {
+
+	var listFile = make([]*domain.FileStorages, 0)
+	tx, err := u.trans.BeginTransaction(ctx)
+	if err != nil {
+		return &entities.UpSertFileDescriptResp{
+			Result: entities.Result{
+				Code:    enums.TRANSACTION_INVALID_CODE,
+				Message: enums.TRANSACTION_INVALID_MESS,
+			},
+		}, nil
+	}
+	respFile, err := utils.SetListFile(ctx, req.File)
+	if err != nil {
+		return &entities.UpSertFileDescriptResp{
+			Result: entities.Result{
+				Code:    enums.UPLOAD_FILE_ERR_CODE,
+				Message: enums.UPLOAD_FILE_ERR_MESS,
+			},
+		}, nil
+	}
+	if len(respFile) > 0 {
+		for _, file := range respFile {
+
+			listFile = append(listFile, &domain.FileStorages{
+				ID:        utils.GenerateUniqueKey(),
+				URL:       file.URL,
+				TicketID:  req.TicketId,
+				CreatedAt: utils.GenerateTimestamp(),
+			})
+		}
+
+	}
+	if len(listFile) > 0 {
+		err = u.file.AddListInformationFileStorages(ctx, tx, listFile)
+		if err != nil {
+			tx.Rollback()
+			return &entities.UpSertFileDescriptResp{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, nil
+		}
+	}
+
+	tx.Commit()
+	return &entities.UpSertFileDescriptResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+	}, nil
 }

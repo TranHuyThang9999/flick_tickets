@@ -40,3 +40,8 @@ func (c *CollectionFileStore) DeleteFileByAnyIdObject(ctx context.Context, tx *g
 	result := tx.Where("ticket_id = ?", anyId).Delete(&domain.FileStorages{}) //
 	return result.Error
 }
+
+func (c *CollectionFileStore) AddListInformationFileStorages(ctx context.Context, tx *gorm.DB, req []*domain.FileStorages) error {
+	result := tx.Create(req)
+	return result.Error
+}

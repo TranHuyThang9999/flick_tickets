@@ -1,6 +1,9 @@
 package entities
 
-import "flick_tickets/core/domain"
+import (
+	"flick_tickets/core/domain"
+	"mime/multipart"
+)
 
 type FileRequest struct {
 	TicketId  int64  `json:"ticket"`
@@ -22,4 +25,11 @@ type Result struct {
 type ResponseGetListFileByObjetId struct {
 	Result Result                 `json:"result"`
 	Files  []*domain.FileStorages `json:"files"`
+}
+type UpSertFileDescriptReq struct {
+	TicketId int64                   `form:"ticket_id"`
+	File     []*multipart.FileHeader `form:"file"`
+}
+type UpSertFileDescriptResp struct {
+	Result Result `json:"result"`
 }

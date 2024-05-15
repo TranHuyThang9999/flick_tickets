@@ -53,10 +53,12 @@ func NewApiRouter(
 	// {
 	adminGroup.POST("/user/upload/ticket", ticket.AddTicket)
 	//	}
-	r.GET("/customer/:token", auth.CheckToken)
+	//process file local
+	r.GET("/customer/:token", auth.CheckToken) //file
 	r.GET("/user/ticket", ticket.GetTicketById)
 	r.GET("customers/ticket", ticket.GetAllTickets)
 	r.GET("/user/load", file_lc.GetListFileById)
+	r.PUT("/user/upload", file_lc.UpSertFileDescriptByTicketId)
 	r.GET("/user/verify/aes", aes.VerifyTickets)
 	r.DELETE("/user/delete/ticket/:id", ticket.DeleteTicketsById)
 	r.GET("/customer/ticket/action", ticket.GetAllTicketsAttachSale) // ko dung

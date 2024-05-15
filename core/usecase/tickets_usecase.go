@@ -42,6 +42,7 @@ func NewUsecaseTicker(
 func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUpload) (*entities.TicketRespUpload, error) {
 
 	var idTicket int64 = utils.GenerateUniqueKey()
+	var listImage = make([]*domain.FileStorages, 0)
 
 	tx, err := c.trans.BeginTransaction(ctx)
 	if err != nil {
@@ -166,24 +167,43 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 	}
 	if len(respFile) > 0 {
 		for _, file := range respFile {
-			err = c.file.AddInformationFileStorages(ctx, tx, &domain.FileStorages{
+			// err = c.file.AddInformationFileStorages(ctx, tx, &domain.FileStorages{
+			// 	ID:        utils.GenerateUniqueKey(),
+			// 	URL:       file.URL,
+			// 	TicketID:  idTicket,
+			// 	CreatedAt: utils.GenerateTimestamp(),
+			// })
+			// if err != nil {
+			// 	tx.Rollback()
+			// 	return &entities.TicketRespUpload{
+			// 		Result: entities.Result{
+			// 			Code:    enums.DB_ERR_CODE,
+			// 			Message: enums.DB_ERR_MESS,
+			// 		},
+			// 	}, nil
+			// }
+			listImage = append(listImage, &domain.FileStorages{
 				ID:        utils.GenerateUniqueKey(),
 				URL:       file.URL,
 				TicketID:  idTicket,
 				CreatedAt: utils.GenerateTimestamp(),
 			})
-			if err != nil {
-				tx.Rollback()
-				return &entities.TicketRespUpload{
-					Result: entities.Result{
-						Code:    enums.DB_ERR_CODE,
-						Message: enums.DB_ERR_MESS,
-					},
-				}, nil
-			}
 		}
 
 	}
+	if len(listImage) > 0 {
+		err = c.file.AddListInformationFileStorages(ctx, tx, listImage)
+		if err != nil {
+			tx.Rollback()
+			return &entities.TicketRespUpload{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, nil
+		}
+	}
+
 	tx.Commit()
 	return &entities.TicketRespUpload{
 		Result: entities.Result{
