@@ -52,7 +52,7 @@ type RepositoryShowTime interface {
 	GetListShowTimeByListId(ctx context.Context, ids []int64) ([]*ShowTime, error)
 	DeleteShowTimesByTicketId(ctx context.Context, tx *gorm.DB, ticketId int64) error
 	UpsertListShowTime(ctx context.Context, req []*ShowTime) error
-	DeleteShowTimeByid(ctx context.Context, show_time_id int64) error
+	DeleteShowTimeByid(ctx context.Context, tx *gorm.DB, show_time_id int64) error
 	GetShowTimeById(ctx context.Context, show_time_id int64) (*ShowTime, error)
 	UpdateShowTimeById(ctx context.Context, req *ShowTimeUpdateReq) error
 	FindDuplicateShowTimeUseUpdate(ctx context.Context, movieTime int, cinemaName string) ([]*ShowTime, error)

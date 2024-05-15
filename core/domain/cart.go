@@ -25,4 +25,5 @@ type RepositoryCarts interface {
 	UpdateCartById(ctx context.Context, req *Carts) error
 	DeleteCartById(ctx context.Context, cartId int64) error
 	FindCartByForm(ctx context.Context, req *CartFindByFormReq) ([]*Carts, error)
+	DeleteCartByShowTimeId(ctx context.Context, show_time_id int64) error
 }

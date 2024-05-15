@@ -98,7 +98,7 @@ func NewApiRouter(
 	r.PUT("/customer/reset/password", customer.UpdatePassWord) //reset password
 	//show time
 	r.POST("/use/add/time", showTime.AddShowTime)
-	r.DELETE("/use/delete/time", showTime.DeleteShowTime)
+	r.DELETE("/use/delete/time", showTime.DeleteShowTime) //ko dung
 	r.GET("/user/getlist/time", showTime.GetShowTimeByTicketId)
 	r.GET("/customer/detail/showtime", showTime.DetailShowTime)
 	r.DELETE("use/delete/byid", showTime.DeleteShowTimeById)

@@ -51,3 +51,7 @@ func (c *Collectioncart) UpdateCartById(ctx context.Context, req *domain.Carts) 
 	result := c.collection.Where("id = ?", req.Id).Updates(req)
 	return result.Error
 }
+func (c *Collectioncart) DeleteCartByShowTimeId(ctx context.Context, show_time_id int64) error {
+	result := c.collection.Where("show_time_id = ?", show_time_id).Delete(&domain.Carts{})
+	return result.Error
+}

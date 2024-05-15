@@ -14,15 +14,21 @@ import (
 type UseCaseShowTime struct {
 	st     domain.RepositoryShowTime
 	cinema domain.RepositoryCinemas
+	trans  domain.RepositoryTransaction
+	cart   domain.RepositoryCarts
 }
 
 func NewUseCaseShowTime(
 	st domain.RepositoryShowTime,
 	cinema domain.RepositoryCinemas,
+	trans domain.RepositoryTransaction,
+	cart domain.RepositoryCarts,
 ) *UseCaseShowTime {
 	return &UseCaseShowTime{
 		st:     st,
 		cinema: cinema,
+		trans:  trans,
+		cart:   cart,
 	}
 }
 func (s *UseCaseShowTime) AddShowTime(ctx context.Context, req *entities.ShowTimeAddReq) (*entities.ShowTimeAddResponse, error) {
@@ -256,8 +262,16 @@ func (s *UseCaseShowTime) DetailShowTime(ctx context.Context, id string) (*entit
 func (s *UseCaseShowTime) DeleteShowTimeById(ctx context.Context, show_time_id string) (*entities.ShowTimeDeleteByIdResp, error) {
 
 	show_time_id_number := mapper.ConvertStringToInt(show_time_id)
-
-	err := s.st.DeleteShowTimeByid(ctx, int64(show_time_id_number))
+	tx, err := s.trans.BeginTransaction(ctx)
+	if err != nil {
+		return &entities.ShowTimeDeleteByIdResp{
+			Result: entities.Result{
+				Code:    enums.TRANSACTION_INVALID_CODE,
+				Message: enums.TRANSACTION_INVALID_MESS,
+			},
+		}, nil
+	}
+	err = s.st.DeleteShowTimeByid(ctx, tx, int64(show_time_id_number))
 	if err != nil {
 		return &entities.ShowTimeDeleteByIdResp{
 			Result: entities.Result{
@@ -266,6 +280,17 @@ func (s *UseCaseShowTime) DeleteShowTimeById(ctx context.Context, show_time_id s
 			},
 		}, nil
 	}
+	err = s.cart.DeleteCartByShowTimeId(ctx, int64(show_time_id_number))
+	if err != nil {
+		tx.Rollback()
+		return &entities.ShowTimeDeleteByIdResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	tx.Commit()
 	return &entities.ShowTimeDeleteByIdResp{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
