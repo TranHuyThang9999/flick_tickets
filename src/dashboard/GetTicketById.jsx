@@ -1,6 +1,6 @@
 import { Button, Modal, Space, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { PlusCircleFilled } from '@ant-design/icons';
+import { PlusCircleFilled ,RetweetOutlined} from '@ant-design/icons';
 import DetailedShowSchedule from '../common/Showtimes/DetailedShowSchedule';
 import GetListFileByTicketId from './GetListFileByTicketId';
 import AddShowTime from './AddShowTime';
@@ -20,21 +20,20 @@ export default function GetTicketById({ id }) {
     const toggleAddFileModal = () => {
         setShowAddFileModal(!showAddFileModal);
     };
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/manager/user/ticket?id=${id}`);
+            const data = await response.json();
+            setTicket(data.ticket);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/manager/user/ticket?id=${id}`);
-                const data = await response.json();
-                setTicket(data.ticket);
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        };
-
+      
         fetchData();
     }, [id]);
-
 
     if (!ticket.id) {
         return <div>Đang tải...</div>;
