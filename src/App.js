@@ -88,7 +88,6 @@ export default function App() {
       {/* <UpdateTicketById ticketId={1357952}/> */}
       {/* <UpdateShowTimeById show_time_id={3169598}/> */}
       {/* <TestCheckBox/> */}
-
       {/* <PageForUser/> */}
       <CheckLogin/>
       {/* <HomeaAdmin /> */}
