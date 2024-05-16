@@ -51,5 +51,4 @@ func (lc *ControllerFileLc) DeleteFileById(ctx *gin.Context) {
 	id := ctx.Param("id")
 	resp, err := lc.file.DeleteFileById(ctx, id)
 	lc.baseController.Response(ctx, resp, err)
-
 }
