@@ -88,3 +88,14 @@ func (c *ControllerTicket) UpdateTicketById(ctx *gin.Context) {
 
 	c.baseController.Response(ctx, resp, err)
 }
+func (c *ControllerTicket) GetAllTicketsByFilmName(ctx *gin.Context) {
+
+	var req entities.TicketFindByMovieNameReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := c.ticket.GetAllTicketsByFilmName(ctx, &req)
+
+	c.baseController.Response(ctx, resp, err)
+}

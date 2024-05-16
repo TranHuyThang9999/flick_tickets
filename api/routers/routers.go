@@ -64,6 +64,7 @@ func NewApiRouter(
 	r.DELETE("/user/delete/ticket/:id", ticket.DeleteTicketsById)
 	r.GET("/customer/ticket/action", ticket.GetAllTicketsAttachSale) // ko dung
 	r.PUT("/use/ticket/updates", ticket.UpdateTicketById)
+	r.GET("/customer/ticket/movie", ticket.GetAllTicketsByFilmName)
 	// r.PUT("/user/update/size/room", ticket.UpdateSizeRoom)
 	//	r.GET("/ws", managerClient.ServerWs) //auto pool
 	//cinema

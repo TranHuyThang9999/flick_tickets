@@ -494,6 +494,20 @@ func (c *UseCaseTicker) GetAllTicketsAttachSale(ctx context.Context, status stri
 }
 func (c *UseCaseTicker) GetAllTicketsByFilmName(ctx context.Context, req *entities.TicketFindByMovieNameReq) (
 	*entities.TicketFindByMovieNameResp, error) {
-
-	return &entities.TicketFindByMovieNameResp{}, nil
+	tickets, err := c.ticket.GetAllTicketsByFilmName(ctx, req.MovieName)
+	if err != nil {
+		return &entities.TicketFindByMovieNameResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.TicketFindByMovieNameResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Tickets: tickets,
+	}, nil
 }
