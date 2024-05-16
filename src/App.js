@@ -39,6 +39,8 @@ import OrderStatistics from "./Orders/OrderStatistics";
 import Blogs from './dashboard/Blogs';
 import LoginWithEmail from "./common/customers/LoginWithEmail";
 import UpSertFileByTicketId from "./dashboard/UpSertFileByTicketId";
+import GetListTicketByMovieName from "./common/ViewTicketsForSell/GetListTicketByMovieName";
+import TestSelect from "./common/test/test";
 
 export default function App() {
   return (
@@ -95,6 +97,8 @@ export default function App() {
       {/* <LoginWithEmail/> */}
       {/* <PasswordRetrieval/> */}
       {/* <UpSertFileByTicketId ticketId={2528471}/> */}
+      {/* <GetListTicketByMovieName movieName={'s'}/> */}
+      {/* <TestSelect/> */}
     </div>
   );
 }

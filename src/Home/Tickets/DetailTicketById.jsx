@@ -1,14 +1,16 @@
-import { Col, Row } from 'antd';
+import { Col, Row, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import './index.css';
 import { showError } from '../../common/log/log';
 import axios from 'axios';
 import CarouselCustomize from '../../common/CustomizeCarousel/CarouselCustomize';
 import DetailedShowSchedule from './DetailedShowSchedule';
+import PageForUser from '../Page/PageForUser';
 
 export default function GetTicketById({ id }) {
     const [ticket, setTicket] = useState({});
     const [listFile, setListFile] = useState([]);
+    const [goback,setGoback] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,7 +25,17 @@ export default function GetTicketById({ id }) {
 
         fetchData();
     }, [id]);
+    function formatTimestamp(timestamp) {
+        const date = new Date(timestamp * 1000); // Nhân 1000 để chuyển đổi từ milliseconds sang seconds
 
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    }
     useEffect(() => {
         const fetchFileData = async () => {
             try {
@@ -41,25 +53,20 @@ export default function GetTicketById({ id }) {
 
         fetchFileData();
     }, [id]);
-
+    const handlerGoback = ()=>{
+        setGoback(true);
+    }
     if (Object.keys(ticket).length === 0) {
         return <div>Đang tải...</div>;
     }
 
-    function formatTimestamp(timestamp) {
-        const date = new Date(timestamp * 1000); // Nhân 1000 để chuyển đổi từ milliseconds sang seconds
-
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-
-        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    if(goback){
+        return <PageForUser/>
     }
 
     return (
         <div className="card-ticket-detail">
+            <Button onClick={handlerGoback}>Quay lại</Button>
             <Row className="backgroud-card">
 
                 <Col style={{ display: 'flex', padding: '30px' }} flex="300px">

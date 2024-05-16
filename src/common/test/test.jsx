@@ -1,50 +1,58 @@
-import { Button, Checkbox, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import { Button, Space, AutoComplete } from 'antd';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import GetListTicketByMovieName from '../ViewTicketsForSell/GetListTicketByMovieName';
 
-export default function TestCheckBox() {
-  const [role, setRole] = useState(13); // Default role is 13
-  const [inputValue, setInputValue] = useState('');
-  const [result, setResult] = useState('');
+export default function TestSelect() {
+  const [tickets, setTickets] = useState([]);
+  const [statusFindMovieName, setStatusMovieName] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState('');
+  const [searchInput, setSearchInput] = useState('');
 
-  const handleCheckboxChange = (e) => {
-    const newRole = e.target.checked ? 1 : 13; // Set role to 1 if checkbox is checked, otherwise 13
-    setRole(newRole);
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/manager/customers/ticket');
+        if (response.data.result.code === 0) {
+          setTickets(response.data.list_tickets);
+        } else if (response.data.result.code === 20) {
+          console.log('No tickets available.');
+        }
+      } catch (error) {
+        console.error('Error fetching tickets:', error);
+      }
+    };
+
+    fetchTickets();
+  }, []);
+
+  const handleSearch = () => {
+    setStatusMovieName(true);
+    setSelectedMovie(searchInput);
   };
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
+  const dataSource = tickets.map((ticket) => ({
+    value: ticket.name,
+  }));
 
-  const handleButtonClick = () => {
-    // Perform actions based on the role value and input value
-    if (role === 1 && inputValue === 'admin') {
-      setResult('Thành công. Vai trò: Admin.');
-    } else if (role === 13 && inputValue === 'user') {
-      setResult('Thành công. Vai trò: Người dùng.');
-    } else {
-      setResult('Thất bại.');
-    }
-  };
+  if (statusFindMovieName) {
+    return <GetListTicketByMovieName movieName={selectedMovie} />;
+  }
 
   return (
     <div>
-      <Form
-        className='login-form'
-        initialValues={{
-          remember: true,
-        }}
-      >
-        <Form.Item>
-          <Input onChange={handleInputChange} placeholder="Nhập 'admin' hoặc 'user'" />
-        </Form.Item>
-        <Form.Item>
-          <Checkbox onChange={handleCheckboxChange}>Admin</Checkbox>
-        </Form.Item>
-        <Form.Item>
-          <Button onClick={handleButtonClick}>Check</Button>
-        </Form.Item>
-      </Form>
-      {result && <p>{result}</p>}
+      <Space direction="vertical" size="middle">
+        <Space.Compact>
+          <AutoComplete
+            options={dataSource}
+            onSelect={(value) => setSearchInput(value)}
+            onChange={(value) => setSearchInput(value)}
+            placeholder="Nhập chữ S để tìm kiếm"
+            style={{ width: 200 }}
+          />
+          <Button onClick={handleSearch}>Tìm kiếm</Button>
+        </Space.Compact>
+      </Space>
     </div>
   );
 }

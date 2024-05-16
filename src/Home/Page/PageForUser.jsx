@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './home.css';
-import { Avatar, Button, Col, Drawer, Menu, Modal, Row, Input, Space } from 'antd';
+import { Avatar, Button, Col, Drawer, Menu, Modal, Row, Input, Space, AutoComplete } from 'antd';
 import {
   BellFilled, ShoppingCartOutlined, TwitterCircleFilled,
   InteractionFilled, WeiboCircleOutlined,
@@ -16,6 +16,7 @@ import QRScanner from '../../QRScanner/QRScanner';
 import PurchaseHistory from '../Tickets/PurchaseHistory';
 import Profile from '../../common/customers/Profile';
 import Blogs from '../../dashboard/Blogs';
+import GetListTicketByMovieName from '../../common/ViewTicketsForSell/GetListTicketByMovieName';
 
 export default function PageForUser() {
 
@@ -31,6 +32,10 @@ export default function PageForUser() {
   const [openHistoryOrder, setOpenHistoryOrder] = useState(false);
   const [openLogin, setOpenLogin] = useState(false);
   const [isNextBlog, setIsNextBlog] = useState(false);
+
+  const [statusFindMovieName, setStatusMovieName] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState('');
+  const [searchInput, setSearchInput] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,6 +124,14 @@ export default function PageForUser() {
     setIsNextBlog(true);
   }
   const listRoomCinema = CinemasGetAll();
+  const handleSearch = () => {
+    setStatusMovieName(true);
+    setSelectedMovie(searchInput);
+  };
+
+  const dataSource = tickets.map((ticket) => ({
+    value: ticket.name,
+  }));
 
   useEffect(() => {
     const feedDataTicket = async () => {
@@ -149,7 +162,9 @@ export default function PageForUser() {
       <Blogs />
     )
   }
-
+  if (statusFindMovieName) {
+    return <GetListTicketByMovieName movieName={selectedMovie} />;
+  }
   return (
     <div>
       <div className='layout-header'>
@@ -161,7 +176,7 @@ export default function PageForUser() {
             {!username && (
               <div>
                 <Button className='layout-header-start-button-login' onClick={showModalFormLogin}>
-                <InteractionFilled />  Đăng nhập
+                  <InteractionFilled />  Đăng nhập
                 </Button>
                 <Modal
                   visible={openLogin}
@@ -285,8 +300,14 @@ export default function PageForUser() {
         <div className='layout-content-search'>
           <Space direction="vertical" size="middle">
             <Space.Compact>
-              <Input placeholder='Tìm kiếm tên phim' />
-              <Button>Tìm kiếm</Button>
+              <AutoComplete
+                options={dataSource}
+                onSelect={(value) => setSearchInput(value)}
+                onChange={(value) => setSearchInput(value)}
+                placeholder="Nhập chữ S để tìm kiếm"
+                style={{ width: 200 }}
+              />
+              <Button onClick={handleSearch}>Tìm kiếm</Button>
             </Space.Compact>
           </Space>
         </div>
@@ -317,7 +338,7 @@ export default function PageForUser() {
           <GetTicketOncarousel status={statusTicketSale} name={nameCinema} movie_theater_name={movieTheaterName} />
         </div>
         <div className='layout-footer-introduce'>
-          <Row style={{ paddingLeft: '20px', paddingTop: '40px', paddingBottom: '40px',backgroundColor:'black' ,color:'white'}}>
+          <Row style={{ paddingLeft: '20px', paddingTop: '40px', paddingBottom: '40px', backgroundColor: 'black', color: 'white' }}>
             <Col span={6}>
 
             </Col>
