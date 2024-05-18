@@ -71,6 +71,8 @@ func (c *CollectionOrder) GetAllOrder(ctx context.Context, req *domain.OrdersReq
 		Sale:           req.Sale,
 		MovieTime:      req.MovieTime,
 		AddressDetails: req.AddressDetails,
+		CinemaName:     req.CinemaName,
+		MovieName:      req.MovieName,
 		CreatedAt:      req.CreatedAt,
 		UpdatedAt:      req.UpdatedAt,
 	}).Order("created_at asc").Find(&listOrder)
@@ -108,4 +110,26 @@ func (c *CollectionOrder) GetListOrderHistoeryByEmail(ctx context.Context, email
 	var listOrder = make([]*domain.Orders, 0)
 	result := c.collection.Where("email = ?", email).Find(&listOrder)
 	return listOrder, result.Error
+}
+func (c *CollectionOrder) GetrevenueOrderByMovieNameAndTimeDistance(ctx context.Context, req *domain.OrderRevenue) (float64, error) {
+
+	var sumPrice float64
+
+	result := c.collection.Model(&domain.Orders{}).
+		Select("SUM(price) AS total_revenue").
+		Where("cinema_name = ? AND movie_name = ? AND status = 9 AND created_at BETWEEN ? AND ?",
+			req.CinemaName, req.MovieName, req.TimeDistanceStart, req.TimeDistanceEnd).
+		Scan(&sumPrice)
+
+	return sumPrice, result.Error
+}
+func (c *CollectionOrder) GetAllMovieNameFromOrder(ctx context.Context) ([]*domain.Orders, error) {
+	var orders []*domain.Orders
+	result := c.collection.Distinct("cinema_name").Find(&orders)
+	return orders, result.Error
+}
+func (c *CollectionOrder) GetAllCinemaByMovieName(ctx context.Context, cinema_name string) ([]*domain.Orders, error) {
+	var orders = make([]*domain.Orders, 0)
+	result := c.collection.Distinct("movie_name").Where("cinema_name = ? ", cinema_name).Find(&orders)
+	return orders, result.Error
 }

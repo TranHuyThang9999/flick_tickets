@@ -1,4 +1,4 @@
--- Active: 1714154952322@@127.0.0.1@5432@flick_tickets@public
+-- Active: 1715291960470@@127.0.0.1@5432@flick_tickets@public
 
 CREATE Table users (
     id BIGINT PRIMARY key,
@@ -130,3 +130,9 @@ CREATE TABLE carts(
     created_at int,
     updated_at int
 );
+SELECT *
+FROM orders
+WHERE cinema_name = 'Phong 01'
+  AND movie_name = '8 viên ngọc rồng'
+  AND created_at BETWEEN 1714842000 AND 1718384400
+  AND status = 9;

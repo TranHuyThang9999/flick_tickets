@@ -686,3 +686,84 @@ func (u *UseCaseOrder) OrderHistory(ctx context.Context, req *entities.OrderHist
 		OrderHistoryEntities: listOrdersResp,
 	}, nil
 }
+func (u *UseCaseOrder) OrderRevenueByMovieName(ctx context.Context, req *entities.OrderRevenueReq) (*entities.OrderRevenueResp, error) {
+
+	sum, err := u.order.GetrevenueOrderByMovieNameAndTimeDistance(ctx, &domain.OrderRevenue{
+		CinemaName:        req.CinemaName,
+		MovieName:         req.MovieName,
+		TimeDistanceStart: req.TimeDistanceStart,
+		TimeDistanceEnd:   req.TimeDistanceEnd,
+	})
+	if err != nil {
+		return &entities.OrderRevenueResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	return &entities.OrderRevenueResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Sum: sum,
+	}, nil
+}
+func (u *UseCaseOrder) GetAllMovieNameFromOrder(ctx context.Context) (*entities.OrderGetAllFromOrderResp, error) {
+	orders, err := u.order.GetAllMovieNameFromOrder(ctx)
+	if err != nil {
+		return &entities.OrderGetAllFromOrderResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+
+	if len(orders) == 0 {
+		return &entities.OrderGetAllFromOrderResp{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
+
+	return &entities.OrderGetAllFromOrderResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Orders: orders,
+	}, nil
+}
+func (u *UseCaseOrder) GetAllCinemaByMovieName(ctx context.Context, cinema_name string) (*entities.OrderGetAllFromOrderByCinemaNameResp, error) {
+	orders, err := u.order.GetAllCinemaByMovieName(ctx, cinema_name)
+	if err != nil {
+		return &entities.OrderGetAllFromOrderByCinemaNameResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+
+	if len(orders) == 0 {
+		return &entities.OrderGetAllFromOrderByCinemaNameResp{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
+
+	return &entities.OrderGetAllFromOrderByCinemaNameResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Orders: orders,
+	}, nil
+
+}

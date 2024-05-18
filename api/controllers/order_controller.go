@@ -127,3 +127,25 @@ func (order *ControllerOrder) GetOrderHistory(ctx *gin.Context) {
 
 	order.baseController.Response(ctx, resp, err)
 }
+func (order *ControllerOrder) OrderRevenueByMovieName(ctx *gin.Context) {
+	var req entities.OrderRevenueReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := order.order.OrderRevenueByMovieName(ctx, &req)
+
+	order.baseController.Response(ctx, resp, err)
+}
+func (order *ControllerOrder) GetAllMovieNameFromOrder(ctx *gin.Context) {
+
+	resp, err := order.order.GetAllMovieNameFromOrder(ctx)
+	order.baseController.Response(ctx, resp, err)
+
+}
+func (order *ControllerOrder) GetAllCinemaByMovieName(ctx *gin.Context) {
+	movie_name := ctx.Query("cinema_name")
+	resp, err := order.order.GetAllCinemaByMovieName(ctx, movie_name)
+	order.baseController.Response(ctx, resp, err)
+
+}

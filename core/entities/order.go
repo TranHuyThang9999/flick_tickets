@@ -75,3 +75,22 @@ type OrderHistoryResp struct {
 	Result               Result                  `json:"result"`
 	OrderHistoryEntities []*OrderHistoryEntities `json:"order_history_entities"`
 }
+
+type OrderRevenueReq struct {
+	CinemaName        string `form:"cinema_name"`
+	MovieName         string `form:"movie_name"`
+	TimeDistanceStart int    `form:"time_distance_start"`
+	TimeDistanceEnd   int    `form:"time_distance_end"`
+}
+type OrderRevenueResp struct {
+	Result Result  `json:"result"`
+	Sum    float64 `json:"sum"`
+}
+type OrderGetAllFromOrderResp struct {
+	Result Result           `json:"result"`
+	Orders []*domain.Orders `json:"orders"`
+}
+type OrderGetAllFromOrderByCinemaNameResp struct {
+	Result Result           `json:"result"`
+	Orders []*domain.Orders `json:"orders"`
+}

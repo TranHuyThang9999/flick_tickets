@@ -29,8 +29,7 @@ func main() {
 	// }
 	configs.LoadConfig("./configs/configs.json")
 	log.LoadLogger()
-	fmt.Println(utils.ConvertTimestampToDateTime(1715101200))
-	fmt.Println(utils.GetUsernameFromEmail("tranhuythang8@gmail.com"))
+	fmt.Println(utils.ConvertTimestampToDateTime(1715927970))
 }
 
 func LoadFileHtml(c *gin.Context) {

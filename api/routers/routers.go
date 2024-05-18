@@ -73,7 +73,7 @@ func NewApiRouter(
 	r.DELETE("/user/delete/cinema", cinema.DeleteCinemaByName)
 	r.GET("/user/getByName", cinema.GetAllCinemaByName)
 	r.PUT("/user/update/width/height", cinema.UpdateColumnWidthHeightContainer)
-	// user
+	// user //order
 	r.POST("/customer/order/ticket", order.OrdersTicket)
 	r.GET("/customer/look/order/ticket", order.GetOrderById)
 	r.PUT("/customer/update/order", order.UpsertOrderById)
@@ -82,7 +82,9 @@ func NewApiRouter(
 	r.GET("/user/order/getlist", order.GetAllOrder)              // thong ke co admin
 	r.GET("/user/trigger", order.TriggerOrder)
 	r.GET("/user/order/history", order.GetOrderHistory)
-
+	r.GET("/user/order/revenue", order.OrderRevenueByMovieName)
+	r.GET("/user/history", order.GetAllMovieNameFromOrder)
+	r.GET("/user/history/movie/name", order.GetAllCinemaByMovieName)
 	//customer
 	r.POST("/customer/send/:email", customer.SendOtptoEmail)
 	r.POST("/customer/verify/", customer.CheckOtpByEmail)
