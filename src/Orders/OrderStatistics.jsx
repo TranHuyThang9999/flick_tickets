@@ -1,37 +1,69 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button, Modal, Select, Space, Table } from 'antd';
+import { Button, Input, Modal, Select, Space, Table, DatePicker } from 'antd';
 import { DollarOutlined } from '@ant-design/icons';
 import RevenueOrder from './RevenueOrder';
+
 export default function OrderStatistics() {
   const [orders, setOrders] = useState([]);
   const [status, setStatus] = useState(0); // Default status
   const [modalOpenStatistics, setModalOpenStatistics] = useState(false);
+  const [searchParams, setSearchParams] = useState({
+    id: '',
+    movie_name: '',
+    price: '',
+    cinema_name: '',
+    movie_time: '',
+    email: '',
+    created_at: null
+  });
 
   useEffect(() => {
+    fetchOrders();
+  }, [status]);
+
+  const fetchOrders = (params = {}) => {
     axios.get('http://localhost:8080/manager/user/order/getlist', {
       params: {
-        status: status
+        status: status,
+        id: params.id || '',
+        movie_name: params.movie_name || '',
+        price: params.price || '',
+        cinema_name: params.cinema_name || '',
+        email: params.email || '',
+        created_at: params.created_at ? params.created_at.unix() : 0
       }
     })
-      .then(response => {
-        if (response.data.result.code === 0) {
-          setOrders(response.data.orders);
-        }
-      })
-      .catch(error => {
-        console.error('There was an error fetching the order list!', error);
-      });
-  }, [status]);
+    .then(response => {
+      if (response.data.result.code === 0) {
+        setOrders(response.data.orders);
+      }
+    })
+    .catch(error => {
+      console.error('There was an error fetching the order list!', error);
+    });
+  };
 
   const statusLabels = {
     9: 'Đã thanh toán',
     11: 'Đã hủy'
   };
 
-  const handlerGetAllOrder = ()=>{
+  const handleGetAllOrders = () => {
     setStatus(0);
-  }
+  };
+
+  const handleSearch = () => {
+    fetchOrders(searchParams);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSearchParams(prevParams => ({
+      ...prevParams,
+      [name]: value
+    }));
+  };
 
 
   const columns = [
@@ -89,7 +121,7 @@ export default function OrderStatistics() {
       render: (text) => new Date(text * 1000).toLocaleString(),
     },
     {
-      title: 'Ngày tạo',
+      title: 'Ngày mua',
       dataIndex: 'created_at',
       key: 'created_at',
       render: (text) => new Date(text * 1000).toLocaleString(),
@@ -99,40 +131,63 @@ export default function OrderStatistics() {
   return (
     <div>
       <h1>Thống kê đơn hàng</h1>
-      <Space>
-        <Space.Compact>
+      <Space direction="vertical" style={{ width: '100%' }}>
+        <Space>
           <Select
-             style={{
-              width: 200,
-            }}
-            defaultValue = '9'
+            style={{ width: 200 }}
+            defaultValue='9'
             onChange={(value) => setStatus(value)}
             options={[
-              {
-                value: '9',
-                label: 'Đơn hàng đã thanh toán',
-              },
-              {
-                value: '11',
-                label: 'Đơn hàng đã hủy',
-              },
+              { value: '9', label: 'Đơn hàng đã thanh toán' },
+              { value: '11', label: 'Đơn hàng đã hủy' },
             ]}
           />
-          <Button onClick={handlerGetAllOrder}>Toàn bộ đơn hàng</Button>
-          <Button  onClick={() => setModalOpenStatistics(true)}>Doanh thu<DollarOutlined /></Button>
+          <Button onClick={handleGetAllOrders}>Toàn bộ đơn hàng</Button>
+          <Button onClick={() => setModalOpenStatistics(true)}>
+            Doanh thu <DollarOutlined />
+          </Button>
           <Modal
-              width={1000}
-              title='Tính doanh thu'
-              footer
-              open={modalOpenStatistics}
-              onOk={() => setModalOpenStatistics(false)}
-              onCancel={() => setModalOpenStatistics(false)}
+            width={1000}
+            title='Tính doanh thu'
+            footer={null}
+            open={modalOpenStatistics}
+            onOk={() => setModalOpenStatistics(false)}
+            onCancel={() => setModalOpenStatistics(false)}
           >
-            <RevenueOrder/>
+            <RevenueOrder />
           </Modal>
-        </Space.Compact>
+        </Space>
+        <Space>
+          <Input
+            name="id"
+            placeholder='Nhập mã đơn hàng'
+            onChange={handleInputChange}
+          />
+          <Input
+            name="movie_name"
+            placeholder='Nhập tên phim'
+            onChange={handleInputChange}
+          />
+          <Input
+            name="price"
+            placeholder='Nhập giá'
+            onChange={handleInputChange}
+          />
+          <Input
+            name="cinema_name"
+            placeholder='Nhập tên phòng'
+            onChange={handleInputChange}
+          />
+          <Input
+            name="email"
+            placeholder='Email khách hàng'
+            onChange={handleInputChange}
+          />
+          
+          <Button onClick={handleSearch}>Tìm kiếm</Button>
+        </Space>
+        <Table dataSource={orders} columns={columns} rowKey="id" />
       </Space>
-      <Table dataSource={orders} columns={columns} rowKey="id" />
     </div>
   );
 }
