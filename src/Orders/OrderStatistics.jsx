@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button, Input, Select, Space, Table } from 'antd';
-
+import { Button, Modal, Select, Space, Table } from 'antd';
+import { DollarOutlined } from '@ant-design/icons';
+import RevenueOrder from './RevenueOrder';
 export default function OrderStatistics() {
   const [orders, setOrders] = useState([]);
   const [status, setStatus] = useState(0); // Default status
-  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [modalOpenStatistics, setModalOpenStatistics] = useState(false);
 
   useEffect(() => {
     axios.get('http://localhost:8080/manager/user/order/getlist', {
@@ -16,7 +17,6 @@ export default function OrderStatistics() {
       .then(response => {
         if (response.data.result.code === 0) {
           setOrders(response.data.orders);
-          calculateTotalRevenue(response.data.orders); // Calculate total revenue after fetching orders
         }
       })
       .catch(error => {
@@ -32,12 +32,6 @@ export default function OrderStatistics() {
   const handlerGetAllOrder = ()=>{
     setStatus(0);
   }
-  const calculateTotalRevenue = (orders) => {
-    const revenue = orders
-      .filter(order => order.status === 9)
-      .reduce((sum, order) => sum + order.price, 0);
-    setTotalRevenue(revenue);
-  };
 
 
   const columns = [
@@ -125,7 +119,17 @@ export default function OrderStatistics() {
             ]}
           />
           <Button onClick={handlerGetAllOrder}>Toàn bộ đơn hàng</Button>
-          <Input value={totalRevenue +'VND'}  disabled/>
+          <Button  onClick={() => setModalOpenStatistics(true)}>Doanh thu<DollarOutlined /></Button>
+          <Modal
+              width={1000}
+              title='Tính doanh thu'
+              footer
+              open={modalOpenStatistics}
+              onOk={() => setModalOpenStatistics(false)}
+              onCancel={() => setModalOpenStatistics(false)}
+          >
+            <RevenueOrder/>
+          </Modal>
         </Space.Compact>
       </Space>
       <Table dataSource={orders} columns={columns} rowKey="id" />
