@@ -61,7 +61,7 @@ export default function GetTicketById({ id }) {
     }
 
     if(goback){
-        return <PageForUser/>
+        window.location.reload();
     }
 
     return (
