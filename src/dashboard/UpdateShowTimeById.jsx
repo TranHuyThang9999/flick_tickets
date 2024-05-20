@@ -53,6 +53,7 @@ export default function UpdateShowTimeById({ show_time_id }) {
             formData.append('movie_time', releaseDateTimestamp);
             formData.append('quantity', values.quantity);
             formData.append('price', values.price);
+            formData.append('discount',values.discount);
 
             const response = await axios.put(
                 'http://localhost:8080/manager/user/showtime/update',
@@ -139,6 +140,13 @@ export default function UpdateShowTimeById({ show_time_id }) {
                             options={options}
                             onChange={(value) => setCinemaName(value)}
                         />
+                    </Form.Item>
+                    <Form.Item
+                        label='Giảm giá vé'
+                        initialValue={showTime.discount}
+                        name="discount"
+                    >
+                        <InputNumber />
                     </Form.Item>
                     <Form.Item
                         label="Thời gian chiếu"

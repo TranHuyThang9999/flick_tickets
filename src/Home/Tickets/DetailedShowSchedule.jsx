@@ -64,7 +64,7 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
 
   const columns = [
     { title: 'Code', dataIndex: 'id', key: 'id' },
-    { title: 'Phòng để chiếu', dataIndex: 'cinema_name', key: 'cinema_name' },
+    { title: 'Chiếu tại rạp', dataIndex: 'cinema_name', key: 'cinema_name' },
     { title: 'Thời gian chiếu phim', dataIndex: 'movie_time', key: 'movie_time', render: (movie_time) => formatTimestamp(movie_time) },
     { title: 'Mô tả', dataIndex: 'description', key: 'description' },
     { title: 'Tỉnh', dataIndex: 'conscious', key: 'conscious' },
@@ -72,6 +72,8 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
     { title: 'Xã/Phường', dataIndex: 'commune', key: 'commune' },
     { title: 'Địa chỉ Chi tiết', dataIndex: 'address_details', key: 'address_details' },
     { title: 'Giá tiền', dataIndex: 'price', key: 'price' },
+    { title: 'Giảm giá', dataIndex: 'discount', key: 'discount' },
+
     {
       title: '',
       render: (record) => (
@@ -90,7 +92,8 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
     quantity: 1,
     price: selectedRecord && selectedRecord.price
   }));
-  const amountTitile = selectedRecord && selectedRecord.price * selectPopChid.length + 'VND';
+  const amountTitile = selectedRecord &&
+   (selectedRecord.price * selectPopChid.length)-(selectedRecord.price * selectPopChid.length)*(selectedRecord.discount/100) + 'VND';
 
   const handleCreatePayment = async () => {
     setLoadingPayment(true);
