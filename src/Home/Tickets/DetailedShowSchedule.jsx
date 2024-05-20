@@ -16,6 +16,8 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
   const [showModal, setShowModal] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
+  const [selectedRow, setSelectedRow] = useState(null);
+
   const [form] = Form.useForm();
 
   const showDrawer = (record) => {
@@ -61,18 +63,22 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${year}-${month}-${day} ${hours}:${minutes}`;
   }
+  const handleRowClick = (record) => {
+    if (selectedRow === record.key) {
+        setSelectedRow(null);
+    } else {
+        setSelectedRow(record.key);
+    }
+};
 
   const columns = [
     { title: 'Code', dataIndex: 'id', key: 'id' },
     { title: 'Chiếu tại rạp', dataIndex: 'cinema_name', key: 'cinema_name' },
     { title: 'Thời gian chiếu phim', dataIndex: 'movie_time', key: 'movie_time', render: (movie_time) => formatTimestamp(movie_time) },
     { title: 'Mô tả', dataIndex: 'description', key: 'description' },
-    { title: 'Tỉnh', dataIndex: 'conscious', key: 'conscious' },
-    { title: 'Huyện', dataIndex: 'district', key: 'district' },
-    { title: 'Xã/Phường', dataIndex: 'commune', key: 'commune' },
     { title: 'Địa chỉ Chi tiết', dataIndex: 'address_details', key: 'address_details' },
     { title: 'Giá tiền', dataIndex: 'price', key: 'price' },
-    { title: 'Giảm giá', dataIndex: 'discount', key: 'discount' },
+    { title: 'Giảm giá %', dataIndex: 'discount', key: 'discount' },
 
     {
       title: '',
@@ -93,7 +99,7 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
     price: selectedRecord && selectedRecord.price
   }));
   const amountTitile = selectedRecord &&
-   (selectedRecord.price * selectPopChid.length)-(selectedRecord.price * selectPopChid.length)*(selectedRecord.discount/100) + 'VND';
+    (selectedRecord.price * selectPopChid.length) - (selectedRecord.price * selectPopChid.length) * (selectedRecord.discount / 100) + 'VND';
 
   const handleCreatePayment = async () => {
     setLoadingPayment(true);
@@ -141,7 +147,24 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
 
   return (
     <div>
-      <Table scroll={{ x: 90 }} dataSource={showTimeTicket} columns={columns} pagination={pagination} loading={fetchingData} />
+      <Table
+        scroll={{ x: 90 }}
+        dataSource={showTimeTicket}
+        columns={columns}
+        pagination={pagination}
+        loading={fetchingData}
+        expandable={{
+          expandedRowRender: (record) => (
+            <div>
+              {record.conscious} || {record.district} ||{record.commune}
+            </div>
+          ),
+        }}
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+      })}
+      rowClassName={(record) => (record.key === selectedRow ? 'selected-row' : '')}
+      />
       <Drawer
         title="Phòng"
         width={1000}
@@ -162,7 +185,7 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
             />
           </div>
         )}
-        <div style={{ display: 'flex', padding: '10px', marginRight: '10px',marginTop:'100px' }}>
+        <div style={{ display: 'flex', padding: '10px', marginRight: '10px', marginTop: '100px' }}>
           <Button style={{ width: '120px', marginRight: '10px' }} type="primary" onClick={() => setShowModal(true)} disabled={selectPopChid.length === 0 || loadingPayment}>
             {loadingPayment ? 'Đang xử lý...' : 'Mua'}
           </Button>
