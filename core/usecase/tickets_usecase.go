@@ -139,6 +139,7 @@ func (c *UseCaseTicker) AddTicket(ctx context.Context, req *entities.TicketReqUp
 				CinemaName:     listCinemasName[i],
 				MovieTime:      listShowTimeInt[j],
 				Price:          req.Price,
+				Discount:       req.Sale,
 				CreatedAt:      utils.GenerateTimestamp(),
 				UpdatedAt:      utils.GenerateTimestamp(),
 			})

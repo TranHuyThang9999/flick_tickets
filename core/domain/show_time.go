@@ -17,6 +17,7 @@ type ShowTime struct {
 	CreatedAt      int     `json:"created_at"`
 	UpdatedAt      int     `json:"updated_at"`
 	Price          float64 `json:"price"`
+	Discount       int     `json:"discount"`
 }
 type ShowTimeDelete struct {
 	ID        int64 `json:"id"`
@@ -37,6 +38,7 @@ type ShowTimeUpdateReq struct {
 	OriginalNumber int     `json:"original_number"`
 	Price          float64 `json:"price"`
 	UpdatedAt      int     `json:"updated_at"`
+	Discount       int     `json:"discount"`
 }
 type RepositoryShowTime interface {
 	AddShowTime(ctx context.Context, req *ShowTime) error

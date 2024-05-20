@@ -9,6 +9,7 @@ type ShowTimeAddReq struct {
 	SelectedSeat string  `form:"selected_seat"`
 	Quantity     int     `form:"quantity"`
 	Price        float64 `form:"price"`
+	Discount     int     `form:"discount"`
 }
 type ShowTimeDelete struct {
 	ID        int64 `form:"id"`
@@ -44,6 +45,7 @@ type ShowTime struct {
 	Quantity        int     `json:"quantity"`
 	OriginalNumber  int     `json:"original_number"`
 	Price           float64 `json:"price"`
+	Discount        int     `json:"discount"`
 }
 type ShowTimeDetail struct {
 	Result   Result           `json:"result"`
@@ -68,6 +70,7 @@ type ShowTimeResp struct {
 	SelectedSeat   string  `json:"selected_seat"`
 	Quantity       int     `json:"quantity"`
 	OriginalNumber int     `json:"original_number"`
+	Discount       int     `json:"discount"`
 	CreatedAt      int     `json:"created_at"`
 	UpdatedAt      int     `json:"updated_at"`
 }

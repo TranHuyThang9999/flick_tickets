@@ -136,3 +136,4 @@ WHERE cinema_name = 'Phong 01'
   AND movie_name = '8 viên ngọc rồng'
   AND created_at BETWEEN 1714842000 AND 1718384400
   AND status = 9;
+ SELECT * FROM "show_times" WHERE cinema_name = 'Phong 01' and movie_time = 1716219576  ORDER BY "show_times"."id" LIMIT 1

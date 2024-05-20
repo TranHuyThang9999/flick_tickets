@@ -89,6 +89,7 @@ func (s *UseCaseShowTime) AddShowTime(ctx context.Context, req *entities.ShowTim
 				CinemaName:     listCinemasName[i],
 				MovieTime:      listShowTimeInt[j],
 				Price:          req.Price,
+				Discount:       req.Discount,
 				CreatedAt:      utils.GenerateTimestamp(),
 				UpdatedAt:      utils.GenerateTimestamp(),
 			})
@@ -220,6 +221,7 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 			Quantity:        showTime.Quantity,
 			OriginalNumber:  showTime.OriginalNumber,
 			Price:           showTime.Price,
+			Discount:        showTime.Discount,
 		})
 	}
 	log.Infof("listRespDetail", listRespDetail)
@@ -333,6 +335,7 @@ func (s *UseCaseShowTime) GetShowTimeById(ctx context.Context, id string) (*enti
 			SelectedSeat:   showTime.SelectedSeat,
 			Quantity:       showTime.Quantity,
 			OriginalNumber: showTime.OriginalNumber,
+			Discount:       showTime.Discount,
 			CreatedAt:      showTime.CreatedAt,
 			UpdatedAt:      showTime.UpdatedAt,
 		},
@@ -357,12 +360,13 @@ func (s *UseCaseShowTime) UpdateShowTimeById(ctx context.Context, req *entities.
 			req.MovieTime = showTime.MovieTime
 		}
 	}
-
+	log.Infof("data ", req.Discount)
 	// Kiểm tra nếu không tìm thấy bản ghi để cập nhật, thêm mới
 	showTimeGetCheck, err := s.st.GetTimeUseCheckAddTicket(ctx, &domain.ShowTimeCheckList{
 		CinemaName: req.CinemaName,
 		MovieTime:  req.MovieTime,
 	})
+	log.Infof("data", showTimeGetCheck)
 	if err != nil {
 		return &entities.ShowTimeUpdateByIdResp{
 			Result: entities.Result{
@@ -380,6 +384,7 @@ func (s *UseCaseShowTime) UpdateShowTimeById(ctx context.Context, req *entities.
 			Quantity:       req.Quantity,
 			OriginalNumber: req.Quantity,
 			Price:          req.Price,
+			Discount:       req.Discount,
 			UpdatedAt:      utils.GenerateTimestamp(),
 		})
 		if err != nil {
@@ -417,6 +422,7 @@ func (s *UseCaseShowTime) UpdateShowTimeById(ctx context.Context, req *entities.
 		Quantity:       req.Quantity,
 		OriginalNumber: req.Quantity,
 		Price:          req.Price,
+		Discount:       req.Discount,
 		UpdatedAt:      utils.GenerateTimestamp(),
 	})
 	if err != nil {

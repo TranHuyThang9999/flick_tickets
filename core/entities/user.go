@@ -43,4 +43,5 @@ type ShowTimeUpdateByIdReq struct {
 	MovieTime  int     `form:"movie_time"` //string
 	Quantity   int     `form:"quantity"`
 	Price      float64 `form:"price"`
+	Discount   int     `form:"discount"`
 }
