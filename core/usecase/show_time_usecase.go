@@ -134,10 +134,10 @@ func (s *UseCaseShowTime) DeleteShowTime(ctx context.Context, req *entities.Show
 		},
 	}, nil
 }
-func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) (*entities.ShowTimeByTicketIdresp, error) {
+func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, ticketId string) (*entities.ShowTimeByTicketIdresp, error) {
 
-	number := mapper.ConvertStringToInt(id) //ticket id
-
+	number := mapper.ConvertStringToInt(ticketId) //ticket id
+	var timeNowTypetimestamp = utils.GenerateTimestamp()
 	// Lấy danh sách thời gian chiếu từ cơ sở dữ liệu
 	listShowTime, err := s.st.GetShowTimeByTicketId(ctx, int64(number))
 	if err != nil {
@@ -225,19 +225,34 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, id string) 
 		})
 	}
 	log.Infof("listRespDetail", listRespDetail)
-	// Sắp xếp danh sách thời gian chiếu theo thời gian của phim
-	sort.Slice(listRespDetail, func(i, j int) bool {
-		return int(listRespDetail[i].ID) > int(listRespDetail[j].ID)
+	//Hiển thị các suất chiếu lớn hơn thời gian hiện tại
+	index := sort.Search(len(listRespDetail), func(i int) bool {
+		return listRespDetail[i].MovieTime <= timeNowTypetimestamp
 	})
-
+	log.Infof("index", index)
+	if index < len(listRespDetail) {
+		return &entities.ShowTimeByTicketIdresp{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+			Showtimes: nil,
+		}, nil
+	} else {
+		// Sắp xếp danh sách thời gian chiếu theo thời gian của phim
+		sort.Slice(listRespDetail, func(i, j int) bool {
+			return int(listRespDetail[i].ID) > int(listRespDetail[j].ID)
+		})
+		return &entities.ShowTimeByTicketIdresp{
+			Result: entities.Result{
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
+			},
+			Showtimes: listRespDetail,
+		}, nil
+	}
 	// Trả về danh sách thời gian chiếu đã được chế biến và không có lỗi
-	return &entities.ShowTimeByTicketIdresp{
-		Result: entities.Result{
-			Code:    enums.SUCCESS_CODE,
-			Message: enums.SUCCESS_MESS,
-		},
-		Showtimes: listRespDetail,
-	}, nil
+
 }
 
 func (s *UseCaseShowTime) DetailShowTime(ctx context.Context, id string) (*entities.ShowTimeDetail, error) {

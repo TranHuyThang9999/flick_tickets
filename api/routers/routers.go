@@ -75,7 +75,7 @@ func NewApiRouter(
 	r.PUT("/user/update/width/height", cinema.UpdateColumnWidthHeightContainer)
 	// user //order
 	r.POST("/customer/order/ticket", order.OrdersTicket)
-	r.GET("/customer/look/order/ticket", order.GetOrderById)
+	r.GET("/customer/look/order/ticket", order.GetOrderById) //ko dung
 	r.PUT("/customer/update/order", order.UpsertOrderById)
 	r.PUT("/customer/order/send", order.SubmitSendTicketByEmail) //webhook
 	r.PUT("/customer/order/calcel", order.UpdateOrderWhenCancel) // webhook

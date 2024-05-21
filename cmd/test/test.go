@@ -2,17 +2,21 @@ package main
 
 import (
 	"flick_tickets/common/log"
-	"flick_tickets/common/utils"
 	"flick_tickets/configs"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
 )
+
+type MovieDetail struct {
+	MovieTime int64
+}
 
 func main() {
 	//r := gin.Default()
@@ -29,7 +33,53 @@ func main() {
 	// }
 	configs.LoadConfig("./configs/configs.json")
 	log.LoadLogger()
-	fmt.Println(utils.ConvertTimestampToDateTime(1715927970))
+	// Example movie details
+	//addTimeUseTest()
+	sortSearch()
+}
+
+func addTimeUseTest() {
+	// Get the current time
+	currentTime := time.Now()
+
+	// Add 15 minutes to the current time
+	timeInFuture := currentTime.Add(19 * time.Minute)
+
+	// Get the Unix timestamp of the future time
+	timeInFutureTimestamp := timeInFuture.Unix()
+
+	// Print the current time and the future time
+	fmt.Println("Current Unix timestamp:", currentTime.Unix())
+	fmt.Println("Future Unix timestamp (15 minutes later):", timeInFutureTimestamp)
+
+}
+func sortSearch() {
+	listRespDetail := []MovieDetail{
+		{MovieTime: 1715879227}, // 2021-06-01 10:00:00 UTC
+		{MovieTime: 1622635200}, // 2021-06-02 10:00:00 UTC
+		{MovieTime: 1622721600}, // 2021-06-03 10:00:00 UTC
+		{MovieTime: 1715879227},
+	}
+
+	// Sort the list by MovieTime (assuming it is not already sorted)
+	sort.Slice(listRespDetail, func(i, j int) bool {
+		return listRespDetail[i].MovieTime < listRespDetail[j].MovieTime
+	})
+
+	// Get the current time as a Unix timestamp
+	timeNowTypetimestamp := time.Now().Unix()
+
+	// Find the first movie detail where MovieTime is greater than or equal to the current time
+	index := sort.Search(len(listRespDetail), func(i int) bool {
+		return listRespDetail[i].MovieTime >= timeNowTypetimestamp
+	})
+
+	// Check if such a movie detail was found
+	if index < len(listRespDetail) {
+		fmt.Printf("Next available movie detail: %+v\n", listRespDetail[index])
+	} else {
+		fmt.Println("No available movie details found")
+	}
 }
 
 func LoadFileHtml(c *gin.Context) {
