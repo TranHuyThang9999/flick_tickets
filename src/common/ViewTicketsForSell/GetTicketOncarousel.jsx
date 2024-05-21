@@ -79,16 +79,15 @@ export default function GetTicketOncarousel({ status ,name,movie_theater_name}) 
         {tickets.length > 0 && (
           <Carousel responsive={responsiveConfig}>
             {tickets.map((ticket) => (
-              <div style={{ paddingLeft: '50px' }} key={ticket.id}>
+              <div style={{ paddingLeft: '75px' }} key={ticket.id}>
                 <Row>
                   <Col>
                     <CarouselCustomize images={listFile.find((item) => item.ticketId === ticket.id)?.files || []} />
                   </Col>
                 </Row>
-                <Row style={{ paddingTop: '10px', width: '270px', justifyContent: 'center' }}>
+                <Row style={{marginLeft:'-20px',paddingTop: '10px', width: '290px', justifyContent: 'center',paddingBottom:'10px'}}>
                   <Col span={12} offset={6}>
-                    <p>{ticket.description}</p>
-                    <p>{ticket.name}</p>
+                    <p style={{color:'blueviolet',fontSize:'19px'}}>{ticket.name}</p>
                     <Button onClick={() => handlerDetail(ticket.id)}>
                       <SelectOutlined /> Chi tiết vé
                     </Button>

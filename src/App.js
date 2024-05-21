@@ -8,7 +8,6 @@ import AppSquare from "./common/test/test";
 import DisplaySelectedSeat from "./dashboard/DisplaySelectedSeat";
 import GetTicketById from "./Home/Tickets/DetailTicketById";
 import ListFileByTicketId from "./Home/Tickets/ListFileByTicketId";
-import GetListTicket from "./Home/Tickets/GetListTicket";
 import AdminUploadTickets from "./dashboard/AdminUploadTickets";
 import TestDetailedShowSchedule from "./common/test/tesst1";
 import SendEmail from "./common/ProcessEmail/SendEmail";
@@ -42,6 +41,7 @@ import UpSertFileByTicketId from "./dashboard/UpSertFileByTicketId";
 import GetListTicketByMovieName from "./common/ViewTicketsForSell/GetListTicketByMovieName";
 import TestSelect from "./common/test/test";
 import RevenueOrder from "./Orders/RevenueOrder";
+import StatisticalBar from "./Orders/StatisticalBar";
 
 export default function App() {
   return (
@@ -90,7 +90,6 @@ export default function App() {
       {/* <UpdateShowTimeById show_time_id={3169598}/> */}
       {/* <TestCheckBox/> */}
       {/* <PageForUser/> */}
-      <CheckLogin/>
       {/* <HomeaAdmin /> */}
       {/* <OrderStatistics/> */}
       {/* <Blogs/> */}
@@ -100,6 +99,8 @@ export default function App() {
       {/* <GetListTicketByMovieName movieName={'s'}/> */}
       {/* <TestSelect/> */}
       {/* <RevenueOrder/> */}
+      {/* <CheckLogin/> */}
+      <StatisticalBar/>
     </div>
   );
 }

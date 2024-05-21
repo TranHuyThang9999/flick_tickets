@@ -304,7 +304,7 @@ export default function PageForUser() {
                 options={dataSource}
                 onSelect={(value) => setSearchInput(value)}
                 onChange={(value) => setSearchInput(value)}
-                placeholder="Nhập chữ S để tìm kiếm"
+                placeholder="Nhập phim muốn tìm kiếm"
                 style={{ width: 200 }}
               />
               <Button onClick={handleSearch}>Tìm kiếm</Button>
