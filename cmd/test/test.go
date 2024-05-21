@@ -2,6 +2,7 @@ package main
 
 import (
 	"flick_tickets/common/log"
+	"flick_tickets/common/utils"
 	"flick_tickets/configs"
 	"fmt"
 	"io"
@@ -35,7 +36,8 @@ func main() {
 	log.LoadLogger()
 	// Example movie details
 	//addTimeUseTest()
-	sortSearch()
+	//sortSearch()
+	fmt.Println(utils.ConvertTimestampToDateTime(1716224400))
 }
 
 func addTimeUseTest() {

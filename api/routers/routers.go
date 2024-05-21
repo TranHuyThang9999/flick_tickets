@@ -106,6 +106,7 @@ func NewApiRouter(
 	r.POST("/use/add/time", showTime.AddShowTime)
 	r.DELETE("/use/delete/time", showTime.DeleteShowTime) //ko dung
 	r.GET("/user/getlist/time", showTime.GetShowTimeByTicketId)
+	r.GET("/user/getlist/time/admin", showTime.GetShowTimeByTicketIdForAdmin)
 	r.GET("/customer/detail/showtime", showTime.DetailShowTime)
 	r.DELETE("use/delete/byid", showTime.DeleteShowTimeById)
 	r.GET("/use/showtime", showTime.GetShowTimeById)

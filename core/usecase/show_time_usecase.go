@@ -9,6 +9,7 @@ import (
 	"flick_tickets/core/entities"
 	"flick_tickets/core/mapper"
 	"sort"
+	"time"
 )
 
 type UseCaseShowTime struct {
@@ -136,8 +137,127 @@ func (s *UseCaseShowTime) DeleteShowTime(ctx context.Context, req *entities.Show
 }
 func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, ticketId string) (*entities.ShowTimeByTicketIdresp, error) {
 
+	number := mapper.ConvertStringToInt(ticketId) // Convert ticket ID to int
+	var timeNowTypetimestamp = time.Now().Unix()  // Get the current timestamp
+
+	// Fetch the list of showtimes by ticket ID from the database
+	listShowTime, err := s.st.GetShowTimeByTicketId(ctx, int64(number))
+	if err != nil {
+		// Return an error if unable to access the data
+		return &entities.ShowTimeByTicketIdresp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, err
+	}
+
+	// Check if the list of showtimes is empty
+	if len(listShowTime) == 0 {
+		return &entities.ShowTimeByTicketIdresp{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
+
+	// Fetch the list of cinemas
+	listCinema, err := s.cinema.GetAllCinema(ctx)
+	if err != nil {
+		return &entities.ShowTimeByTicketIdresp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, err
+	}
+
+	// Check if the list of cinemas is empty
+	if len(listCinema) == 0 {
+		return &entities.ShowTimeByTicketIdresp{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
+
+	// Create a map of cinemas by their name
+	mapCinemaByName := make(map[string]*domain.Cinemas)
+	for _, cinema := range listCinema {
+		mapCinemaByName[cinema.CinemaName] = cinema
+	}
+
+	// Create a list to hold the showtime details
+	var listRespDetail []*entities.ShowTime
+	for _, showTime := range listShowTime {
+		cinema := mapCinemaByName[showTime.CinemaName]
+		if cinema == nil {
+			// If cinema information is not found, create a default cinema object with empty fields
+			cinema = &domain.Cinemas{
+				CinemaName:      "",
+				Description:     "",
+				Conscious:       "",
+				District:        "",
+				Commune:         "",
+				AddressDetails:  "",
+				WidthContainer:  0,
+				HeightContainer: 0,
+			}
+		}
+
+		// Filter showtimes to include only those with MovieTime greater than the current timestamp
+		if showTime.MovieTime > int(timeNowTypetimestamp) {
+			listRespDetail = append(listRespDetail, &entities.ShowTime{
+				ID:              showTime.ID,
+				TicketID:        showTime.TicketID,
+				CinemaName:      showTime.CinemaName,
+				MovieTime:       showTime.MovieTime,
+				Description:     cinema.Description,
+				Conscious:       cinema.Conscious,
+				District:        cinema.District,
+				Commune:         cinema.Commune,
+				AddressDetails:  cinema.AddressDetails,
+				WidthContainer:  cinema.WidthContainer,
+				HeightContainer: cinema.HeightContainer,
+				SelectedSeat:    showTime.SelectedSeat,
+				Quantity:        showTime.Quantity,
+				OriginalNumber:  showTime.OriginalNumber,
+				Price:           showTime.Price,
+				Discount:        showTime.Discount,
+			})
+		}
+	}
+
+	// Check if the filtered list of showtimes is empty
+	if len(listRespDetail) == 0 {
+		return &entities.ShowTimeByTicketIdresp{
+			Result: entities.Result{
+				Code:    enums.DATA_EMPTY_ERR_CODE,
+				Message: enums.DATA_EMPTY_ERR_MESS,
+			},
+		}, nil
+	}
+
+	// Sort the filtered list of showtimes by MovieTime in ascending order
+	sort.Slice(listRespDetail, func(i, j int) bool {
+		return listRespDetail[i].MovieTime < listRespDetail[j].MovieTime
+	})
+
+	// Return the filtered and sorted list of showtimes
+	return &entities.ShowTimeByTicketIdresp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Showtimes: listRespDetail,
+	}, nil
+}
+
+func (s *UseCaseShowTime) GetShowTimeByTicketIdForAdmin(ctx context.Context, ticketId string) (*entities.ShowTimeByTicketIdresp, error) {
+
 	number := mapper.ConvertStringToInt(ticketId) //ticket id
-	var timeNowTypetimestamp = utils.GenerateTimestamp()
 	// Lấy danh sách thời gian chiếu từ cơ sở dữ liệu
 	listShowTime, err := s.st.GetShowTimeByTicketId(ctx, int64(number))
 	if err != nil {
@@ -225,36 +345,21 @@ func (s *UseCaseShowTime) GetShowTimeByTicketId(ctx context.Context, ticketId st
 		})
 	}
 	log.Infof("listRespDetail", listRespDetail)
-	//Hiển thị các suất chiếu lớn hơn thời gian hiện tại
-	index := sort.Search(len(listRespDetail), func(i int) bool {
-		return listRespDetail[i].MovieTime <= timeNowTypetimestamp
+
+	// Sắp xếp danh sách thời gian chiếu theo thời gian của phim
+	sort.Slice(listRespDetail, func(i, j int) bool {
+		return int(listRespDetail[i].ID) > int(listRespDetail[j].ID)
 	})
-	log.Infof("index", index)
-	if index < len(listRespDetail) {
-		return &entities.ShowTimeByTicketIdresp{
-			Result: entities.Result{
-				Code:    enums.DATA_EMPTY_ERR_CODE,
-				Message: enums.DATA_EMPTY_ERR_MESS,
-			},
-			Showtimes: nil,
-		}, nil
-	} else {
-		// Sắp xếp danh sách thời gian chiếu theo thời gian của phim
-		sort.Slice(listRespDetail, func(i, j int) bool {
-			return int(listRespDetail[i].ID) > int(listRespDetail[j].ID)
-		})
-		return &entities.ShowTimeByTicketIdresp{
-			Result: entities.Result{
-				Code:    enums.SUCCESS_CODE,
-				Message: enums.SUCCESS_MESS,
-			},
-			Showtimes: listRespDetail,
-		}, nil
-	}
+	return &entities.ShowTimeByTicketIdresp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Showtimes: listRespDetail,
+	}, nil
+
 	// Trả về danh sách thời gian chiếu đã được chế biến và không có lỗi
-
 }
-
 func (s *UseCaseShowTime) DetailShowTime(ctx context.Context, id string) (*entities.ShowTimeDetail, error) {
 
 	showTimeId := mapper.ConvertStringToInt(id)
@@ -375,7 +480,7 @@ func (s *UseCaseShowTime) UpdateShowTimeById(ctx context.Context, req *entities.
 			req.MovieTime = showTime.MovieTime
 		}
 	}
-	log.Infof("data ", req.Discount)
+	log.Infof("data ", req.MovieTime)
 	// Kiểm tra nếu không tìm thấy bản ghi để cập nhật, thêm mới
 	showTimeGetCheck, err := s.st.GetTimeUseCheckAddTicket(ctx, &domain.ShowTimeCheckList{
 		CinemaName: req.CinemaName,
