@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { showError } from '../common/log/log';
 
 export default function GetAllShowTime({ ticket_id }) {
@@ -8,7 +8,7 @@ export default function GetAllShowTime({ ticket_id }) {
     useEffect(() => {
         const fetchShowTimes = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/manager/user/getlist/time?id=${ticket_id}`);
+                const response = await axios.get(`http://localhost:8080/manager/user/getlist/time/admin?id=${ticket_id}`);
                 if (response.data.result.code === 0) {
                     setShowTimes(response.data.showtimes);
                     console.log("11",response);

@@ -76,7 +76,7 @@ const items = [
 
 const HomeAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [activeTab, setActiveTab] = useState('2');
+  const [activeTab, setActiveTab] = useState('7');
   const[logout,setLogout] = useState(false);
 
   const handleTabChange = (key) => {

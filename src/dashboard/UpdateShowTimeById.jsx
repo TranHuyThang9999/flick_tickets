@@ -5,6 +5,7 @@ import { Button, DatePicker, Drawer, Form, InputNumber, Select } from 'antd';
 import moment from 'moment';
 import CinemasGetAll from '../common/cinemas/CinemasGetAll';
 import './index.css';
+
 export default function UpdateShowTimeById({ show_time_id }) {
 
     const [showTime, setShowTime] = useState(null);
@@ -12,25 +13,21 @@ export default function UpdateShowTimeById({ show_time_id }) {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false); // State để kiểm soát trạng thái mở của Drawer
 
-
     useEffect(() => {
-        const fetchdata = async () => {
+        const fetchData = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/manager/use/showtime?id=${show_time_id}`);
                 if (response.data.result.code === 0) {
                     setShowTime(response.data.show_time);
-                    return;
                 } else {
                     showError("error server");
-                    return;
                 }
             } catch (error) {
                 console.log(error);
                 showError("error server");
-                return;
             }
         }
-        fetchdata();
+        fetchData();
     }, [show_time_id]);
 
     const layout = {
@@ -44,16 +41,13 @@ export default function UpdateShowTimeById({ show_time_id }) {
 
     const handleFormSubmit = async (values) => {
         try {
-
-            const releaseDateTimestamp = moment(values.movie_time).unix();
-
             const formData = new FormData();
             formData.append('id', show_time_id);
             formData.append('cinema_name', cinemaName);
-            formData.append('movie_time', releaseDateTimestamp);
+            formData.append('movie_time', values.movie_time.unix());
             formData.append('quantity', values.quantity);
             formData.append('price', values.price);
-            formData.append('discount',values.discount);
+            formData.append('discount', values.discount);
 
             const response = await axios.put(
                 'http://localhost:8080/manager/user/showtime/update',
@@ -67,33 +61,26 @@ export default function UpdateShowTimeById({ show_time_id }) {
 
             if (response.data.result.code === 0) {
                 showSuccess('Cập nhật thành công');
-                return;
             } else if (response.data.result.code === 26) {
                 showWarning("Suất chiếu đã tồn tại vui lòng chọn lại");
-                return;
             } else {
                 showError('Lỗi server, vui lòng thử lại');
-                return;
             }
         } catch (error) {
             console.log(error);
             showError('Lỗi server, vui lòng thử lại');
-            return;
         }
     };
 
-    const options = [];
-    const cinemas = CinemasGetAll();
-    for (let index = 0; index < cinemas.length; index++) {
-        options.push({
-            label: cinemas[index].cinema_name,
-            value: cinemas[index].cinema_name,
-        });
-    }
+    const options = CinemasGetAll().map(cinema => ({
+        label: cinema.cinema_name,
+        value: cinema.cinema_name,
+    }));
 
     if (!showTime) {
         return null;
     }
+
     const handleUpdateClick = () => {
         setVisible(true); // Mở Drawer khi nhấn nút cập nhật
     };
@@ -101,6 +88,7 @@ export default function UpdateShowTimeById({ show_time_id }) {
     const handleCloseDrawer = () => {
         setVisible(false); // Đóng Drawer khi cần
     };
+
     return (
         <div>
             <Button onClick={handleUpdateClick}>Cập nhật</Button>
@@ -153,8 +141,8 @@ export default function UpdateShowTimeById({ show_time_id }) {
                         name="movie_time"
                     >
                         <DatePicker
-                            allowClear
-                            defaultValue={moment.unix(showTime.movie_time)}
+                            
+                            // defaultValue={showTime.movie_time ? moment.unix(showTime.movie_time) : null}
                             showTime
                         />
                     </Form.Item>

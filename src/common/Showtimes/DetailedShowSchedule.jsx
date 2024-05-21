@@ -1,7 +1,7 @@
 import { Button, Drawer, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { showError, showWarning } from '../log/log';
-import { EditFilled, UnorderedListOutlined, RetweetOutlined } from '@ant-design/icons';
+import {  UnorderedListOutlined, RetweetOutlined } from '@ant-design/icons';
 import SelectedSeatForAdmin from '../../dashboard/SelectedSeatForAdmin';
 import DeleteShowTimeById from '../../dashboard/DeleteShowTimeById';
 import UpdateShowTimeById from '../../dashboard/UpdateShowTimeById';
@@ -31,7 +31,7 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/manager/user/getlist/time?id=${id}`);
+      const response = await fetch(`http://localhost:8080/manager/user/getlist/time/admin?id=${id}`);
       const data = await response.json();
       setShowTimeTicket(data.showtimes);
       if (data.result.code === 0) {

@@ -1,6 +1,6 @@
 import { Button, Modal, Space, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { PlusCircleFilled ,RetweetOutlined} from '@ant-design/icons';
+import { PlusCircleFilled } from '@ant-design/icons';
 import DetailedShowSchedule from '../common/Showtimes/DetailedShowSchedule';
 import GetListFileByTicketId from './GetListFileByTicketId';
 import AddShowTime from './AddShowTime';

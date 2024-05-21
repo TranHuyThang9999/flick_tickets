@@ -10,7 +10,6 @@ export default function GetAllTicketsForAdmin() {
     const [tickets, setTickets] = useState([]);
     const [open, setOpen] = useState(false);
     const [selectedTicketId, setSelectedTicketId] = useState(null);
-    const [size, setSize] = useState();
     const [openUpdateTicket, setOpenUpdateTicket] = useState([]);
 
     useEffect(() => {
@@ -33,7 +32,6 @@ export default function GetAllTicketsForAdmin() {
 
     const showDrawer = (id) => {
         setSelectedTicketId(id);
-        setSize('large');
         setOpen(true);
     };
 

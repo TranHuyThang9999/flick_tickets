@@ -5,7 +5,6 @@ import { showError } from '../../common/log/log';
 import axios from 'axios';
 import CarouselCustomize from '../../common/CustomizeCarousel/CarouselCustomize';
 import DetailedShowSchedule from './DetailedShowSchedule';
-import PageForUser from '../Page/PageForUser';
 
 export default function GetTicketById({ id }) {
     const [ticket, setTicket] = useState({});
