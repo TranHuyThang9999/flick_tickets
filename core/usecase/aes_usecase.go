@@ -5,6 +5,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
+	"encoding/json"
 	"flick_tickets/common/enums"
 	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
@@ -97,36 +98,82 @@ func (c *UseCaseAes) CheckQrCode(ctx context.Context, req *entities.AesContentEn
 		}, nil
 	}
 	dataOrderId := string(data)
-	detailOrder, err := c.order.GetOrderById(ctx, int64(mapper.ConvertStringToInt(dataOrderId)))
+	statusExistsObject, err := c.memory.KeyExists(ctx, dataOrderId)
 	if err != nil {
 		return &entities.TokenResponseCheckQrCode{
 			Result: entities.Result{
-				Code:    enums.DB_ERR_CODE,
-				Message: enums.DB_ERR_MESS,
+				Code:    enums.CACHE_ERR_CODE,
+				Message: enums.CACHE_ERR_MESS,
 			},
 		}, nil
 	}
-	orderResp := entities.OrderHistoryEntities{
-		ID:             detailOrder.ID,
-		MovieName:      detailOrder.MovieName,
-		CinemaName:     detailOrder.CinemaName,
-		Email:          detailOrder.Email,
-		ReleaseDate:    detailOrder.ReleaseDate,
-		Description:    detailOrder.Description,
-		Status:         detailOrder.Status,
-		Price:          detailOrder.Price,
-		Seats:          detailOrder.Seats,
-		MovieTime:      detailOrder.MovieTime,
-		AddressDetails: detailOrder.AddressDetails,
-		CreatedAt:      detailOrder.CreatedAt,
+	if !statusExistsObject {
+		detailOrder, err := c.order.GetOrderById(ctx, int64(mapper.ConvertStringToInt(dataOrderId)))
+		if err != nil {
+			return &entities.TokenResponseCheckQrCode{
+				Result: entities.Result{
+					Code:    enums.DB_ERR_CODE,
+					Message: enums.DB_ERR_MESS,
+				},
+			}, nil
+		}
+		orderResp := entities.OrderHistoryEntities{
+			ID:             detailOrder.ID,
+			MovieName:      detailOrder.MovieName,
+			CinemaName:     detailOrder.CinemaName,
+			Email:          detailOrder.Email,
+			ReleaseDate:    detailOrder.ReleaseDate,
+			Description:    detailOrder.Description,
+			Status:         detailOrder.Status,
+			Price:          detailOrder.Price,
+			Seats:          detailOrder.Seats,
+			MovieTime:      detailOrder.MovieTime,
+			AddressDetails: detailOrder.AddressDetails,
+			CreatedAt:      detailOrder.CreatedAt,
+		}
+		err = c.memory.SetObjectById(ctx, dataOrderId, detailOrder)
+		if err != nil {
+			return &entities.TokenResponseCheckQrCode{
+				Result: entities.Result{
+					Code:    enums.CACHE_ERR_CODE,
+					Message: enums.CACHE_ERR_MESS,
+				},
+			}, nil
+		}
+		return &entities.TokenResponseCheckQrCode{
+			Result: entities.Result{
+				Code:    enums.SUCCESS_CODE,
+				Message: enums.SUCCESS_MESS,
+			},
+			Order:     &orderResp,
+			CreatedAt: utils.GenerateTimestamp(),
+		}, nil
+	}
+	dataStringOrder, err := c.memory.GetObjectById(ctx, dataOrderId)
+	if err != nil {
+		return &entities.TokenResponseCheckQrCode{
+			Result: entities.Result{
+				Code:    enums.CACHE_ERR_CODE,
+				Message: enums.CACHE_ERR_MESS,
+			},
+		}, nil
+	}
+	var orderResp *entities.OrderHistoryEntities
+	err = json.Unmarshal([]byte(dataStringOrder), &orderResp)
+	if err != nil {
+		return &entities.TokenResponseCheckQrCode{
+			Result: entities.Result{
+				Code:    enums.ERROR_CONVERT_JSON_CODE,
+				Message: enums.ERROR_CONVERT_JSON_MESS,
+			},
+		}, nil
 	}
 	return &entities.TokenResponseCheckQrCode{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
-		Order:     &orderResp,
-		CreatedAt: utils.GenerateTimestamp(),
+		Order: orderResp,
 	}, nil
 }
 
