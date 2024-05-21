@@ -1,7 +1,8 @@
-import { Button, Form, Input, Upload } from 'antd'
+import { Button, Form, Input, Select, Upload } from 'antd'
 import axios from 'axios'
 import React, { useState } from 'react'
 import { showError, showSuccess, showWarning } from '../common/log/log';
+import CinemasGetAll from '../common/cinemas/CinemasGetAll';
 
 // curl --location 'localhost:8080/manager/customer/staff/register' \
 // --form 'user_name="go 111"' \
@@ -59,7 +60,14 @@ export default function CreateAccountStaff() {
             span: 16,
         },
     };
-
+    const options = [];
+    const cinemas = CinemasGetAll();
+    for (let index = 0; index < cinemas.length; index++) {
+      options.push({
+        label: cinemas[index].cinema_name,
+        value: cinemas[index].cinema_name,
+      })
+    }
 
     return (
         <div>
@@ -149,7 +157,21 @@ export default function CreateAccountStaff() {
                 >
                     <Input />
                 </Form.Item>
+                <Form.Item
+                    label='Ca làm việc'
+                >
+                
 
+                </Form.Item>
+                <Form.Item
+                    label='Làm tại rạp'
+                >
+                <Select
+                    allowClear
+                    options={options}
+                    mode='multiple'
+                />
+                </Form.Item>
                 <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                     <Button type="primary" htmlType="submit">
                         Submit
