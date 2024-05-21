@@ -149,3 +149,12 @@ func (order *ControllerOrder) GetAllCinemaByMovieName(ctx *gin.Context) {
 	order.baseController.Response(ctx, resp, err)
 
 }
+func (order *ControllerOrder) GetAllOrderStatistical(ctx *gin.Context) {
+	var req entities.OrderStatisticalReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	resp, err := order.order.StatisticalOrder(ctx, &req)
+	order.baseController.Response(ctx, resp, err)
+}

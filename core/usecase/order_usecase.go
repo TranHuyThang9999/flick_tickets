@@ -767,3 +767,35 @@ func (u *UseCaseOrder) GetAllCinemaByMovieName(ctx context.Context, cinema_name 
 	}, nil
 
 }
+func (u *UseCaseOrder) StatisticalOrder(ctx context.Context, req *entities.OrderStatisticalReq) (*entities.OrderStatisticalResp, error) {
+
+	var orderResp = make([]*domain.Orders, 0)
+	listOrder, err := u.order.GetAllOrder(ctx, &domain.OrdersReqByForm{
+		Status: 9,
+	})
+	log.Infof("len ", len(listOrder))
+	if err != nil {
+		return &entities.OrderStatisticalResp{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	for i := 0; i < len(listOrder); i++ {
+		if listOrder[i].CreatedAt >= req.StartTime && listOrder[i].CreatedAt <= req.EndTime {
+			orderResp = append(orderResp, listOrder[i])
+		} else if req.EndTime == req.StartTime {
+			if listOrder[i].CreatedAt == req.EndTime {
+				orderResp = append(orderResp, listOrder[i])
+			}
+		}
+	}
+	return &entities.OrderStatisticalResp{
+		Result: entities.Result{
+			Code:    enums.SUCCESS_CODE,
+			Message: enums.SUCCESS_MESS,
+		},
+		Orders: orderResp,
+	}, nil
+}

@@ -85,6 +85,7 @@ func NewApiRouter(
 	r.GET("/user/order/revenue", order.OrderRevenueByMovieName)
 	r.GET("/user/history", order.GetAllMovieNameFromOrder)
 	r.GET("/user/history/movie/name", order.GetAllCinemaByMovieName)
+	r.GET("/user/statistical", order.GetAllOrderStatistical)
 	//customer
 	r.POST("/customer/send/:email", customer.SendOtptoEmail)
 	r.POST("/customer/verify/", customer.CheckOtpByEmail)

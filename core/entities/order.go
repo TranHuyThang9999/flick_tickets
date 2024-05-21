@@ -94,3 +94,11 @@ type OrderGetAllFromOrderByCinemaNameResp struct {
 	Result Result           `json:"result"`
 	Orders []*domain.Orders `json:"orders"`
 }
+type OrderStatisticalReq struct {
+	StartTime int `form:"start_time"`
+	EndTime   int `form:"end_time"`
+}
+type OrderStatisticalResp struct {
+	Result Result           `json:"result"`
+	Orders []*domain.Orders `json:"orders"`
+}
