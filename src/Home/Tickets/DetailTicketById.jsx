@@ -9,7 +9,7 @@ import DetailedShowSchedule from './DetailedShowSchedule';
 export default function GetTicketById({ id }) {
     const [ticket, setTicket] = useState({});
     const [listFile, setListFile] = useState([]);
-    const [goback,setGoback] = useState(false);
+    const [goback, setGoback] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -52,14 +52,14 @@ export default function GetTicketById({ id }) {
 
         fetchFileData();
     }, [id]);
-    const handlerGoback = ()=>{
+    const handlerGoback = () => {
         setGoback(true);
     }
     if (Object.keys(ticket).length === 0) {
         return <div>Đang tải...</div>;
     }
 
-    if(goback){
+    if (goback) {
         window.location.reload();
     }
 
@@ -104,7 +104,13 @@ export default function GetTicketById({ id }) {
                                 fontSize: '17px'
                             }}>
                                 Ngày phát hành: {formatTimestamp(ticket.release_date)}<br />
-                                Trạng thái: {ticket.status}<br />
+                                {ticket.status === 15 && (
+                                    <span>Trạng thái: Mở bán</span>
+                                )}
+                                {ticket.status === 17 && (
+                                    <span>Trạng thái: Chưa mở</span>
+                                )}
+                                <br/>
                                 Giới hạn độ tuổi: {ticket.age_limit}<br />
                             </div>
 

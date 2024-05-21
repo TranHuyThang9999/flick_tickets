@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { showError, showSuccess, showWarning } from '../common/log/log';
 import { Button, DatePicker, Drawer, Form, InputNumber, Select } from 'antd';
-import moment from 'moment';
 import CinemasGetAll from '../common/cinemas/CinemasGetAll';
 import './index.css';
 

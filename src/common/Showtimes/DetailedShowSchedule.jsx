@@ -10,10 +10,10 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
   const [showTimeTicket, setShowTimeTicket] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const [selectPopChid, setSelectPopChid] = useState([]);
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [openUpdateShowTime, setopenUpdateShowTime] = useState(false);
-  const [selectedRecordId, setSelectedRecordId] = useState(null);
+  // const [selectPopChid, setSelectPopChid] = useState([]);
+  // const [selectedRow, setSelectedRow] = useState(null);
+  // const [openUpdateShowTime, setopenUpdateShowTime] = useState(false);
+  // const [selectedRecordId, setSelectedRecordId] = useState(null);
 
   const showDrawer = (record) => {
     // const { id } = record; // Extract the id from the record
@@ -64,14 +64,14 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
     fetchData(); // Reload data when reload button is clicked
   };
 
-  const showDrawerUpdateShowTime = (record) => {
-    setopenUpdateShowTime(true);
-    setSelectedRecordId(record.id); // Lưu ID của bản ghi được chọn
-  };
+  // const showDrawerUpdateShowTime = (record) => {
+  //   setopenUpdateShowTime(true);
+  //   setSelectedRecordId(record.id); // Lưu ID của bản ghi được chọn
+  // };
 
-  const onCloseDrawreUpdateShowTime = () => {
-    setopenUpdateShowTime(false);
-  };
+  // const onCloseDrawreUpdateShowTime = () => {
+  //   setopenUpdateShowTime(false);
+  // };
 
   function formatTimestamp(timestamp) {
     const date = new Date(timestamp * 1000);
@@ -134,7 +134,7 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
                   heightContainerUseSaveData={selectedRecord.height_container}
                   widthContainerUseSavedate={selectedRecord.width_container}
                   numSquares={selectedRecord.original_number}
-                  onCreate={setSelectPopChid}
+                  // onCreate={setSelectPopChid}
                 />
               </div>
             )}
@@ -144,13 +144,13 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
     },
 
   ];
-  const handleRowClick = (record) => {
-    if (selectedRow === record.key) {
-      setSelectedRow(null);
-    } else {
-      setSelectedRow(record.key);
-    }
-  };
+  // const handleRowClick = (record) => {
+  //   if (selectedRow === record.key) {
+  //     setSelectedRow(null);
+  //   } else {
+  //     setSelectedRow(record.key);
+  //   }
+  // };
   return (
     <div>
       <Table
@@ -166,10 +166,10 @@ export default function DetailedShowSchedule({ id }) {// display for admin ShowT
           ),
           rowExpandable: (record) => record.name !== 'Not Expandable',
         }}
-        onRow={(record) => ({
-          onClick: () => handleRowClick(record),
-        })}
-        rowClassName={(record) => (record.key === selectedRow ? 'selected-row' : '')}
+        // onRow={(record) => ({
+        //   onClick: () => handleRowClick(record),
+        // })}
+        // rowClassName={(record) => (record.key === selectedRow ? 'selected-row' : '')}
       />
     </div>
   );

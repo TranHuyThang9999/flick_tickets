@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { showError, showSuccess, showWarning } from '../common/log/log';
-import { Form, DatePicker, Upload, Input, Button, Select, InputNumber, Col, Row } from 'antd';
+import { Form, DatePicker, Upload, Input, Button, Select, InputNumber } from 'antd';
 import Axios from 'axios';
 import CinemasGetAll from '../common/cinemas/CinemasGetAll';
 import "./index.css";
