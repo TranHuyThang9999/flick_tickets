@@ -39,7 +39,8 @@ export default function StatisticalBar() {
                     // Chuyển dữ liệu sang mảng để sử dụng trong BarChart
                     const salesArray = Object.entries(sales).map(([movieName, totalRevenue]) => ({
                         movieName,
-                        totalRevenue
+                        totalRevenue,
+                        fill: getRandomColor() // Lấy một màu ngẫu nhiên cho mỗi cột
                     }));
 
                     setMovieSales(salesArray);
@@ -51,6 +52,16 @@ export default function StatisticalBar() {
         fetchData();
     }, [dateRange]);
 
+    // Hàm để tạo màu ngẫu nhiên
+    const getRandomColor = () => {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    };
+
     return (
         <div>
             <RangePicker
@@ -58,14 +69,14 @@ export default function StatisticalBar() {
                 onChange={(dates) => setDateRange(dates)}
             />
             <div>
-                <h2>Tổng doanh thu mỗi phim:</h2>
-                <BarChart width={600} height={400} data={movieSales}>
+                <h2>Tổng doanh thu mỗi phim VND</h2>
+                <BarChart width={500} height={400} data={movieSales}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="movieName" />
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="totalRevenue" fill="#8884d8" />
+                    <Bar dataKey="totalRevenue" name="Doanh thu tổng cộng" />
                 </BarChart>
             </div>
         </div>

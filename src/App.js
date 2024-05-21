@@ -99,8 +99,8 @@ export default function App() {
       {/* <GetListTicketByMovieName movieName={'s'}/> */}
       {/* <TestSelect/> */}
       {/* <RevenueOrder/> */}
-      {/* <CheckLogin/> */}
-      <StatisticalBar/>
+      <CheckLogin/>
+      {/* <StatisticalBar/> */}
     </div>
   );
 }

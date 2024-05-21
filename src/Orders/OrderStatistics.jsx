@@ -3,11 +3,13 @@ import axios from 'axios';
 import { Button, Input, Modal, Select, Space, Table, DatePicker } from 'antd';
 import { DollarOutlined } from '@ant-design/icons';
 import RevenueOrder from './RevenueOrder';
+import StatisticalBar from './StatisticalBar';
 
 export default function OrderStatistics() {
   const [orders, setOrders] = useState([]);
   const [status, setStatus] = useState(0); // Default status
   const [modalOpenStatistics, setModalOpenStatistics] = useState(false);
+  const [modalOpenStatisticsbar, setModalOpenStatisticsbar] = useState(false);
   const [searchParams, setSearchParams] = useState({
     id: '',
     movie_name: '',
@@ -144,8 +146,9 @@ export default function OrderStatistics() {
           />
           <Button onClick={handleGetAllOrders}>Toàn bộ đơn hàng</Button>
           <Button onClick={() => setModalOpenStatistics(true)}>
-            Doanh thu <DollarOutlined />
+            Doanh thu phòng vé<DollarOutlined />
           </Button>
+          <Button onClick={()=>setModalOpenStatisticsbar(true)}>Thống kê doanh thu vé đã bán theo thời gian</Button>
           <Modal
             width={1000}
             title='Tính doanh thu'
@@ -155,6 +158,15 @@ export default function OrderStatistics() {
             onCancel={() => setModalOpenStatistics(false)}
           >
             <RevenueOrder />
+          </Modal>
+          <Modal
+            width={1000}
+            footer
+            open={modalOpenStatisticsbar}
+            onOk={() => setModalOpenStatisticsbar(false)}
+            onCancel={() => setModalOpenStatisticsbar(false)}
+          >
+            <StatisticalBar/>
           </Modal>
         </Space>
         <Space>
