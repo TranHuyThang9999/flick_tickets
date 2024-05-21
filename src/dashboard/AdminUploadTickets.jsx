@@ -298,7 +298,7 @@ export default function AdminUploadTickets() {
 
                 <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                     <Button type="primary" htmlType="submit">
-                        Submit
+                    Tạo vé
                     </Button>
                 </Form.Item>
             </Form>

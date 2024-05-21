@@ -160,7 +160,7 @@ export default function OrderStatistics() {
             <RevenueOrder />
           </Modal>
           <Modal
-            width={1000}
+            width={1200}
             footer
             open={modalOpenStatisticsbar}
             onOk={() => setModalOpenStatisticsbar(false)}
