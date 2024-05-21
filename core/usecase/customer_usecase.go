@@ -349,7 +349,6 @@ func (e *UseCaseCustomer) CreateAccountAdminManagerForStaff(ctx context.Context,
 		UpdatedAt:   utils.GenerateTimestamp(),
 	})
 
-	tx.Commit()
 	if err != nil {
 		return &entities.CustomersRespRegisterAdmin{
 			Result: entities.Result{
@@ -358,16 +357,18 @@ func (e *UseCaseCustomer) CreateAccountAdminManagerForStaff(ctx context.Context,
 			},
 		}, nil
 	}
-	account := fmt.Sprintf("user name : %s \n password : %s ", req.UserName, keyPassword)
-	err = utils.SendPasswordToEmail(req.Email, "Dạp phim gửi bạn tài khoản đăng nhập", account)
-	if err != nil {
-		return &entities.CustomersRespRegisterAdmin{
-			Result: entities.Result{
-				Code:    enums.SEND_EMAIL_ERR_CODE,
-				Message: enums.SEND_EMAIL_ERR_MESS,
-			},
-		}, err
-	}
+	// account := fmt.Sprintf("user name : %s \n password : %s ", req.UserName, keyPassword)
+	// err = utils.SendPasswordToEmail(req.Email, "Dạp phim gửi bạn tài khoản đăng nhập", account)
+	// if err != nil {
+	// 	return &entities.CustomersRespRegisterAdmin{
+	// 		Result: entities.Result{
+	// 			Code:    enums.SEND_EMAIL_ERR_CODE,
+	// 			Message: enums.SEND_EMAIL_ERR_MESS,
+	// 		},
+	// 	}, err
+	// }
+	tx.Commit()
+
 	return &entities.CustomersRespRegisterAdmin{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,

@@ -9,16 +9,27 @@ import (
 	"flick_tickets/common/log"
 	"flick_tickets/common/utils"
 	"flick_tickets/configs"
+	"flick_tickets/core/domain"
 	"flick_tickets/core/entities"
+	"flick_tickets/core/events/caching/cache"
+	"flick_tickets/core/mapper"
 )
 
 type UseCaseAes struct {
 	config *configs.Configs
+	memory cache.RepositoryCache
+	order  domain.RepositoryOrder
 }
 
-func NewUseCaseAes(cf *configs.Configs) (*UseCaseAes, error) {
+func NewUseCaseAes(
+	cf *configs.Configs,
+	memory cache.RepositoryCache,
+	order domain.RepositoryOrder,
+) (*UseCaseAes, error) {
 	return &UseCaseAes{
 		config: cf,
+		memory: memory,
+		order:  order,
 	}, nil
 }
 func (c *UseCaseAes) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entities.TokenRequestSendQrCode) (*entities.TokenRespSendQrCode, error) {
@@ -58,11 +69,13 @@ func (c *UseCaseAes) GeneratesTokenWithAesToQrCodeAndSendQrWithEmail(req *entiti
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
-		Created: utils.GenerateTimestamp(),
+		CreatedAt: utils.GenerateTimestamp(),
 	}, nil
 }
 func (c *UseCaseAes) CheckQrCode(ctx context.Context, req *entities.AesContentEncryptReq) (*entities.TokenResponseCheckQrCode, error) {
+
 	log.Infof("req : ", req)
+
 	if req.Token == "" {
 		return &entities.TokenResponseCheckQrCode{
 			Result: entities.Result{
@@ -83,13 +96,37 @@ func (c *UseCaseAes) CheckQrCode(ctx context.Context, req *entities.AesContentEn
 			},
 		}, nil
 	}
+	dataOrderId := string(data)
+	detailOrder, err := c.order.GetOrderById(ctx, int64(mapper.ConvertStringToInt(dataOrderId)))
+	if err != nil {
+		return &entities.TokenResponseCheckQrCode{
+			Result: entities.Result{
+				Code:    enums.DB_ERR_CODE,
+				Message: enums.DB_ERR_MESS,
+			},
+		}, nil
+	}
+	orderResp := entities.OrderHistoryEntities{
+		ID:             detailOrder.ID,
+		MovieName:      detailOrder.MovieName,
+		CinemaName:     detailOrder.CinemaName,
+		Email:          detailOrder.Email,
+		ReleaseDate:    detailOrder.ReleaseDate,
+		Description:    detailOrder.Description,
+		Status:         detailOrder.Status,
+		Price:          detailOrder.Price,
+		Seats:          detailOrder.Seats,
+		MovieTime:      detailOrder.MovieTime,
+		AddressDetails: detailOrder.AddressDetails,
+		CreatedAt:      detailOrder.CreatedAt,
+	}
 	return &entities.TokenResponseCheckQrCode{
 		Result: entities.Result{
 			Code:    enums.SUCCESS_CODE,
 			Message: enums.SUCCESS_MESS,
 		},
-		Content: string(data),
-		Created: utils.GenerateTimestamp(),
+		Order:     &orderResp,
+		CreatedAt: utils.GenerateTimestamp(),
 	}, nil
 }
 
