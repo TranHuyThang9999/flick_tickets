@@ -38,7 +38,7 @@ export default function DetailedShowSchedule({ id, statusSaleForTicket }) {
       const data = response.data;
       setShowTimeTicket(data.showtimes);
       if (data.result.code === 20) {
-        showWarning("Không tìm thấy bản ghi nào");
+        showWarning("Hiện tạo chưa có xuất chiếu nào");
       } else if (data.result.code === 4) {
         showError("Lỗi server vui lòng thử lại");
       }

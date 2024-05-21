@@ -98,7 +98,6 @@ export default function GetTicketById({ id }) {
                                 {ticket.description}
                             </span>
                             <br />
-                            <div style={{ color: 'red', fontSize: '15px' }}> Giảm giá: {ticket.sale}</div>
 
                             <div style={{
                                 fontFamily: '-moz-initial',
