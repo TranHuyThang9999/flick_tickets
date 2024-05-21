@@ -3,45 +3,18 @@ import QrReader from 'react-qr-scanner';
 import jsQR from 'jsqr';
 import axios from 'axios';
 import { Button, Input } from 'antd';
-import { showError, showSuccess, showWarning } from '../common/log/log';
+import { showError, showWarning } from '../common/log/log';
 import moment from 'moment';
 
 const QRScanner = () => {
-  const [resultInforQrCode, setResultInforQrCode] = useState('');
   const [scanEnabled, setScanEnabled] = useState(false);
   const [order, setOrder] = useState(null);
-  const [orderIdToQrCode, setOrderIdToQrCode] = useState('');
   const qrReaderRef = useRef(null);
-  const [imageSelected, setImageSelected] = useState(false);
-  const [newQrCode, setNewQrCode] = useState('');
 
   const handleScan = async (data) => {
     if (data) {
-      setResultInforQrCode(data.text);
-      setNewQrCode(data.text);
       setScanEnabled(false);
-      try {
-        const response = await axios.get('http://localhost:8080/manager/user/verify/aes', {
-          params: {
-            token: data.text
-          }
-        });
-        console.log(response.data);
-        if (response.data.result.code === 0) {
-          setOrderIdToQrCode(response.data.content);
-          handlerDetailOrderById(response.data.content);
-          showSuccess("Mời xem thông tin đơn hàng");
-        } else if (response.data.result.code === 18) {
-          showWarning("QR code hợp lệ");
-        } else if (response.data.result.code === 12) {
-          showError("Lỗi yêu cầu không hợp lệ");
-        } else {
-          showError("Lỗi máy chủ");
-        }
-      } catch (error) {
-        console.error(error);
-        showError("Lỗi máy chủ");
-      }
+      verifyQRCode(data.text);
     }
   };
 
@@ -51,86 +24,58 @@ const QRScanner = () => {
 
   const startScan = () => {
     setScanEnabled(true);
+    setOrder(null);
   };
 
   const stopScan = () => {
     setScanEnabled(false);
   };
 
-  const handleFileUpload = async (event) => {
+  const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
-      try {
-        setResultInforQrCode('');
-        setImageSelected(false); // Đặt imageSelected thành false khi chọn ảnh mới
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          const imageData = e.target.result;
-          const image = new Image();
-          image.src = imageData;
-          image.onload = async () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = image.width;
-            canvas.height = image.height;
-            const context = canvas.getContext('2d');
-            context.drawImage(image, 0, 0);
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const code = jsQR(imageData.data, imageData.width, imageData.height);
-            if (code) {
-              setResultInforQrCode(code.data);
-              setNewQrCode(code.data);
-              setImageSelected(true);
-              if (resultInforQrCode) {
-                await handlerDetailOrderById(code.data);
-              }
-            } else {
-              console.error('Failed to decode QR code');
-            }
-          };
+      setOrder(null);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageData = e.target.result;
+        const image = new Image();
+        image.src = imageData;
+        image.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = image.width;
+          canvas.height = image.height;
+          const context = canvas.getContext('2d');
+          context.drawImage(image, 0, 0);
+          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          if (code) {
+            verifyQRCode(code.data);
+          } else {
+            showWarning('Mã QrCode không hợp lệ vui lòng chọn lại');
+          }
         };
-        reader.readAsDataURL(file);
-      } catch (error) {
-        console.error('Error while uploading file:', error);
-      }
+      };
+      reader.readAsDataURL(file);
     } else {
-      console.error('Invalid file type. Only .png, .jpg, .jpeg files are accepted.');
+      showWarning('Mã QrCode không hợp lệ vui lòng chọn lại');
     }
   };
-  
 
-  const handleButtonClick = async () => {
+  const verifyQRCode = async (token) => {
     try {
       const response = await axios.get('http://localhost:8080/manager/user/verify/aes', {
-        params: {
-          token: newQrCode
-        }
+        params: { token }
       });
-      console.log(response.data);
-      if (response.data.result.code === 0) {
-        setOrderIdToQrCode(response.data.content);
-        handlerDetailOrderById(response.data.content);
-        showSuccess("Mời xem thông tin đơn hàng");
-      } else if (response.data.result.code === 18) {
+      const { result, order } = response.data;
+      if (result.code === 0) {
+        setOrder(order);
+        // showSuccess("Mời xem thông tin đơn hàng");
+      } else if (result.code === 18) {
         showWarning("QR code hợp lệ");
-      } else if (response.data.result.code === 12) {
+      } else if (result.code === 12) {
         showError("Lỗi yêu cầu không hợp lệ");
       } else {
-        showError("Lỗi máy chủ");
-      }
-    } catch (error) {
-      console.error(error);
-      // showError("Lỗi máy chủ");
-    }
-  };
-
-  const handlerDetailOrderById = async (orderId) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/manager/customer/look/order/ticket?id=${orderId}`);
-      if (response.data.result.code === 0) {
-        setOrder(response.data.orders);
-      } else if (response.data.result.code === 14) {
-        // showWarning("Lỗi từ phía máy khách");
-      } else if (response.data.result.code === 4) {
         showError("Lỗi máy chủ");
       }
     } catch (error) {
@@ -139,8 +84,29 @@ const QRScanner = () => {
     }
   };
 
-  let scannerContent;
+  const getOrderStatus = (status) => {
+    switch (status) {
+      case 9:
+        return 'Thanh toán thành công';
+      case 11:
+        return 'Đã hủy';
+      default:
+        return 'Trạng thái không xác định';
+    }
+  };
 
+  const formatAddressDetails = (addressDetails) => {
+    try {
+      const parsedAddress = JSON.parse(addressDetails);
+      const { cinema_name, description, conscious, district, commune, address_details } = parsedAddress;
+      return `${cinema_name}, ${description}, ${conscious}, ${district}, ${commune}, ${address_details}`;
+    } catch (error) {
+      console.error('Error parsing address details:', error);
+      return 'Thông tin địa chỉ không hợp lệ';
+    }
+  };
+
+  let scannerContent;
   if (scanEnabled) {
     scannerContent = (
       <QrReader
@@ -159,42 +125,14 @@ const QRScanner = () => {
     );
   }
 
-  let scanButton;
-  if (scanEnabled) {
-    scanButton = <Button onClick={stopScan}>Stop Scan</Button>;
-  } else {
-    scanButton = <Button onClick={startScan}>Kiểm tra mã QrCode</Button>;
-  }
-
-  const getOrderStatus = (status) => {
-    if (status === 9) {
-      return 'Thanh toán thành công';
-    } else if (status === 11) {
-      return 'Đã hủy';
-    } else {
-      return 'Trạng thái không xác định';
-    }
-  };
-
-  const formatAddressDetails = (addressDetails) => {
-    try {
-      const parsedAddress = JSON.parse(addressDetails);
-      const { cinema_name, description, conscious, district, commune, address_details } = parsedAddress;
-      return `${cinema_name}, ${description}, ${conscious}, ${district}, ${commune}, ${address_details}`;
-    } catch (error) {
-      console.error('Error parsing address details:', error);
-      return 'Thông tin địa chỉ không hợp lệ';
-    }
-  };
-
   let orderInfo;
   if (order) {
-    const addressDetailsString = order.addressDetails ? formatAddressDetails(order.addressDetails) : '';
+    const addressDetailsString = order.address_details ? formatAddressDetails(order.address_details) : '';
     orderInfo = (
       <div style={{ padding: '10px' }}>
         <p>ID Đơn hàng: {order.id}</p>
-        <p>Giờ chiếu: {order.show_time_id}</p>
-        <p>Ngày phát hành: {order.release_date}</p>
+        <p>Tên phim: {order.movie_name}</p>
+        <p>Tên rạp: {order.cinema_name}</p>
         <p>Email: {order.email}</p>
         <p>Mô tả: {order.description}</p>
         <p>Trạng thái: {getOrderStatus(order.status)}</p>
@@ -207,11 +145,17 @@ const QRScanner = () => {
     );
   }
 
+  let scanButton;
+  if (scanEnabled) {
+    scanButton = <Button onClick={stopScan}>Stop Scan</Button>;
+  } else {
+    scanButton = <Button onClick={startScan}>Kiểm tra mã QrCode</Button>;
+  }
+
   return (
     <div style={{ width: '600px' }}>
       {scannerContent}
       {scanButton}
-      <Button onClick={handleButtonClick} disabled={!imageSelected}>Kiểm tra mã QRCode</Button>
       {orderInfo}
     </div>
   );
